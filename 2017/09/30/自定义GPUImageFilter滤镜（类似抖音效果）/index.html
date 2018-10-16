@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>自定义GPUImageFilter滤镜（类似抖音效果） | XJ的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在GPUImageMovie无法同时读取多个视频分析这篇文章，我已经粗略介绍过了GPUImage。本文将带来GPUImageFilter的自定义抖音效果滤镜。  什么是GLSLGLSL首先我们需要具备的知识点之一，GLSL是官方的OpenGL着色语言的简称(OpenGL Shading Language)。GLSL是类似于C的高级语言。使用GLSL，你能够编写一些简短的程序代码，称为着色器(Sha">
+<meta name="keywords" content="OpenGLES,GPUImage,iOS,GPUImageFilter">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自定义GPUImageFilter滤镜（类似抖音效果）">
+<meta property="og:url" content="http://z-xj.com/2017/09/30/自定义GPUImageFilter滤镜（类似抖音效果）/index.html">
+<meta property="og:site_name" content="XJ的博客">
+<meta property="og:description" content="在GPUImageMovie无法同时读取多个视频分析这篇文章，我已经粗略介绍过了GPUImage。本文将带来GPUImageFilter的自定义抖音效果滤镜。  什么是GLSLGLSL首先我们需要具备的知识点之一，GLSL是官方的OpenGL着色语言的简称(OpenGL Shading Language)。GLSL是类似于C的高级语言。使用GLSL，你能够编写一些简短的程序代码，称为着色器(Sha">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://ws3.sinaimg.cn/large/006tKfTcgy1fk1wl6ephij307g09s0sx.jpg">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/006tKfTcgy1fk1wdfcgq1j308w0fsgmh.jpg">
+<meta property="og:image" content="https://ws4.sinaimg.cn/large/006tKfTcgy1fk1wd8it7zj308w0fsaib.jpg">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/006tKfTcgy1fk1wc16biog307g0dc15r.gif">
+<meta property="og:updated_time" content="2018-10-16T13:55:20.504Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="自定义GPUImageFilter滤镜（类似抖音效果）">
+<meta name="twitter:description" content="在GPUImageMovie无法同时读取多个视频分析这篇文章，我已经粗略介绍过了GPUImage。本文将带来GPUImageFilter的自定义抖音效果滤镜。  什么是GLSLGLSL首先我们需要具备的知识点之一，GLSL是官方的OpenGL着色语言的简称(OpenGL Shading Language)。GLSL是类似于C的高级语言。使用GLSL，你能够编写一些简短的程序代码，称为着色器(Sha">
+<meta name="twitter:image" content="https://ws3.sinaimg.cn/large/006tKfTcgy1fk1wl6ephij307g09s0sx.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="XJ的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?deeb29ff2d5628cd455b526ec47da129";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">XJ的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">OpenGLES、iOS</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://z-xj.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-自定义GPUImageFilter滤镜（类似抖音效果）" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/09/30/自定义GPUImageFilter滤镜（类似抖音效果）/" class="article-date">
+  <time datetime="2017-09-30T12:35:34.000Z" itemprop="datePublished">2017-09-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      自定义GPUImageFilter滤镜（类似抖音效果）
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在<a href="http://z-xj.com/2017/09/27/GPUImageMovie%E5%90%8C%E6%97%B6%E8%AF%BB%E5%8F%96%E5%A4%9A%E4%B8%AA%E8%A7%86%E9%A2%91/">GPUImageMovie无法同时读取多个视频分析</a>这篇文章，我已经粗略介绍过了GPUImage。本文将带来<strong>GPUImageFilter</strong>的自定义抖音效果滤镜。</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fk1wl6ephij307g09s0sx.jpg" alt="抖音"></p>
+<h1 id="什么是GLSL"><a href="#什么是GLSL" class="headerlink" title="什么是GLSL"></a>什么是GLSL</h1><p><strong>GLSL</strong>首先我们需要具备的知识点之一，<strong>GLSL</strong>是官方的<strong>OpenGL</strong>着色语言的简称(OpenGL Shading Language)。<strong>GLSL</strong>是类似于C的高级语言。使用<strong>GLSL</strong>，你能够编写一些简短的程序代码，称为着色器(<strong>Shader</strong>)，这些着色器可以在<strong>GPU</strong>上运行。</p>
+<h3 id="VSH-顶点着色器"><a href="#VSH-顶点着色器" class="headerlink" title="VSH(顶点着色器)"></a>VSH(顶点着色器)</h3><p><strong>顶点着色器</strong>从字面上的意思来解释就是关于坐标的控制，如其名<strong>VSH</strong>就是用于光栅化前的顶点数据准备，在这个脚本我们可以修改外部传入的坐标并传递给GL并且可以传递数据给下面将会介绍到的<strong>FSH</strong>（<strong>片段着色器</strong>）。</p>
+<p>下面是一段<strong>GPUImageFilter</strong>里面的<strong>顶点着色器</strong>代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"> <span class="comment">// 定义position 属性</span></div><div class="line"> attribute vec4 position;</div><div class="line"></div><div class="line"><span class="comment">//定义inputTextureCoordinate属性(纹理坐标)</span></div><div class="line"> attribute vec4 inputTextureCoordinate;</div><div class="line"> </div><div class="line"><span class="comment">//传递数据给FSH，需要两个着色器必须声明同一个名称的varying属性</span></div><div class="line"> varying vec2 textureCoordinate;</div><div class="line"> </div><div class="line"> <span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line"><span class="function"> </span>&#123;	</div><div class="line">    <span class="comment">// 将外部传入的position直接赋值给gl，最终的数据为-1 ~ 1</span></div><div class="line">     gl_Position = position;</div><div class="line">   </div><div class="line">   	<span class="comment">// 传递纹理坐标到VSH</span></div><div class="line">     textureCoordinate = inputTextureCoordinate.xy;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<p>里面的vecN类型的对象代表着N个<strong>GLfloat</strong>的数据，例如<em>position</em>是一个vec4类型，那么它就是由4个<strong>GLfloat</strong>组成的。<strong>attribute</strong>可以理解为这个属性是一个数组，由多个vecN组成。</p>
+<h3 id="FSH-片段着色器"><a href="#FSH-片段着色器" class="headerlink" title="FSH(片段着色器)"></a>FSH(片段着色器)</h3><p><strong>片段着色器</strong>字面意思比较不好理解，它的作用是用于处理光栅化后的每一个像素的最终颜色。例如我们可以用它将原始像素处理为黑白、反色等等。下面是一段<strong>GPUImageFilter</strong>里面的<strong>片段着色器</strong>代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">	<span class="comment">// 这个属性我们已经在顶点着色器见到过了 </span></div><div class="line">varying highp vec2 textureCoordinate;</div><div class="line"> </div><div class="line"><span class="comment">// 这个属性是画面的内容，由外部传入，值为0~1。</span></div><div class="line"> uniform sampler2D inputImageTexture;</div><div class="line"> </div><div class="line"> <span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line"><span class="function"> </span>&#123;</div><div class="line">   	<span class="comment">//这里只是简单的将当前位置上的图片读取出来赋值给GL。</span></div><div class="line">     gl_FragColor = texture2D(inputImageTexture, textureCoordinate);</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<p>通过<em>texture2D</em>函数我们可以得到一个<strong>纹素</strong>（texel），这是一个纹理图片中的像素。函数参数分别为<em>sampler2D</em>（纹理句柄）以及纹理坐标，得到当前纹理坐标对应的像素。</p>
+<a id="more"></a>
+<h1 id="GPUImageColorInvertFilter"><a href="#GPUImageColorInvertFilter" class="headerlink" title="GPUImageColorInvertFilter"></a>GPUImageColorInvertFilter</h1><p>为了保证这次内容不会过于复杂，我就直接拿<strong>GPUImageColorInvertFilter</strong>来作为样例讲解</p>
+<h3 id="头文件"><a href="#头文件" class="headerlink" title="头文件"></a>头文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">#import &quot;GPUImageFilter.h&quot;</div><div class="line"></div><div class="line">@interface GPUImageColorInvertFilter : GPUImageFilter</div><div class="line"></div><div class="line">&#123;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
+<p>头文件的声明十分简单，没有声明任何的属性及方法</p>
+<h3 id="实现文件"><a href="#实现文件" class="headerlink" title="实现文件"></a>实现文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line">#import &quot;GPUImageColorInvertFilter.h&quot;</div><div class="line"></div><div class="line">#if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE</div><div class="line">NSString *const kGPUImageInvertFragmentShaderString = SHADER_STRING</div><div class="line">(</div><div class="line"> varying highp vec2 textureCoordinate;</div><div class="line"> </div><div class="line"> uniform sampler2D inputImageTexture;</div><div class="line"> </div><div class="line"> void main()</div><div class="line"> &#123;</div><div class="line">    lowp vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);</div><div class="line">    </div><div class="line">    gl_FragColor = vec4((1.0 - textureColor.rgb), textureColor.w);</div><div class="line"> &#125;</div><div class="line">);                                                                    </div><div class="line">#else</div><div class="line">NSString *const kGPUImageInvertFragmentShaderString = SHADER_STRING</div><div class="line">(</div><div class="line"> varying vec2 textureCoordinate;</div><div class="line"> </div><div class="line"> uniform sampler2D inputImageTexture;</div><div class="line"> </div><div class="line"> void main()</div><div class="line"> &#123;</div><div class="line">     vec4 textureColor = texture2D(inputImageTexture, textureCoordinate);</div><div class="line">     </div><div class="line">     gl_FragColor = vec4((1.0 - textureColor.rgb), textureColor.w);</div><div class="line"> &#125;</div><div class="line"> );</div><div class="line">#endif</div><div class="line"></div><div class="line">@implementation GPUImageColorInvertFilter</div><div class="line"></div><div class="line">- (id)init;</div><div class="line">&#123;</div><div class="line">    if (!(self = [super initWithFragmentShaderFromString:kGPUImageInvertFragmentShaderString]))</div><div class="line">    &#123;</div><div class="line">		return nil;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    return self;</div><div class="line">&#125;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
+<p>这里只是重写了<em>init</em>方法，把自己自定义的片元着色器脚本重写并传给父类初始化。</p>
+<p>从<em>#if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE</em>到<em>#endif</em>这些代码就是这个滤镜的核心代码。这里有个判断<strong>iOS设备</strong>及<strong>iOS模拟器</strong>的宏定义是为了区分<strong>OpenGLES</strong>和<strong>OpenGL</strong>。</p>
+<p>因为<strong>GPUImageFilter</strong>已经将大部分<strong>OpenGLES</strong>细节隐藏在里面，所以大部分情况下需要重写的只是滤镜的片元着色器。</p>
+<h1 id="开始动手写滤镜"><a href="#开始动手写滤镜" class="headerlink" title="开始动手写滤镜"></a>开始动手写滤镜</h1><p>现在我们新建一个<strong>GPUImage3DFilter</strong>像<strong>GPUImageColorInvertFilter</strong>一样，只重写<em>init</em>方法。如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">#import &quot;GPUImage3DFilter.h&quot;</div><div class="line"></div><div class="line">NSString *const kGPUImage3DFragmentShaderString = SHADER_STRING</div><div class="line">(</div><div class="line"> // 图片的像素坐标</div><div class="line"> varying highp vec2 textureCoordinate;</div><div class="line"> // 图片</div><div class="line"> uniform sampler2D inputImageTexture;</div><div class="line"> </div><div class="line"> void main()</div><div class="line"> &#123;</div><div class="line">   // 这张图片转成0~1，每个像素的值是多少</div><div class="line">     lowp vec2 imagePixel = 1.0 / vec2(640.0,1136.0);</div><div class="line">   </div><div class="line">   // 对纹理坐标进行偏移，*5.0代表着偏移五个像素</div><div class="line">     lowp vec4 right = texture2D(inputImageTexture, textureCoordinate + imagePixel * 5.0);</div><div class="line">     lowp vec4 left = texture2D(inputImageTexture, textureCoordinate - imagePixel * 5.0);</div><div class="line">   // 最终取left的r跟right的gb组成一个新的像素</div><div class="line">    gl_FragColor = vec4(left.r,right.g,right.b,1.0);</div><div class="line"> &#125;</div><div class="line"> );</div><div class="line"></div><div class="line">@implementation GPUImage3DFilter</div><div class="line"></div><div class="line">- (instancetype)init</div><div class="line">&#123;</div><div class="line">    self = [super initWithFragmentShaderFromString:kGPUImage3DFragmentShaderString];</div><div class="line">    if (self) &#123;</div><div class="line">        </div><div class="line">    &#125;</div><div class="line">    return self;</div><div class="line">&#125;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
+<p>现在我们载入一张图片并且加上我们滤镜</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">UIImage *image = [UIImage imageNamed:@&quot;123.jpg&quot;];</div><div class="line"></div><div class="line">// 初始化一个GPUImagePicture</div><div class="line">// GPUImagePicture是一个GPUImage的输出源(GPUImageOutput)</div><div class="line">   GPUImagePicture *picture  = [[GPUImagePicture alloc] initWithImage:image];</div><div class="line">   </div><div class="line">   // 使用我们自定义的3D滤镜</div><div class="line">   GPUImage3DFilter *filter = [[GPUImage3DFilter alloc] init];</div><div class="line">   </div><div class="line">   // 告诉GPUImageFilter我们传输的下一帧数据是来自Image</div><div class="line">   [filter useNextFrameForImageCapture];</div><div class="line">   </div><div class="line">   // picture添加他的输出目标</div><div class="line">   [picture addTarget:filter];</div><div class="line">   </div><div class="line">   // picture开始处理图片</div><div class="line">   [picture processImageWithCompletionHandler:^&#123;</div><div class="line">    // 从效果链的最后一级取出结果，这里的效果链最后一级是3DFilter</div><div class="line">       UIImage *image1 = [filter imageFromCurrentFramebuffer];</div><div class="line">   &#125;];</div></pre></td></tr></table></figure>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fk1wdfcgq1j308w0fsgmh.jpg" alt="原图"><img src="https://ws4.sinaimg.cn/large/006tKfTcgy1fk1wd8it7zj308w0fsaib.jpg" alt="3D结果图"></p>
+<p>可以看到是有一点抖音效果的。</p>
+<h3 id="适应全尺寸图片"><a href="#适应全尺寸图片" class="headerlink" title="适应全尺寸图片"></a>适应全尺寸图片</h3><p>细心的同学可能发现，这个滤镜要是用在非<strong>640x1136</strong>的图片上会有<strong>BUG</strong>。现在来解决下这个问题，回顾下之前提到的<em>setupFilterForSize:</em>方法，这个方法是每一帧都会调用到的。我们可以重写这个方法来向脚本传递最新的画面大小。</p>
+<h4 id="将变量写活"><a href="#将变量写活" class="headerlink" title="将变量写活"></a>将变量写活</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">NSString *const kGPUImage3DFragmentShaderString = SHADER_STRING</div><div class="line">(</div><div class="line"> // 图片的像素坐标</div><div class="line"> varying highp vec2 textureCoordinate;</div><div class="line"> // 图片</div><div class="line"> uniform sampler2D inputImageTexture;</div><div class="line"> </div><div class="line"> uniform lowp vec2 imagePixel;</div><div class="line"> </div><div class="line"> void main()</div><div class="line"> &#123;</div><div class="line">     // 对纹理坐标进行偏移，*5.0代表着偏移五个像素</div><div class="line">     lowp vec4 right = texture2D(inputImageTexture, textureCoordinate + imagePixel * 5.0);</div><div class="line">     lowp vec4 left = texture2D(inputImageTexture, textureCoordinate - imagePixel * 5.0);</div><div class="line">     // 最终取left的r跟right的gb组成一个新的像素</div><div class="line">     gl_FragColor = vec4(left.r,right.g,right.b,1.0);</div><div class="line"> &#125;</div><div class="line"> );</div></pre></td></tr></table></figure>
+<h4 id="重写setupFilterForSize-函数，并且实现setFloatVec2-forUniformName方法"><a href="#重写setupFilterForSize-函数，并且实现setFloatVec2-forUniformName方法" class="headerlink" title="重写setupFilterForSize:函数，并且实现setFloatVec2:forUniformName方法"></a><del>重写setupFilterForSize:函数，并且实现setFloatVec2:forUniformName方法</del></h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">- (void)setupFilterForSize:(CGSize)filterFrameSize</div><div class="line">&#123;</div><div class="line">    runSynchronouslyOnVideoProcessingQueue(^&#123;</div><div class="line">        [GPUImageContext setActiveShaderProgram:filterProgram];</div><div class="line">        GPUVector3 imagePixel;</div><div class="line">        imagePixel.one = 1.0 / filterFrameSize.width;</div><div class="line">        imagePixel.two = 1.0 / filterFrameSize.height;</div><div class="line">      // 这里是向着色器传递每个像素格式化成0~1的值</div><div class="line">        [self setFloatVec2:imagePixel forUniformName:@&quot;imagePixel&quot;];</div><div class="line">    &#125;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">// GPUImage的作者不知道出于什么目的没有写setFloatVec2:forUniformName:函数，我这边依照setFloatVec3:forUniformName:写了一个</div><div class="line">- (void)setFloatVec2:(GPUVector3)newVec2 forUniformName:(NSString *)uniformName;</div><div class="line">&#123;</div><div class="line">    </div><div class="line">    GLint uniformIndex = [filterProgram uniformIndex:uniformName];</div><div class="line">    [self setVec2:newVec2 forUniform:uniformIndex program:filterProgram];</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)setVec2:(GPUVector3)vectorValue forUniform:(GLint)uniform program:(GLProgram *)shaderProgram;</div><div class="line">&#123;</div><div class="line">    runAsynchronouslyOnVideoProcessingQueue(^&#123;</div><div class="line">        [GPUImageContext setActiveShaderProgram:shaderProgram];</div><div class="line">        </div><div class="line">        [self setAndExecuteUniformStateCallbackAtIndex:uniform forProgram:shaderProgram toBlock:^&#123;</div><div class="line">            glUniform2fv(uniform, 1, (const GLfloat *)&amp;vectorValue);</div><div class="line">        &#125;];</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行一下，如果没有意外跟之前写死的结果是一样的。</p>
+<h4 id="优化代码"><a href="#优化代码" class="headerlink" title="优化代码"></a>优化代码</h4><p>修正上面所说的没有<em>setFloatVec2:forUniformName:</em>方法，<strong>GPUImage</strong>已经有这个方法只是名称比较奇怪。有两个方法可以实现这个功能<em>setSize: forUniformName:和setPoint:forUniformName:</em>。我们来实验一下,直接修改<em>setupFilterForSize:</em>方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">- (void)setupFilterForSize:(CGSize)filterFrameSize</div><div class="line">&#123;</div><div class="line">    runSynchronouslyOnVideoProcessingQueue(^&#123;</div><div class="line">        [GPUImageContext setActiveShaderProgram:filterProgram];</div><div class="line">        CGSize imagePixel;</div><div class="line">        imagePixel.width = 1.0 / filterFrameSize.width;</div><div class="line">        imagePixel.height = 1.0 / filterFrameSize.height;</div><div class="line">        [self setSize:imagePixel forUniformName:@&quot;imagePixel&quot;];</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>另外的<em>setPoint:forUniformName:</em>方法与<em>setSize: forUniformName:</em>实现相同，感兴趣的同学可以自己修改下~</p>
+<p>Run起来的结果跟我们之前的结果是一样的😜。至此我们的抖音滤镜已经可以正常工作了~~~🎉🎉🎉</p>
+<h2 id="让效果动起来"><a href="#让效果动起来" class="headerlink" title="让效果动起来"></a>让效果动起来</h2><p>不能动的3D效果看起来可能很无聊，我们是不是可以让它动起来呢？</p>
+<p>答案：可以的。</p>
+<p>首先我们需要三个对象</p>
+<p>1、<strong>CADisplayLink</strong>每次屏幕刷新，用来驱动数据更新及画面输出。</p>
+<p>2、<strong>GPUImagePicture</strong>每次屏幕刷新，我们需要将原始画面传输给3D滤镜进行处理。</p>
+<p>3、<strong>GPUImage3DFilter</strong>每次屏幕刷新，我们需要更新3DFilter每次偏移的像素值。</p>
+<p>其次我们需要初始化对象并且产生动画数据</p>
+<p>1、初始化<strong>CADisplayLink</strong>并且使用<strong>GPUImageView</strong>来展示内容（<strong>GPUImageView</strong>实现了<strong>GPUImageInput</strong>所以可以直接将数据传输给它）。</p>
+<p>2、实现<em>update</em>方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div></pre></td><td class="code"><pre><div class="line">@interface ViewController ()</div><div class="line">@property (nonatomic, strong) CADisplayLink *displayLink;</div><div class="line">@property (nonatomic, strong) GPUImagePicture *picture;</div><div class="line">@property (nonatomic, strong) GPUImage3DFilter *filter;</div><div class="line">@end</div><div class="line">  </div><div class="line">- (void)viewDidLoad &#123;</div><div class="line">    [super viewDidLoad];</div><div class="line">    </div><div class="line">    GPUImageView *imageView = [[GPUImageView alloc] initWithFrame:self.view.bounds];</div><div class="line">    [self.view addSubview:imageView];</div><div class="line">    </div><div class="line">    </div><div class="line">    self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(update)];</div><div class="line">    [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];</div><div class="line">    // Do any additional setup after loading the view, typically from a nib.</div><div class="line">    UIImage *image = [UIImage imageNamed:@&quot;123.jpg&quot;];</div><div class="line">    GPUImagePicture *picture  = [[GPUImagePicture alloc] initWithImage:image];</div><div class="line">    GPUImage3DFilter *filter = [[GPUImage3DFilter alloc] init];</div><div class="line">    [filter useNextFrameForImageCapture];</div><div class="line">    [picture addTarget:filter];</div><div class="line">    [filter addTarget:imageView];</div><div class="line">//    [picture processImageWithCompletionHandler:^&#123;</div><div class="line">//        UIImage *image1 = [filter imageFromCurrentFramebuffer];</div><div class="line">//        NSLog(@&quot;123&quot;);</div><div class="line">//    &#125;];</div><div class="line">    self.picture = picture;</div><div class="line">    self.filter = filter;</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)update</div><div class="line">&#123;</div><div class="line">  // 每次随机产生一个0~10的数进行动画</div><div class="line">    int x = arc4random() % 11;</div><div class="line">    int y = arc4random() % 11;</div><div class="line">    </div><div class="line">    self.filter.offset = CGPointMake(x, y);</div><div class="line">    [self.picture processImage];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>GPUImage3DFilter</strong>添加外部可设置的偏移值属性</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">@interface GPUImage3DFilter : GPUImageFilter</div><div class="line"></div><div class="line">/**</div><div class="line"> 3d滤镜偏移值</div><div class="line"> */</div><div class="line">@property (nonatomic, assign) CGPoint offset;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
+<p>更新<strong>GPUImage3DFilter</strong>片元着色器并且向它传递偏移值数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">NSString *const kGPUImage3DFragmentShaderString = SHADER_STRING</div><div class="line">(</div><div class="line"> // 图片的像素坐标</div><div class="line"> varying highp vec2 textureCoordinate;</div><div class="line"> // 图片</div><div class="line"> uniform sampler2D inputImageTexture;</div><div class="line"> </div><div class="line"> uniform highp vec2 imagePixel;</div><div class="line"> </div><div class="line"> uniform highp vec2 offset;</div><div class="line"> </div><div class="line"> void main()</div><div class="line"> &#123;</div><div class="line">     // 对纹理坐标进行偏移，*5.0代表着偏移五个像素</div><div class="line">     lowp vec4 right = texture2D(inputImageTexture, textureCoordinate + imagePixel * offset);</div><div class="line">     lowp vec4 left = texture2D(inputImageTexture, textureCoordinate - imagePixel * offset);</div><div class="line">     // 最终取left的r跟right的gb组成一个新的像素</div><div class="line">     gl_FragColor = vec4(left.r,right.g,right.b,1.0);</div><div class="line"> &#125;</div><div class="line"> );</div><div class="line"></div><div class="line"></div><div class="line">- (void)setupFilterForSize:(CGSize)filterFrameSize</div><div class="line">&#123;</div><div class="line">    runSynchronouslyOnVideoProcessingQueue(^&#123;</div><div class="line">        [GPUImageContext setActiveShaderProgram:filterProgram];</div><div class="line">        CGSize imagePixel;</div><div class="line">        imagePixel.width = 1.0 / filterFrameSize.width;</div><div class="line">        imagePixel.height = 1.0 / filterFrameSize.height;</div><div class="line">        [self setSize:imagePixel forUniformName:@&quot;imagePixel&quot;];</div><div class="line">      </div><div class="line">      // 传递偏移值数据</div><div class="line">        [self setPoint:self.offset forUniformName:@&quot;offset&quot;];</div><div class="line">    &#125;);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>写了这么多代码不run一下有点虚。。。😂😂😂</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tKfTcgy1fk1wc16biog307g0dc15r.gif" alt="动画"></p>
+<p>最终我们得到了一个非常鬼畜的抖音效果动画。。。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文从<strong>GPUImageFilter</strong>为基类来实现一个<strong>GPUImage</strong>自定义滤镜，这只是<strong>GPUImageFilter</strong>最简单的自定义实现方式。</p>
+<p>有兴趣的同学可以看看<strong>GPUImageTwoPassFilter</strong>、<strong>GPUImageTwoInputFilter</strong>等等内部逻辑不同于<strong>GPUImageFilter</strong>的Filter，去发掘更多好玩的滤镜。</p>
+<h1 id="扩展阅读"><a href="#扩展阅读" class="headerlink" title="扩展阅读"></a>扩展阅读</h1><p>1、<a href="https://github.com/BradLarson/GPUImage" target="_blank" rel="external">GPUImage</a></p>
+<p>2、<a href="https://www.kancloud.cn/trent/imagesharp/100473" target="_blank" rel="external">基于单幅图像的2D转3D算法研究</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://z-xj.com/2017/09/30/自定义GPUImageFilter滤镜（类似抖音效果）/" data-id="cjnbui1sj0021vov364u50fsr" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GPUImage/">GPUImage</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GPUImageFilter/">GPUImageFilter</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpenGLES/">OpenGLES</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/10/03/查看GPUImageFramebuffer内容/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          查看GPUImageFramebuffer内容
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/09/28/iOS-平台下使用Cairo图形库/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">iOS 平台下使用Cairo图形库</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ARKit/">ARKit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AVFoundation/">AVFoundation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cairo/">Cairo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GIF/">GIF</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPUImage/">GPUImage</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPUImageFilter/">GPUImageFilter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPUImageFramebuffer/">GPUImageFramebuffer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPUImageMovie/">GPUImageMovie</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hook/">Hook</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Metal/">Metal</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MetalKit/">MetalKit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenCL/">OpenCL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenGLES/">OpenGLES</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Quartz2D/">Quartz2D</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SCNMaterial/">SCNMaterial</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SceneKit/">SceneKit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/XCode/">XCode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/debugQuickLookObject/">debugQuickLookObject</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/并行计算/">并行计算</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活/">生活</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ARKit/" style="font-size: 12.5px;">ARKit</a> <a href="/tags/AVFoundation/" style="font-size: 10px;">AVFoundation</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/Cairo/" style="font-size: 10px;">Cairo</a> <a href="/tags/GIF/" style="font-size: 10px;">GIF</a> <a href="/tags/GPUImage/" style="font-size: 17.5px;">GPUImage</a> <a href="/tags/GPUImageFilter/" style="font-size: 10px;">GPUImageFilter</a> <a href="/tags/GPUImageFramebuffer/" style="font-size: 10px;">GPUImageFramebuffer</a> <a href="/tags/GPUImageMovie/" style="font-size: 10px;">GPUImageMovie</a> <a href="/tags/Hook/" style="font-size: 10px;">Hook</a> <a href="/tags/Metal/" style="font-size: 15px;">Metal</a> <a href="/tags/MetalKit/" style="font-size: 10px;">MetalKit</a> <a href="/tags/OpenCL/" style="font-size: 10px;">OpenCL</a> <a href="/tags/OpenGLES/" style="font-size: 20px;">OpenGLES</a> <a href="/tags/Quartz2D/" style="font-size: 10px;">Quartz2D</a> <a href="/tags/SCNMaterial/" style="font-size: 10px;">SCNMaterial</a> <a href="/tags/SceneKit/" style="font-size: 10px;">SceneKit</a> <a href="/tags/XCode/" style="font-size: 10px;">XCode</a> <a href="/tags/debugQuickLookObject/" style="font-size: 10px;">debugQuickLookObject</a> <a href="/tags/iOS/" style="font-size: 17.5px;">iOS</a> <a href="/tags/并行计算/" style="font-size: 10px;">并行计算</a> <a href="/tags/生活/" style="font-size: 10px;">生活</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/02/09/Android Hook JNI C函数/">Android Hook JNI C函数</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/23/GPUImage支持GIF/">GPUImage支持GIF</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/15/Metal-并行计算/">Metal 并行计算</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/14/关于跑步/">关于跑步</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/07/ARKit使用OpenGLES/">ARKit使用OpenGLES</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 张晓军<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>iOS 平台下使用Cairo图形库 | XJ的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="最近在一个Lottie衍生项目上，由于需要绘制线条、圆、矩形等图元并且需要GPU加速，本来第一选择是自己封装OpenGLES来绘制图元。但计划赶不上变化，在开发过程中发现CAShapeLayer的fillRule实现起来太耗时了，在一番筛选之后，决定使用Cairo来作为绘制引擎。 CairoCairo是一个跨平台的2D矢量图形库，它是用C编写的，可工作在linux, BSDs, OSX, iOS">
+<meta name="keywords" content="OpenGLES,Cairo,iOS,Quartz2D">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS 平台下使用Cairo图形库">
+<meta property="og:url" content="http://z-xj.com/2017/09/28/iOS-平台下使用Cairo图形库/index.html">
+<meta property="og:site_name" content="XJ的博客">
+<meta property="og:description" content="最近在一个Lottie衍生项目上，由于需要绘制线条、圆、矩形等图元并且需要GPU加速，本来第一选择是自己封装OpenGLES来绘制图元。但计划赶不上变化，在开发过程中发现CAShapeLayer的fillRule实现起来太耗时了，在一番筛选之后，决定使用Cairo来作为绘制引擎。 CairoCairo是一个跨平台的2D矢量图形库，它是用C编写的，可工作在linux, BSDs, OSX, iOS">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/006tNc79gy1fjzme1zy0fj30io0jqmy5.jpg">
+<meta property="og:updated_time" content="2018-10-16T13:55:20.501Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="iOS 平台下使用Cairo图形库">
+<meta name="twitter:description" content="最近在一个Lottie衍生项目上，由于需要绘制线条、圆、矩形等图元并且需要GPU加速，本来第一选择是自己封装OpenGLES来绘制图元。但计划赶不上变化，在开发过程中发现CAShapeLayer的fillRule实现起来太耗时了，在一番筛选之后，决定使用Cairo来作为绘制引擎。 CairoCairo是一个跨平台的2D矢量图形库，它是用C编写的，可工作在linux, BSDs, OSX, iOS">
+<meta name="twitter:image" content="https://ws1.sinaimg.cn/large/006tNc79gy1fjzme1zy0fj30io0jqmy5.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="XJ的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?deeb29ff2d5628cd455b526ec47da129";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">XJ的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">OpenGLES、iOS</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://z-xj.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-iOS-平台下使用Cairo图形库" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/09/28/iOS-平台下使用Cairo图形库/" class="article-date">
+  <time datetime="2017-09-28T11:17:34.000Z" itemprop="datePublished">2017-09-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      iOS 平台下使用Cairo图形库
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近在一个<strong>Lottie</strong>衍生项目上，由于需要绘制线条、圆、矩形等图元并且需要GPU加速，本来第一选择是自己封装<strong>OpenGLES</strong>来绘制图元。但计划赶不上变化，在开发过程中发现<strong>CAShapeLayer</strong>的<em><a href="https://en.wikipedia.org/wiki/Nonzero-rule" target="_blank" rel="external">fillRule</a></em>实现起来太耗时了，在一番筛选之后，决定使用Cairo来作为绘制引擎。</p>
+<h1 id="Cairo"><a href="#Cairo" class="headerlink" title="Cairo"></a>Cairo</h1><p><a href="https://www.cairographics.org" target="_blank" rel="external">Cairo</a>是一个跨平台的2D矢量图形库，它是用C编写的，可工作在linux, BSDs, OSX, iOS 等平台上。在我们的项目里它十分适合代替iOS的Quartz2D这个库并且它支持OpenGL及ES。</p>
+<h1 id="iOS-支持"><a href="#iOS-支持" class="headerlink" title="iOS 支持"></a>iOS 支持</h1><p>我用的版本是1.1.5.2，<a href="https://github.com/wolfspider/cairo-1.15.2-iOS" target="_blank" rel="external">Github地址</a>这个版本是支持GL加速的。如果你不需要的话，可以使用<a href="https://github.com/yoshikiohshima/cairo-1.15.2-iOS" target="_blank" rel="external">这个版本</a>。这两个版本都已经内置了编译好的pixman。</p>
+<a id="more"></a>
+<h1 id="Cairo的几个基本概念"><a href="#Cairo的几个基本概念" class="headerlink" title="Cairo的几个基本概念"></a><strong>Cairo</strong>的几个基本概念</h1><ul>
+<li><p>cairo_device_t</p>
+<p><em>cairo_device_t</em>用于管理<em>cairo_surface_t</em>,相当于<strong>iOS</strong>上面的GL环境管理者（<strong>EAGLContext</strong>），GLES创建函数<em>cairo_nsgles_device_create</em>。</p>
+</li>
+<li><p>cairo_surface_t</p>
+<p><em>cairo_surface_t</em>这个对象简单的讲，是指画布我们的画布大小、内容等都是由它管理。我使用的是支持GLES的<em>cairo_surface_t</em>，所以使用的是<em>cairo_gl_surface_create_for_texture</em>函数创建。</p>
+</li>
+<li><p>cairo_t</p>
+<p><em>cairo_t</em>可以理解为画笔，例如线条宽度、颜色、画笔位置等等都是通过它来设置并最终绘制到画布上。<em>cairo_t</em>可以通过<em>cairo_create</em>传入上面创建的<em>cairo_surface_t</em>来初始化。</p>
+</li>
+</ul>
+<h1 id="使用Cairo"><a href="#使用Cairo" class="headerlink" title="使用Cairo"></a>使用Cairo</h1><figure class="highlight obj-c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 初始化GL环境</span></div><div class="line">EAGLContext *context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];</div><div class="line">[EAGLContext setCurrentContext:context];</div><div class="line"><span class="keyword">void</span> *ctx = (__bridge <span class="keyword">void</span> *)(context);</div><div class="line">cairo_device_t *device = cairo_nsgles_device_create(ctx);</div><div class="line"></div><div class="line"><span class="comment">// 创建Texture</span></div><div class="line">    GLuint texture;</div><div class="line">    glGenTextures(<span class="number">1</span>, &amp;texture);</div><div class="line">    <span class="keyword">int</span> width,height;</div><div class="line">    <span class="comment">/*</span></div><div class="line"><span class="comment">	  这里我用的texture是300x300</span></div><div class="line"><span class="comment">      初始化Texture、width、height...</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    </div><div class="line">    cairo_surface_t *surface = cairo_gl_surface_create_for_texture(device,</div><div class="line">                                                                   <span class="built_in">CAIRO_CONTENT_COLOR_ALPHA</span>,</div><div class="line">                                                                   texture,</div><div class="line">                                                                   width,</div><div class="line">                                                                   height);</div><div class="line"></div><div class="line">	<span class="comment">// 创建画笔</span></div><div class="line">    cairo_t *cr = cairo_create(surface);</div><div class="line">    cairo_set_line_width(cr, <span class="number">10</span>);</div><div class="line">    cairo_move_to(cr, <span class="number">0</span>, <span class="number">0</span>);</div><div class="line">    cairo_line_to(cr, <span class="number">300</span>, <span class="number">0</span>);</div><div class="line">    cairo_line_to(cr, <span class="number">300</span>, <span class="number">300</span>);</div><div class="line">    cairo_line_to(cr, <span class="number">0</span>, <span class="number">300</span>);</div><div class="line"></div><div class="line"><span class="comment">// 闭合路径</span></div><div class="line">    cairo_close_path(cr);</div><div class="line"></div><div class="line">	 <span class="comment">// 设置颜色为绿色</span></div><div class="line">	cairo_set_source_rgba(cr, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>);</div><div class="line"></div><div class="line">	<span class="comment">// 绘制并保存结果</span></div><div class="line">    cairo_stroke_preserve(cr);</div><div class="line">	<span class="comment">// 提交数据并绘制</span></div><div class="line">    cairo_surface_flush(surface);</div><div class="line"></div><div class="line"> <span class="comment">// 如果你需要在后面调用自己的GL代码，那么需要将GL环境重置。否则cairo将不会重新设置之前的GL状态，导致绘制失败</span></div><div class="line">    cairo_device_flush(device);</div></pre></td></tr></table></figure>
+<p>如果一切顺利，那么你的texture内容应该为<img src="https://ws1.sinaimg.cn/large/006tNc79gy1fjzme1zy0fj30io0jqmy5.jpg" alt="结果">最后记得调用各个对象的destory方法释放内存。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://z-xj.com/2017/09/28/iOS-平台下使用Cairo图形库/" data-id="cjnbui1rh0007vov3n13fmdbz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Cairo/">Cairo</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpenGLES/">OpenGLES</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Quartz2D/">Quartz2D</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/09/30/自定义GPUImageFilter滤镜（类似抖音效果）/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          自定义GPUImageFilter滤镜（类似抖音效果）
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/09/27/GPUImageMovie同时读取多个视频/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">GPUImageMovie无法同时读取多个视频分析</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ARKit/">ARKit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AVFoundation/">AVFoundation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cairo/">Cairo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GIF/">GIF</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPUImage/">GPUImage</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPUImageFilter/">GPUImageFilter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPUImageFramebuffer/">GPUImageFramebuffer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPUImageMovie/">GPUImageMovie</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hook/">Hook</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Metal/">Metal</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MetalKit/">MetalKit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenCL/">OpenCL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenGLES/">OpenGLES</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Quartz2D/">Quartz2D</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SCNMaterial/">SCNMaterial</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SceneKit/">SceneKit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/XCode/">XCode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/debugQuickLookObject/">debugQuickLookObject</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/并行计算/">并行计算</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活/">生活</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ARKit/" style="font-size: 12.5px;">ARKit</a> <a href="/tags/AVFoundation/" style="font-size: 10px;">AVFoundation</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/Cairo/" style="font-size: 10px;">Cairo</a> <a href="/tags/GIF/" style="font-size: 10px;">GIF</a> <a href="/tags/GPUImage/" style="font-size: 17.5px;">GPUImage</a> <a href="/tags/GPUImageFilter/" style="font-size: 10px;">GPUImageFilter</a> <a href="/tags/GPUImageFramebuffer/" style="font-size: 10px;">GPUImageFramebuffer</a> <a href="/tags/GPUImageMovie/" style="font-size: 10px;">GPUImageMovie</a> <a href="/tags/Hook/" style="font-size: 10px;">Hook</a> <a href="/tags/Metal/" style="font-size: 15px;">Metal</a> <a href="/tags/MetalKit/" style="font-size: 10px;">MetalKit</a> <a href="/tags/OpenCL/" style="font-size: 10px;">OpenCL</a> <a href="/tags/OpenGLES/" style="font-size: 20px;">OpenGLES</a> <a href="/tags/Quartz2D/" style="font-size: 10px;">Quartz2D</a> <a href="/tags/SCNMaterial/" style="font-size: 10px;">SCNMaterial</a> <a href="/tags/SceneKit/" style="font-size: 10px;">SceneKit</a> <a href="/tags/XCode/" style="font-size: 10px;">XCode</a> <a href="/tags/debugQuickLookObject/" style="font-size: 10px;">debugQuickLookObject</a> <a href="/tags/iOS/" style="font-size: 17.5px;">iOS</a> <a href="/tags/并行计算/" style="font-size: 10px;">并行计算</a> <a href="/tags/生活/" style="font-size: 10px;">生活</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/02/09/Android Hook JNI C函数/">Android Hook JNI C函数</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/23/GPUImage支持GIF/">GPUImage支持GIF</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/15/Metal-并行计算/">Metal 并行计算</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/14/关于跑步/">关于跑步</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/07/ARKit使用OpenGLES/">ARKit使用OpenGLES</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 张晓军<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

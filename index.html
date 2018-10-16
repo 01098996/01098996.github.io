@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>XJ的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="学习感悟|解决问题的一点分享">
+<meta name="keywords" content="iOS,OpenGLES">
+<meta property="og:type" content="website">
+<meta property="og:title" content="XJ的博客">
+<meta property="og:url" content="http://z-xj.com/index.html">
+<meta property="og:site_name" content="XJ的博客">
+<meta property="og:description" content="学习感悟|解决问题的一点分享">
+<meta property="og:locale" content="zh-CN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="XJ的博客">
+<meta name="twitter:description" content="学习感悟|解决问题的一点分享">
+  
+    <link rel="alternate" href="/atom.xml" title="XJ的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?deeb29ff2d5628cd455b526ec47da129";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">XJ的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">OpenGLES、iOS</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://z-xj.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-Android Hook JNI C函数" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/02/09/Android Hook JNI C函数/" class="article-date">
+  <time datetime="2018-02-09T13:17:52.000Z" itemprop="datePublished">2018-02-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/02/09/Android Hook JNI C函数/">Android Hook JNI C函数</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近在逆向一款Android上的APP，总结了一下Android的JNI C函数Hook方式。</p>
+<h3 id="Xposed"><a href="#Xposed" class="headerlink" title="Xposed"></a>Xposed</h3><p>据我了解这个库可以Hook Java方法并不能hook C函数，不能满足我的需求。</p>
+<h3 id="Cydia-Substrate"><a href="#Cydia-Substrate" class="headerlink" title="Cydia Substrate"></a>Cydia Substrate</h3><p>iOS平台上大名鼎鼎的<strong>Cydia Substrate</strong>同样支持安卓平台，但是它的短板是只支持安卓2.3~4.4之间。我需要逆向的APP在5.0之上，所以这个也并不满足需求。</p>
+<h3 id="inject-inlineHook"><a href="#inject-inlineHook" class="headerlink" title="inject + inlineHook"></a>inject + inlineHook</h3><p>inject用于在我们需要hook的app加载我们的so库进行hook，inject的具体使用可以参考<a href="http://blog.csdn.net/eqera/article/details/38022045" target="_blank" rel="external">这篇文章</a>，<a href="https://github.com/ele7enxxh/Android-Inline-Hook" target="_blank" rel="external">inlineHook</a>用于替换原生JNI C 函数。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://z-xj.com/2018/02/09/Android Hook JNI C函数/" data-id="cjnbui1ra0001vov38ie703xj" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hook/">Hook</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-GPUImage支持GIF" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/10/23/GPUImage支持GIF/" class="article-date">
+  <time datetime="2017-10-23T12:06:48.000Z" itemprop="datePublished">2017-10-23</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/10/23/GPUImage支持GIF/">GPUImage支持GIF</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近项目中有一个处理<strong>GIF</strong>的需求，首先想到的是<strong>GPUImage</strong>，很遗憾<strong>GPUImage</strong>并不支持<strong>GIF</strong>的导入。在这个背景下，我根据<strong>GPUImageMovie</strong>封装了<strong>GPUImageGIF</strong>。<a href="https://github.com/01098996/GPUImageGIF" target="_blank" rel="external">Github地址</a>，有用的的小伙伴请Star支持下。~</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://z-xj.com/2017/10/23/GPUImage支持GIF/" data-id="cjnbui1rf0005vov3rvs2gkal" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GIF/">GIF</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GPUImage/">GPUImage</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Metal-并行计算" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/10/15/Metal-并行计算/" class="article-date">
+  <time datetime="2017-10-15T07:07:30.000Z" itemprop="datePublished">2017-10-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/10/15/Metal-并行计算/">Metal 并行计算</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="什么是-Metal"><a href="#什么是-Metal" class="headerlink" title="什么是 Metal"></a>什么是 Metal</h3><p><strong>Metal</strong> 是一个把<strong>OpenGL</strong> 及<strong>OpenCL</strong> 类似的面向底层的图形编程接口，通过使用相关的API可以直接操作<strong>GPU</strong> ，在 2014 年的 WWDC 的时候发布，并于今年发布了macOS平台上的<strong>Metal 2</strong>。</p>
+<p><strong>Metal</strong>是iOS、macOS、tvOS独有的，意味着它不能像<strong>OpenGL</strong>|<strong>OpenCL</strong>那样支持跨平台，但是它能最大的挖掘苹果移动设备的<strong>GPU</strong>能力，进行复杂的运算，像 <strong>Unity</strong> 等游戏引擎都通过 <strong>Metal</strong> 对3D能力进行了优化， App Store还有相应的运用 Metal 技术的游戏专题。</p>
+<h2 id="什么是-GPU-加速计算？"><a href="#什么是-GPU-加速计算？" class="headerlink" title="什么是 GPU 加速计算？"></a>什么是 GPU 加速计算？</h2><p><strong>GPU加速计算</strong>可以提供非凡的应用程序性能，能将应用程序计算密集部分的工作负载转移到<strong>GPU</strong>，同时仍由<strong>CPU</strong> 运行其余程序代码。从用户的角度来看，应用程序的运行速度明显加快.</p>
+<h4 id="GPU-与-CPU-性能比较"><a href="#GPU-与-CPU-性能比较" class="headerlink" title="GPU 与 CPU 性能比较"></a>GPU 与 CPU 性能比较</h4><p>理解 GPU 和 CPU 之间区别的一种简单方式是比较它们如何处理任务。CPU 由专为顺序串行处理而优化的几个核心组成，而 GPU 则拥有一个由数以千计的更小、更高效的核心（专为同时处理多重任务而设计）组成的大规模并行计算架构。</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1fkiojha6j6j30bk07xt9i.jpg" alt="CPU 与 GPU差异"></p>
+<h2 id="MetalKit"><a href="#MetalKit" class="headerlink" title="MetalKit"></a>MetalKit</h2><p><strong>MetalKit</strong>提供了一组实用方法和类，减少创建<strong>Metal</strong>环境所需的工作。 <em>framework</em>提供了三个关键领域开发支持：</p>
+<ul>
+<li><strong>MTKTextureLoader</strong>:可以方便且异轻松的步加载各种来源的纹理。支持常见的文件格式如<em>PNG</em>和<em>JPEG</em>，以及特定的纹理格式如<em>KTX</em>和<em>PVR</em>。</li>
+<li>Model.h:可以很容易与<strong>Model I/O</strong>资源对接，使用这些高度优化的功能和对象在<strong>Model I/O</strong>网格和<strong>Metal Buffer</strong>之间高效地传输数据。</li>
+<li><strong>MTKView</strong>提供了<strong>Metal View</strong>标准的实现，这大幅的降低了创建显示视图所需的代码量。</li>
+</ul>
+<p>本文会使用<strong>MetalKit</strong>来创建显示视图及用作纹理加载。</p>
+        
+          <p class="article-more-link">
+            <a href="/2017/10/15/Metal-并行计算/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://z-xj.com/2017/10/15/Metal-并行计算/" data-id="cjnbui1re0004vov322w4qwid" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Metal/">Metal</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MetalKit/">MetalKit</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpenCL/">OpenCL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpenGLES/">OpenGLES</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/并行计算/">并行计算</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-关于跑步" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/10/14/关于跑步/" class="article-date">
+  <time datetime="2017-10-14T14:12:10.000Z" itemprop="datePublished">2017-10-14</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/10/14/关于跑步/">关于跑步</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近在体重突破150斤的同时我也下了决心开始减肥，于是在周围朋友的推荐下我开始了我的慢跑生涯。</p>
+<h1 id="0x00"><a href="#0x00" class="headerlink" title="0x00"></a>0x00</h1><p>第一天，在没有任何健身app的指导下我开始上路了，一开始认为以我的身体素质能跑个3公里没问题，现实是残酷的在跑完1公里左右身体不适症状开始出现，在1.3公里时身体已经坚持住了。本次慢跑以1.3公里的距离告终。</p>
+<h1 id="0x01"><a href="#0x01" class="headerlink" title="0x01"></a>0x01</h1><p>第二天，在我准备再次开始昨天的训练时跟老婆抱怨了下昨天跑步身体各种不适。老婆说了句你应该下个Keep按它的教程一步一步来，于是我把之前卸载的Keep又装回来了。神奇的是按里面的训练，我跑完3公里身体不适竟比昨天好了许多。再接下来的好几天我都按照App的指示一步一步完成了几次训练并且中间没有暂停休息。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>如果你不了解你所要进行的运动，最好是使用专业的健身App进行训练活动。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://z-xj.com/2017/10/14/关于跑步/" data-id="cjnbui1sk0022vov3a17ysvcb" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/生活/">生活</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-ARKit使用OpenGLES" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/10/07/ARKit使用OpenGLES/" class="article-date">
+  <time datetime="2017-10-06T16:13:39.000Z" itemprop="datePublished">2017-10-07</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/10/07/ARKit使用OpenGLES/">ARKit使用OpenGLES</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在开发<strong>ARKit</strong>的时候，由于我厂App需要兼顾安卓平台，再三权衡之后使用了<strong>OpenGLES</strong>作为渲染引擎。<strong>XCode</strong>创建<strong>ARKit</strong>工程并不支持<strong>OpenGLES</strong>，所以我根据<strong>Metal</strong>示例代码改造成支持<strong>OpenGLES</strong>版本。第三方库方面用到了同<strong>GPUImage</strong>一样用到的GLProgram工具类。</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79gy1fk8zajcl5aj30ku1121ky.jpg" alt="Snapshot"></p>
+<p><a href="https://github.com/01098996/ARKit-GLDemo" target="_blank" rel="external">Github地址</a>，有需要的小伙伴请star支持。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://z-xj.com/2017/10/07/ARKit使用OpenGLES/" data-id="cjnbui1r60000vov3a4jqxe5q" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ARKit/">ARKit</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GPUImage/">GPUImage</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Metal/">Metal</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpenGLES/">OpenGLES</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/XCode/">XCode</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-ARKit自定义SCNMaterial的渲染" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/10/05/ARKit自定义SCNMaterial的渲染/" class="article-date">
+  <time datetime="2017-10-05T03:48:42.000Z" itemprop="datePublished">2017-10-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/10/05/ARKit自定义SCNMaterial的渲染/">ARKit自定义SCNMaterial的渲染</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本文主要介绍了ARKit如何将照相机捕获到的数据传入SceneKit自定义着色器进行渲染，本文内容假定读者有一定的ARKit、SceneKit及Metal的基础。</p>
+<h1 id="ARKit"><a href="#ARKit" class="headerlink" title="ARKit"></a>ARKit</h1><p>今年的 WWDC 开发者大会上，苹果为我们带来了 <strong>ARKit</strong>。它做到了将优秀的 AR 体验带给无数的消费级设备，其重要性我们这段时间来早就了解了。不过苹果一个巴掌毕竟拍不响，这些还都需要开发者们来支持。更多关于ARKit的介绍可以访问苹果的<a href="https://developer.apple.com/arkit/" target="_blank" rel="external">开发者网站</a>。</p>
+<h1 id="SceneKit"><a href="#SceneKit" class="headerlink" title="SceneKit"></a>SceneKit</h1><p>在 WWDC 2012 (那时 OS X 系统还在用喵系命名)，Apple 向 OS X 开发者们介绍了 <strong>SceneKit</strong>，这个 Cocoa 下的 3D 渲染框架。在第一版通用 3D 渲染器发布后，一年内又陆续增加了像 shader (着色器) 修改器、节点约束、骨骼动画等几个强大的特性 (随 Mavericks 发布)。今年，<strong>SceneKit</strong> 变的更加强大，支持了粒子效果、物理引擎、脚本事件以及多通道分层渲染等多种技术，而且，对于很多人来说更关键的是，它终于可以在 iOS 中使用了。</p>
+<p>一上手，我发现 <strong>SceneKit</strong> 最强大和脱颖而出的地方，就是可以与 <strong>CoreImage</strong>，<strong>CoreAnimation</strong>，<strong>SpriteKit</strong> 等已有的图形框架相互整合及协作，这在其他游戏引擎中可不常见，但如果你本身就是个 Cocoa 或 Cocoa Touch 框架下的的开发者的话，就会感到相当亲切了。 关于<strong>SceneKit</strong>介绍可以到<a href="https://www.objccn.io/issue-18-3/" target="_blank" rel="external">这里</a>了解。</p>
+<p>创建<strong>ARKit</strong>的三个模板之一就是<strong>SceneKit</strong>，并且<strong>SceneKit</strong>在开发3D游戏优势十分明显。</p>
+        
+          <p class="article-more-link">
+            <a href="/2017/10/05/ARKit自定义SCNMaterial的渲染/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://z-xj.com/2017/10/05/ARKit自定义SCNMaterial的渲染/" data-id="cjnbui1rd0003vov3mw2wri8i" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ARKit/">ARKit</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Metal/">Metal</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SCNMaterial/">SCNMaterial</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SceneKit/">SceneKit</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-查看GPUImageFramebuffer内容" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/10/03/查看GPUImageFramebuffer内容/" class="article-date">
+  <time datetime="2017-10-03T03:08:03.000Z" itemprop="datePublished">2017-10-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/10/03/查看GPUImageFramebuffer内容/">查看GPUImageFramebuffer内容</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="GPU-Frame-Capture"><a href="#GPU-Frame-Capture" class="headerlink" title="GPU Frame Capture"></a>GPU Frame Capture</h1><p>在用<strong>OpenGLES</strong>开发视频特效的时候经常会debug查看一下当前画面是否如预期，在<strong>iOS</strong>平台上有一个非常好用的功能<strong>GPU Frame Capture </strong>，在调试效果的时候可以看到每一次绘制的结果，但是有一个问题，由于它需要收集一次<em>[EAGLContext presentRenderbuffer:]</em>到下一次<em>[EAGLContext presentRenderbuffer:]</em>的所有绘制数据，所以这个过程异常缓慢并且如果是进行离屏渲染的话这个功能并不能用，十分的尴尬。</p>
+<h1 id="Quick-Look-Debugging"><a href="#Quick-Look-Debugging" class="headerlink" title="Quick Look Debugging"></a>Quick Look Debugging</h1><p>由于<strong>GPU Frame Capture</strong>有上面所说的痛点，那么我们是否可以自己来搞定这个问题呢？答案是可以，在<strong>XCode 5</strong>之后对支持QuickLook的属性</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcly1fk4w4x5gwej30fj0633za.jpg" alt="Debug"></p>
+<p>只要你按空格键就会出现它的内容预览。</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcly1fk4wiklphfj30fj0800ti.jpg" alt="QuickLook"></p>
+<p>这里有篇文章教我们如何自定义<a href="http://nshipster.cn/quick-look-debugging/" target="_blank" rel="external">DebugQuickLook</a>，这样我们可以开始为<strong>GPUImageFramebuffer</strong>添加预览功能。</p>
+        
+          <p class="article-more-link">
+            <a href="/2017/10/03/查看GPUImageFramebuffer内容/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://z-xj.com/2017/10/03/查看GPUImageFramebuffer内容/" data-id="cjnbui1rm000dvov3o8o1c53j" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GPUImage/">GPUImage</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GPUImageFramebuffer/">GPUImageFramebuffer</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/debugQuickLookObject/">debugQuickLookObject</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-自定义GPUImageFilter滤镜（类似抖音效果）" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/09/30/自定义GPUImageFilter滤镜（类似抖音效果）/" class="article-date">
+  <time datetime="2017-09-30T12:35:34.000Z" itemprop="datePublished">2017-09-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/09/30/自定义GPUImageFilter滤镜（类似抖音效果）/">自定义GPUImageFilter滤镜（类似抖音效果）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在<a href="http://z-xj.com/2017/09/27/GPUImageMovie%E5%90%8C%E6%97%B6%E8%AF%BB%E5%8F%96%E5%A4%9A%E4%B8%AA%E8%A7%86%E9%A2%91/">GPUImageMovie无法同时读取多个视频分析</a>这篇文章，我已经粗略介绍过了GPUImage。本文将带来<strong>GPUImageFilter</strong>的自定义抖音效果滤镜。</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fk1wl6ephij307g09s0sx.jpg" alt="抖音"></p>
+<h1 id="什么是GLSL"><a href="#什么是GLSL" class="headerlink" title="什么是GLSL"></a>什么是GLSL</h1><p><strong>GLSL</strong>首先我们需要具备的知识点之一，<strong>GLSL</strong>是官方的<strong>OpenGL</strong>着色语言的简称(OpenGL Shading Language)。<strong>GLSL</strong>是类似于C的高级语言。使用<strong>GLSL</strong>，你能够编写一些简短的程序代码，称为着色器(<strong>Shader</strong>)，这些着色器可以在<strong>GPU</strong>上运行。</p>
+<h3 id="VSH-顶点着色器"><a href="#VSH-顶点着色器" class="headerlink" title="VSH(顶点着色器)"></a>VSH(顶点着色器)</h3><p><strong>顶点着色器</strong>从字面上的意思来解释就是关于坐标的控制，如其名<strong>VSH</strong>就是用于光栅化前的顶点数据准备，在这个脚本我们可以修改外部传入的坐标并传递给GL并且可以传递数据给下面将会介绍到的<strong>FSH</strong>（<strong>片段着色器</strong>）。</p>
+<p>下面是一段<strong>GPUImageFilter</strong>里面的<strong>顶点着色器</strong>代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"> <span class="comment">// 定义position 属性</span></div><div class="line"> attribute vec4 position;</div><div class="line"></div><div class="line"><span class="comment">//定义inputTextureCoordinate属性(纹理坐标)</span></div><div class="line"> attribute vec4 inputTextureCoordinate;</div><div class="line"> </div><div class="line"><span class="comment">//传递数据给FSH，需要两个着色器必须声明同一个名称的varying属性</span></div><div class="line"> varying vec2 textureCoordinate;</div><div class="line"> </div><div class="line"> <span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line"><span class="function"> </span>&#123;	</div><div class="line">    <span class="comment">// 将外部传入的position直接赋值给gl，最终的数据为-1 ~ 1</span></div><div class="line">     gl_Position = position;</div><div class="line">   </div><div class="line">   	<span class="comment">// 传递纹理坐标到VSH</span></div><div class="line">     textureCoordinate = inputTextureCoordinate.xy;</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<p>里面的vecN类型的对象代表着N个<strong>GLfloat</strong>的数据，例如<em>position</em>是一个vec4类型，那么它就是由4个<strong>GLfloat</strong>组成的。<strong>attribute</strong>可以理解为这个属性是一个数组，由多个vecN组成。</p>
+<h3 id="FSH-片段着色器"><a href="#FSH-片段着色器" class="headerlink" title="FSH(片段着色器)"></a>FSH(片段着色器)</h3><p><strong>片段着色器</strong>字面意思比较不好理解，它的作用是用于处理光栅化后的每一个像素的最终颜色。例如我们可以用它将原始像素处理为黑白、反色等等。下面是一段<strong>GPUImageFilter</strong>里面的<strong>片段着色器</strong>代码</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">	<span class="comment">// 这个属性我们已经在顶点着色器见到过了 </span></div><div class="line">varying highp vec2 textureCoordinate;</div><div class="line"> </div><div class="line"><span class="comment">// 这个属性是画面的内容，由外部传入，值为0~1。</span></div><div class="line"> uniform sampler2D inputImageTexture;</div><div class="line"> </div><div class="line"> <span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line"><span class="function"> </span>&#123;</div><div class="line">   	<span class="comment">//这里只是简单的将当前位置上的图片读取出来赋值给GL。</span></div><div class="line">     gl_FragColor = texture2D(inputImageTexture, textureCoordinate);</div><div class="line"> &#125;</div></pre></td></tr></table></figure>
+<p>通过<em>texture2D</em>函数我们可以得到一个<strong>纹素</strong>（texel），这是一个纹理图片中的像素。函数参数分别为<em>sampler2D</em>（纹理句柄）以及纹理坐标，得到当前纹理坐标对应的像素。</p>
+        
+          <p class="article-more-link">
+            <a href="/2017/09/30/自定义GPUImageFilter滤镜（类似抖音效果）/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://z-xj.com/2017/09/30/自定义GPUImageFilter滤镜（类似抖音效果）/" data-id="cjnbui1sj0021vov364u50fsr" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GPUImage/">GPUImage</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GPUImageFilter/">GPUImageFilter</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpenGLES/">OpenGLES</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-iOS-平台下使用Cairo图形库" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/09/28/iOS-平台下使用Cairo图形库/" class="article-date">
+  <time datetime="2017-09-28T11:17:34.000Z" itemprop="datePublished">2017-09-28</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/09/28/iOS-平台下使用Cairo图形库/">iOS 平台下使用Cairo图形库</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近在一个<strong>Lottie</strong>衍生项目上，由于需要绘制线条、圆、矩形等图元并且需要GPU加速，本来第一选择是自己封装<strong>OpenGLES</strong>来绘制图元。但计划赶不上变化，在开发过程中发现<strong>CAShapeLayer</strong>的<em><a href="https://en.wikipedia.org/wiki/Nonzero-rule" target="_blank" rel="external">fillRule</a></em>实现起来太耗时了，在一番筛选之后，决定使用Cairo来作为绘制引擎。</p>
+<h1 id="Cairo"><a href="#Cairo" class="headerlink" title="Cairo"></a>Cairo</h1><p><a href="https://www.cairographics.org" target="_blank" rel="external">Cairo</a>是一个跨平台的2D矢量图形库，它是用C编写的，可工作在linux, BSDs, OSX, iOS 等平台上。在我们的项目里它十分适合代替iOS的Quartz2D这个库并且它支持OpenGL及ES。</p>
+<h1 id="iOS-支持"><a href="#iOS-支持" class="headerlink" title="iOS 支持"></a>iOS 支持</h1><p>我用的版本是1.1.5.2，<a href="https://github.com/wolfspider/cairo-1.15.2-iOS" target="_blank" rel="external">Github地址</a>这个版本是支持GL加速的。如果你不需要的话，可以使用<a href="https://github.com/yoshikiohshima/cairo-1.15.2-iOS" target="_blank" rel="external">这个版本</a>。这两个版本都已经内置了编译好的pixman。</p>
+        
+          <p class="article-more-link">
+            <a href="/2017/09/28/iOS-平台下使用Cairo图形库/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://z-xj.com/2017/09/28/iOS-平台下使用Cairo图形库/" data-id="cjnbui1rh0007vov3n13fmdbz" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Cairo/">Cairo</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpenGLES/">OpenGLES</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Quartz2D/">Quartz2D</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-GPUImageMovie同时读取多个视频" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/09/27/GPUImageMovie同时读取多个视频/" class="article-date">
+  <time datetime="2017-09-27T15:13:49.000Z" itemprop="datePublished">2017-09-27</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/09/27/GPUImageMovie同时读取多个视频/">GPUImageMovie无法同时读取多个视频分析</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="GPUImage"><a href="#GPUImage" class="headerlink" title="GPUImage"></a>GPUImage</h1><p>在<strong>iOS</strong>的图像处理这方面，<strong>GPUImage</strong>算是首屈一指的第三方库。一般我们用来做视频特效及实时滤镜的第一选择都是<strong>GPUImage</strong>。</p>
+<h1 id="GPUImageMovie"><a href="#GPUImageMovie" class="headerlink" title="GPUImageMovie"></a>GPUImageMovie</h1><p>它封装了<strong>AVFoundation</strong>的API使用户可以以极低的成本解码视频，并且<em>GPUImageMovie</em>是继承于<em>GPUImageOutput</em>可以无缝的与<em>GPUImageInput</em>协议衔接并可以享用<strong>GPUImage</strong>内置强大的滤镜资源，所以作为视频工具开发的一个很好的选择。</p>
+<h1 id="同时解码多个文件"><a href="#同时解码多个文件" class="headerlink" title="同时解码多个文件"></a>同时解码多个文件</h1><p>但是在需要同时解码多个视频文件时，GPUImageMovie并不能很好的工作。原因是<em>GPUImageMovie</em> 的<em>processAsset</em>方法在解码的时候使用了while循环，阻塞当前调用线程</p>
+        
+          <p class="article-more-link">
+            <a href="/2017/09/27/GPUImageMovie同时读取多个视频/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://z-xj.com/2017/09/27/GPUImageMovie同时读取多个视频/" data-id="cjnbui1rj000avov3th9755lw" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AVFoundation/">AVFoundation</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GPUImage/">GPUImage</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GPUImageMovie/">GPUImageMovie</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpenGLES/">OpenGLES</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">__('next') &raquo;</a>
+  </nav>
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ARKit/">ARKit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AVFoundation/">AVFoundation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cairo/">Cairo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GIF/">GIF</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPUImage/">GPUImage</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPUImageFilter/">GPUImageFilter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPUImageFramebuffer/">GPUImageFramebuffer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPUImageMovie/">GPUImageMovie</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hook/">Hook</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Metal/">Metal</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MetalKit/">MetalKit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenCL/">OpenCL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenGLES/">OpenGLES</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Quartz2D/">Quartz2D</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SCNMaterial/">SCNMaterial</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SceneKit/">SceneKit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/XCode/">XCode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/debugQuickLookObject/">debugQuickLookObject</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/并行计算/">并行计算</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活/">生活</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ARKit/" style="font-size: 12.5px;">ARKit</a> <a href="/tags/AVFoundation/" style="font-size: 10px;">AVFoundation</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/Cairo/" style="font-size: 10px;">Cairo</a> <a href="/tags/GIF/" style="font-size: 10px;">GIF</a> <a href="/tags/GPUImage/" style="font-size: 17.5px;">GPUImage</a> <a href="/tags/GPUImageFilter/" style="font-size: 10px;">GPUImageFilter</a> <a href="/tags/GPUImageFramebuffer/" style="font-size: 10px;">GPUImageFramebuffer</a> <a href="/tags/GPUImageMovie/" style="font-size: 10px;">GPUImageMovie</a> <a href="/tags/Hook/" style="font-size: 10px;">Hook</a> <a href="/tags/Metal/" style="font-size: 15px;">Metal</a> <a href="/tags/MetalKit/" style="font-size: 10px;">MetalKit</a> <a href="/tags/OpenCL/" style="font-size: 10px;">OpenCL</a> <a href="/tags/OpenGLES/" style="font-size: 20px;">OpenGLES</a> <a href="/tags/Quartz2D/" style="font-size: 10px;">Quartz2D</a> <a href="/tags/SCNMaterial/" style="font-size: 10px;">SCNMaterial</a> <a href="/tags/SceneKit/" style="font-size: 10px;">SceneKit</a> <a href="/tags/XCode/" style="font-size: 10px;">XCode</a> <a href="/tags/debugQuickLookObject/" style="font-size: 10px;">debugQuickLookObject</a> <a href="/tags/iOS/" style="font-size: 17.5px;">iOS</a> <a href="/tags/并行计算/" style="font-size: 10px;">并行计算</a> <a href="/tags/生活/" style="font-size: 10px;">生活</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/02/09/Android Hook JNI C函数/">Android Hook JNI C函数</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/23/GPUImage支持GIF/">GPUImage支持GIF</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/15/Metal-并行计算/">Metal 并行计算</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/14/关于跑步/">关于跑步</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/07/ARKit使用OpenGLES/">ARKit使用OpenGLES</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 张晓军<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

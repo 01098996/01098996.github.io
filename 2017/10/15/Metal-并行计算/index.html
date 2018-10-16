@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Metal 并行计算 | XJ的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="什么是 MetalMetal 是一个把OpenGL 及OpenCL 类似的面向底层的图形编程接口，通过使用相关的API可以直接操作GPU ，在 2014 年的 WWDC 的时候发布，并于今年发布了macOS平台上的Metal 2。 Metal是iOS、macOS、tvOS独有的，意味着它不能像OpenGL|OpenCL那样支持跨平台，但是它能最大的挖掘苹果移动设备的GPU能力，进行复杂的运算，像">
+<meta name="keywords" content="OpenGLES,Metal,MetalKit,OpenCL,并行计算">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Metal 并行计算">
+<meta property="og:url" content="http://z-xj.com/2017/10/15/Metal-并行计算/index.html">
+<meta property="og:site_name" content="XJ的博客">
+<meta property="og:description" content="什么是 MetalMetal 是一个把OpenGL 及OpenCL 类似的面向底层的图形编程接口，通过使用相关的API可以直接操作GPU ，在 2014 年的 WWDC 的时候发布，并于今年发布了macOS平台上的Metal 2。 Metal是iOS、macOS、tvOS独有的，意味着它不能像OpenGL|OpenCL那样支持跨平台，但是它能最大的挖掘苹果移动设备的GPU能力，进行复杂的运算，像">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://ws2.sinaimg.cn/large/006tNc79gy1fkiojha6j6j30bk07xt9i.jpg">
+<meta property="og:image" content="https://ws2.sinaimg.cn/large/006tNc79gy1fkixpchl1zj30ku112kjo.jpg">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/006tNc79gy1fkipwa4onqj30lq0fh3zf.jpg">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/006tNc79gy1fkjwlhybkkj30ku1127wh.jpg">
+<meta property="og:updated_time" content="2018-10-16T13:55:20.499Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Metal 并行计算">
+<meta name="twitter:description" content="什么是 MetalMetal 是一个把OpenGL 及OpenCL 类似的面向底层的图形编程接口，通过使用相关的API可以直接操作GPU ，在 2014 年的 WWDC 的时候发布，并于今年发布了macOS平台上的Metal 2。 Metal是iOS、macOS、tvOS独有的，意味着它不能像OpenGL|OpenCL那样支持跨平台，但是它能最大的挖掘苹果移动设备的GPU能力，进行复杂的运算，像">
+<meta name="twitter:image" content="https://ws2.sinaimg.cn/large/006tNc79gy1fkiojha6j6j30bk07xt9i.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="XJ的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?deeb29ff2d5628cd455b526ec47da129";
+      var s = document.getElementsByTagName("script")[0]; 
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">XJ的博客</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">OpenGLES、iOS</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://z-xj.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Metal-并行计算" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/10/15/Metal-并行计算/" class="article-date">
+  <time datetime="2017-10-15T07:07:30.000Z" itemprop="datePublished">2017-10-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Metal 并行计算
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="什么是-Metal"><a href="#什么是-Metal" class="headerlink" title="什么是 Metal"></a>什么是 Metal</h3><p><strong>Metal</strong> 是一个把<strong>OpenGL</strong> 及<strong>OpenCL</strong> 类似的面向底层的图形编程接口，通过使用相关的API可以直接操作<strong>GPU</strong> ，在 2014 年的 WWDC 的时候发布，并于今年发布了macOS平台上的<strong>Metal 2</strong>。</p>
+<p><strong>Metal</strong>是iOS、macOS、tvOS独有的，意味着它不能像<strong>OpenGL</strong>|<strong>OpenCL</strong>那样支持跨平台，但是它能最大的挖掘苹果移动设备的<strong>GPU</strong>能力，进行复杂的运算，像 <strong>Unity</strong> 等游戏引擎都通过 <strong>Metal</strong> 对3D能力进行了优化， App Store还有相应的运用 Metal 技术的游戏专题。</p>
+<h2 id="什么是-GPU-加速计算？"><a href="#什么是-GPU-加速计算？" class="headerlink" title="什么是 GPU 加速计算？"></a>什么是 GPU 加速计算？</h2><p><strong>GPU加速计算</strong>可以提供非凡的应用程序性能，能将应用程序计算密集部分的工作负载转移到<strong>GPU</strong>，同时仍由<strong>CPU</strong> 运行其余程序代码。从用户的角度来看，应用程序的运行速度明显加快.</p>
+<h4 id="GPU-与-CPU-性能比较"><a href="#GPU-与-CPU-性能比较" class="headerlink" title="GPU 与 CPU 性能比较"></a>GPU 与 CPU 性能比较</h4><p>理解 GPU 和 CPU 之间区别的一种简单方式是比较它们如何处理任务。CPU 由专为顺序串行处理而优化的几个核心组成，而 GPU 则拥有一个由数以千计的更小、更高效的核心（专为同时处理多重任务而设计）组成的大规模并行计算架构。</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1fkiojha6j6j30bk07xt9i.jpg" alt="CPU 与 GPU差异"></p>
+<h2 id="MetalKit"><a href="#MetalKit" class="headerlink" title="MetalKit"></a>MetalKit</h2><p><strong>MetalKit</strong>提供了一组实用方法和类，减少创建<strong>Metal</strong>环境所需的工作。 <em>framework</em>提供了三个关键领域开发支持：</p>
+<ul>
+<li><strong>MTKTextureLoader</strong>:可以方便且异轻松的步加载各种来源的纹理。支持常见的文件格式如<em>PNG</em>和<em>JPEG</em>，以及特定的纹理格式如<em>KTX</em>和<em>PVR</em>。</li>
+<li>Model.h:可以很容易与<strong>Model I/O</strong>资源对接，使用这些高度优化的功能和对象在<strong>Model I/O</strong>网格和<strong>Metal Buffer</strong>之间高效地传输数据。</li>
+<li><strong>MTKView</strong>提供了<strong>Metal View</strong>标准的实现，这大幅的降低了创建显示视图所需的代码量。</li>
+</ul>
+<p>本文会使用<strong>MetalKit</strong>来创建显示视图及用作纹理加载。</p>
+<a id="more"></a>
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>本文将使用Metal的并行计算功能进行图片黑白化处理。</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1fkixpchl1zj30ku112kjo.jpg" alt="输入图片"></p>
+<h3 id="创建环境"><a href="#创建环境" class="headerlink" title="创建环境"></a>创建环境</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line">#import &quot;ViewController.h&quot;</div><div class="line">#import &lt;MetalKit/MetalKit.h&gt;</div><div class="line"></div><div class="line">@interface ViewController () &lt;MTKViewDelegate&gt;</div><div class="line">@property (weak, nonatomic) IBOutlet MTKView *displayView;</div><div class="line">@property (nonatomic, strong) id&lt;MTLTexture&gt; texutre;</div><div class="line">@property (nonatomic, strong) id&lt;MTLCommandQueue&gt; commnadQueue;</div><div class="line">@end</div><div class="line"></div><div class="line">@implementation ViewController</div><div class="line"></div><div class="line">- (void)viewDidLoad &#123;</div><div class="line">[super viewDidLoad];</div><div class="line">// Do any additional setup after loading the view, typically from a nib.</div><div class="line"></div><div class="line">id&lt;MTLDevice&gt; device = MTLCreateSystemDefaultDevice();</div><div class="line">self.displayView.device = device;</div><div class="line">self.displayView.delegate = self;</div><div class="line"></div><div class="line">// framebufferOnly表示view的framebuffer只能用作显示，不能作为离屏渲染与并行计算的写入</div><div class="line">[self.displayView setFramebufferOnly:NO];</div><div class="line"></div><div class="line">self.commnadQueue = [device newCommandQueue];</div><div class="line"></div><div class="line">MTKTextureLoader *textureLoader = [[MTKTextureLoader alloc] initWithDevice:device];</div><div class="line">NSError *error;</div><div class="line">self.texutre = [textureLoader newTextureWithContentsOfURL:[[NSBundle mainBundle] URLForResource:@&quot;IMG_0365&quot; withExtension:@&quot;png&quot;]</div><div class="line">options:nil</div><div class="line">error:&amp;error];</div><div class="line"></div><div class="line">NSAssert(!error &amp;&amp; self.texutre, @&quot;加载纹理出错&quot;);</div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)drawInMTKView:(nonnull MTKView *)view &#123;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">- (void)mtkView:(nonnull MTKView *)view drawableSizeWillChange:(CGSize)size &#123;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">@end</div></pre></td></tr></table></figure>
+<p>这里声明了一个视图控制器，并在<em>ViewDidLoad</em>进行环境初始化。<strong>Metal</strong>的API基本上都是面向接口编程，所以大部分对象都是实现某个协议的对象没有具体的类。</p>
+<ul>
+<li><strong>MTLDevice</strong> :  所有资源的创建者，对应<strong>OpenGLES</strong>的<strong>EAGLContext</strong>。</li>
+<li><strong>MTLCommandQueue</strong> : FIFO命令队列，创建、管理所有提交到<strong>Metal</strong>的命令。</li>
+<li><strong>MTLTexture</strong> : 纹理。</li>
+</ul>
+<p>最底下两个方法是<em>MTKView</em>的代理方法，<em>drawInMTKView:</em>根据当前<em>preferredFramesPerSecond</em>的值计算出的帧率进行调用，绘制入口，<em>mtkView:view drawableSizeWillChange:</em>当MTKView大小发生变更会调用到，一般我们用来重新计算数据。</p>
+<p>在本文我们只需要聚焦在<em>drawInMTKView:</em>方法。</p>
+<h3 id="编写脚本"><a href="#编写脚本" class="headerlink" title="编写脚本"></a>编写脚本</h3><p><img src="https://ws1.sinaimg.cn/large/006tNc79gy1fkipwa4onqj30lq0fh3zf.jpg" alt="创建文件"></p>
+<p>首先创建一个新文件，在搜索框中输入metal，可以找到Metal File，点击next随便起一个名字这里我起名为compute。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;metal_stdlib&gt;</span></span></div><div class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> metal;</div><div class="line"></div><div class="line">constant float3 kGrayScale = float3(<span class="number">0.2989</span>,<span class="number">0.5870</span>,<span class="number">0.1140</span>);</div><div class="line"></div><div class="line">kernel void grayKernel(texture2d&lt;float, access::read&gt; inputImageTexture [[texture(0)]],</div><div class="line">texture2d&lt;<span class="keyword">float</span>, access::write&gt; outputImageTexture [[texture(<span class="number">1</span>)]],</div><div class="line">uint2 gid [[thread_position_in_grid]])</div><div class="line">&#123;</div><div class="line">float4 inColor = inputImageTexture.read(gid);</div><div class="line"><span class="keyword">float</span> gray = dot(kGrayScale,inColor.rgb);</div><div class="line">outputImageTexture.write(float4(float3(gray),inColor.a), gid);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>这个是我们每一次并行计算都会调用到的方法，我简单介绍下我们这里声明了<em>kGrayScale</em>是我们用来将图片处理为黑白算法会用到的float3向量，<em>grayKernel</em>是一个类似C的函数，在函数前面必须加上<em>kernel</em>声明它为Compute Shader。这三个参数分别是输入图、输出图、每次计算时的线程id。函数内容就是简单的黑白图像算法。</p>
+<h3 id="调用脚本"><a href="#调用脚本" class="headerlink" title="调用脚本"></a>调用脚本</h3><p>ViewController类声明<strong>MTLComputePipelineState</strong>对象，这个是脚本编译后的状态，<strong>Metal</strong>与<strong>OpenGESL</strong>不一样的是它的对象在创建时就会对其状态进行验证，我们创建成功后无需再对它的状态机型检查。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">@property (nonatomic, strong) id&lt;MTLComputePipelineState&gt; computePipelineState;</div></pre></td></tr></table></figure>
+<p>在<em>ViewDidLoad</em>函数最底下加上</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">id&lt;MTLLibrary&gt; library = [device newDefaultLibrary];</div><div class="line">id&lt;MTLFunction&gt; function = [library  newFunctionWithName:@&quot;grayKernel&quot;];</div><div class="line">self.computePipelineState = [device newComputePipelineStateWithFunction:function</div><div class="line">error:&amp;error];</div><div class="line">NSAssert(!error &amp;&amp; self.computePipelineState, @&quot;加载脚本出错&quot;);</div></pre></td></tr></table></figure>
+<p>这一步是读取工程里面所有的Metal脚本并且找到名为”grayKernel”的函数，最后通过这个函数创建计算管线状态。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">- (void)drawInMTKView:(nonnull MTKView *)view &#123;</div><div class="line"></div><div class="line">id&lt;MTLTexture&gt; outputTexture = [[view currentDrawable] texture];</div><div class="line">id&lt;MTLCommandBuffer&gt; commandBuffer = [self.commnadQueue commandBuffer];</div><div class="line">id&lt;MTLComputeCommandEncoder&gt; computeCommandEncoder = [commandBuffer computeCommandEncoder];</div><div class="line">[computeCommandEncoder setComputePipelineState:self.computePipelineState];</div><div class="line">[computeCommandEncoder setTexture:self.texutre atIndex:0];</div><div class="line">[computeCommandEncoder setTexture:outputTexture atIndex:1];</div><div class="line"></div><div class="line">NSUInteger threadExecutionWidth = [self.computePipelineState threadExecutionWidth];</div><div class="line">NSUInteger maxTotalThreadsPerThreadgroup = [self.computePipelineState maxTotalThreadsPerThreadgroup];</div><div class="line">MTLSize threadgroupCounts = MTLSizeMake(threadExecutionWidth * 2, threadExecutionWidth * 2, 1);</div><div class="line">MTLSize threadsPerThreadGroup = MTLSizeMake([self.texutre width] / threadgroupCounts.width + 1,</div><div class="line">[self.texutre height] / threadgroupCounts.height + 1,</div><div class="line">1);</div><div class="line">NSAssert(threadsPerThreadGroup.width * threadsPerThreadGroup.height &lt; maxTotalThreadsPerThreadgroup, @&quot;单个线程组超出最大线程数&quot;);</div><div class="line">[computeCommandEncoder dispatchThreadgroups:threadgroupCounts</div><div class="line">threadsPerThreadgroup:threadsPerThreadGroup];</div><div class="line">[computeCommandEncoder endEncoding];</div><div class="line">[commandBuffer presentDrawable:[view currentDrawable]];</div><div class="line">[commandBuffer commit];</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><em>drawInMTKView:</em>方法修改为上面的代码。</p>
+<ul>
+<li><p><em>MTKView</em>有<em>currentDrawable</em>的属性，这个是当前画布。从里面取出texture用于存储我们绘制的结果。</p>
+</li>
+<li><p>从commandQueue创建一个<em>MTLCommandBuffer</em>，<em>MTLCommandBuffer</em>用于创建管理渲染、并行计算、并行渲染等命令编码器，我们这里用到的是计算命令编码器（<em>MTLComputeCommandEncoder</em>）。</p>
+</li>
+<li><p>创建<em>MTLComputeCommandEncoder</em>并设置计算管线状态和设置输入输出纹理。</p>
+</li>
+</ul>
+<p>​<br>​<br>​我们好像还少了一个参数？<em>uint2 gid [[thread_position_in_grid]]</em>，它需要两个参数作为输入：<br>​<br>​<em> 线程组的个数可以通过</em>MTLComputePipelineState<em>的</em>threadExecutionWidth<em>作为倍数来创建线程组个数。<br>​</em> 单个线程组的处理单元个数，我这里简单用了宽高/线程组个数来得到单个线程组的处理单元个数。最大不得超过<em>MTLComputePipelineState</em>的<em>maxTotalThreadsPerThreadgroup</em>个数。<br>​<em> 最后调用 dispatchThreadgroups:threadsPerThreadgroup:进行传参。<br>​<br>​现在我们已经做好所有准备工作，下一步</em>MTLComputeCommandEncoder<em>结束编码，MTLCommandBuffer将结果输出到drawable并提交所有命令。<br>​<br>​一切顺利的话我们将得到下面的结果<br>​<br>​<img src="https://ws1.sinaimg.cn/large/006tNc79gy1fkjwlhybkkj30ku1127wh.jpg" alt="result"><br>​<br>​<br>​<br>​### 保存绘制结果<br>​<br>​</em>MTLComputeCommandEncoder<em>不仅可以处理图片，还可以帮我们进行大量数据计算并将结果返回给我们，我们可以从脚本里面将结果传出来，这个是iOS目前<em>*OpenGLES</em></em>做不到的。<br>​<br>​首先，将脚本修改成<br>​<br>​<figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">​<span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;metal_stdlib&gt;</span></span></div><div class="line">​<span class="keyword">using</span> <span class="keyword">namespace</span> metal;</div><div class="line">​</div><div class="line">​constant float3 kGrayScale = float3(<span class="number">0.2989</span>,<span class="number">0.5870</span>,<span class="number">0.1140</span>);</div><div class="line">​</div><div class="line">​kernel void grayKernel(texture2d&lt;float, access::read&gt; inputImageTexture [[texture(0)]],</div><div class="line">​texture2d&lt;<span class="keyword">float</span>, access::write&gt; outputImageTexture [[texture(<span class="number">1</span>)]],</div><div class="line">​device uchar4 *outputResult [[ buffer(<span class="number">0</span>) ]],</div><div class="line">​uint2 gid [[thread_position_in_grid]])</div><div class="line">​&#123;</div><div class="line">​float4 inColor = inputImageTexture.read(gid);</div><div class="line">​<span class="keyword">float</span> gray = dot(kGrayScale,inColor.rgb);</div><div class="line">​</div><div class="line">​uint width = inputImageTexture.get_width();</div><div class="line">​uint height = inputImageTexture.get_height();</div><div class="line">​uint index = min(gid.x, width) + min(gid.y, height) * width;</div><div class="line">​float4 result = float4(float3(gray),inColor.a);</div><div class="line">​outputResult[index] = uchar4(uchar3(gray * <span class="number">255</span>), inColor.a * <span class="number">255</span>);</div><div class="line">​outputImageTexture.write(result, gid);</div><div class="line">​&#125;</div><div class="line">​</div></pre></td></tr></table></figure></p>
+<p>​<br>​<br>​<br>​ViewController类声明<strong>MTLBuffer</strong>对象，用于存储脚本计算后的数据。<br>​<br>​<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">​@property (nonatomic, strong) id&lt;MTLBuffer&gt; resultBuffer;</div><div class="line">​</div></pre></td></tr></table></figure></p>
+<p>​<br>​并且在<em>viewDidLoad</em>加上初始化代码,这里只判断RGBA的情况。<br>​<br>​<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">​switch (self.texutre.pixelFormat) &#123;</div><div class="line">​case MTLPixelFormatRGBA16Unorm:</div><div class="line">​self.resultBuffer = [device newBufferWithLength:self.texutre.width * self.texutre.height * 4 * sizeof(GLubyte)</div><div class="line">​options:MTLResourceOptionCPUCacheModeDefault];</div><div class="line">​break;</div><div class="line">​default:</div><div class="line">​NSAssert(NO, @&quot;pixelFormat is unsupport !!!!&quot;);</div><div class="line">​break;</div><div class="line">​&#125;</div><div class="line">​</div></pre></td></tr></table></figure></p>
+<p>​<br>​Storyboard拉一个<em>UIButton</em>，并且添加事件<em>save:</em><br>​<br>​<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">​- (IBAction)save:(id)sender&#123;</div><div class="line">​CGSize size = CGSizeMake(self.texutre.width, self.texutre.height);</div><div class="line">​GLubyte *imageBytes = [self.resultBuffer contents];</div><div class="line">​CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();</div><div class="line">​CGContextRef imageContext = CGBitmapContextCreate(imageBytes,</div><div class="line">​size.width,</div><div class="line">​size.height,</div><div class="line">​8,</div><div class="line">​size.width * 4,</div><div class="line">​colorSpace,</div><div class="line">​kCGImageAlphaPremultipliedLast);</div><div class="line">​</div><div class="line">​</div><div class="line">​CGContextTranslateCTM(imageContext, 0, size.height);</div><div class="line">​CGContextScaleCTM(imageContext, 1, -1);</div><div class="line">​</div><div class="line">​CGImageRef imageRef = CGBitmapContextCreateImage(imageContext);</div><div class="line">​UIImage *resultImage = [UIImage imageWithCGImage:imageRef];</div><div class="line">​CGImageRelease(imageRef);</div><div class="line">​CGContextRelease(imageContext);</div><div class="line">​CGColorSpaceRelease(colorSpace);</div><div class="line">​UIImageWriteToSavedPhotosAlbum(resultImage, nil, nil, nil);</div><div class="line">​&#125;</div><div class="line">​</div></pre></td></tr></table></figure></p>
+<p>​<br>​最后在<em>drawInMTKView:</em>的<em>NSAssert(threadsPerThreadGroup.width </em> threadsPerThreadGroup.height &lt; maxTotalThreadsPerThreadgroup, @”单个线程组超出最大线程数”);*语句下插入以下代码<br>​<br>​<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">​[computeCommandEncoder setBuffer:self.resultBuffer offset:0 atIndex:0];</div><div class="line">​</div></pre></td></tr></table></figure></p>
+<p>​<br>​向脚本传递结果存储buffer。<br>​<br>​<br>​<br>​## 小结<br>​<br>​本文只是演示<strong>Metal</strong>并行计算的冰山一角，<em>MTLComputeCommandEncoder</em>不仅可以处理图片，还可以帮助我们进行大量数据并行计算并且可以返回到CPU端给我们。<br><a href="https://github.com/01098996/MetalExample" target="_blank" rel="external">Example</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://z-xj.com/2017/10/15/Metal-并行计算/" data-id="cjnbui1re0004vov322w4qwid" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Metal/">Metal</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MetalKit/">MetalKit</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpenCL/">OpenCL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/OpenGLES/">OpenGLES</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/并行计算/">并行计算</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/10/23/GPUImage支持GIF/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          GPUImage支持GIF
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/10/14/关于跑步/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">关于跑步</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/ARKit/">ARKit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/AVFoundation/">AVFoundation</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Cairo/">Cairo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GIF/">GIF</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPUImage/">GPUImage</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPUImageFilter/">GPUImageFilter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPUImageFramebuffer/">GPUImageFramebuffer</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/GPUImageMovie/">GPUImageMovie</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hook/">Hook</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Metal/">Metal</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MetalKit/">MetalKit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenCL/">OpenCL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/OpenGLES/">OpenGLES</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Quartz2D/">Quartz2D</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SCNMaterial/">SCNMaterial</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SceneKit/">SceneKit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/XCode/">XCode</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/debugQuickLookObject/">debugQuickLookObject</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/">iOS</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/并行计算/">并行计算</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/生活/">生活</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/ARKit/" style="font-size: 12.5px;">ARKit</a> <a href="/tags/AVFoundation/" style="font-size: 10px;">AVFoundation</a> <a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/Cairo/" style="font-size: 10px;">Cairo</a> <a href="/tags/GIF/" style="font-size: 10px;">GIF</a> <a href="/tags/GPUImage/" style="font-size: 17.5px;">GPUImage</a> <a href="/tags/GPUImageFilter/" style="font-size: 10px;">GPUImageFilter</a> <a href="/tags/GPUImageFramebuffer/" style="font-size: 10px;">GPUImageFramebuffer</a> <a href="/tags/GPUImageMovie/" style="font-size: 10px;">GPUImageMovie</a> <a href="/tags/Hook/" style="font-size: 10px;">Hook</a> <a href="/tags/Metal/" style="font-size: 15px;">Metal</a> <a href="/tags/MetalKit/" style="font-size: 10px;">MetalKit</a> <a href="/tags/OpenCL/" style="font-size: 10px;">OpenCL</a> <a href="/tags/OpenGLES/" style="font-size: 20px;">OpenGLES</a> <a href="/tags/Quartz2D/" style="font-size: 10px;">Quartz2D</a> <a href="/tags/SCNMaterial/" style="font-size: 10px;">SCNMaterial</a> <a href="/tags/SceneKit/" style="font-size: 10px;">SceneKit</a> <a href="/tags/XCode/" style="font-size: 10px;">XCode</a> <a href="/tags/debugQuickLookObject/" style="font-size: 10px;">debugQuickLookObject</a> <a href="/tags/iOS/" style="font-size: 17.5px;">iOS</a> <a href="/tags/并行计算/" style="font-size: 10px;">并行计算</a> <a href="/tags/生活/" style="font-size: 10px;">生活</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/02/">二月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/10/">十月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/02/09/Android Hook JNI C函数/">Android Hook JNI C函数</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/23/GPUImage支持GIF/">GPUImage支持GIF</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/15/Metal-并行计算/">Metal 并行计算</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/14/关于跑步/">关于跑步</a>
+          </li>
+        
+          <li>
+            <a href="/2017/10/07/ARKit使用OpenGLES/">ARKit使用OpenGLES</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 张晓军<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

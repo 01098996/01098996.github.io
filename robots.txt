@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: 
+Sitemap: http://z-xj.com/atom.xml
