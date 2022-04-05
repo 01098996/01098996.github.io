@@ -13,19 +13,19 @@
 <meta property="og:site_name" content="面向Google编程">
 <meta property="og:description" content="背景 一直以来线上的Android Native崩溃都是通过第三方SDK收集到的信息作为主要的分析方向，但是最近一段时间频繁出现了大量异常的崩溃信息，表现在出现崩溃的用户设备的内存可用占比都是低于10%。  起初以为是某个版本做了改动出现了内存泄露，导致线上OOM将其归结为内存优化处理。随着更多的线上崩溃出现，从其中一部分日志调用栈里发现崩溃的地方大部分并非内存分配的调用。既然不是OOM导致的崩溃">
 <meta property="og:locale">
-<meta property="og:image" content="http://z-xj.com/.com//20220405002616.jpg">
-<meta property="og:image" content="http://z-xj.com/.com//20220405111410.jpg">
-<meta property="og:image" content="http://z-xj.com/.com//20220405115220.jpg">
-<meta property="og:image" content="http://z-xj.com/.com//20220405125537.jpg">
-<meta property="og:image" content="http://z-xj.com/.com//20220405130229.jpg">
+<meta property="og:image" content="http://z-xj.com/2022/04/05/Android%E7%B2%BE%E5%87%86%E5%AE%9A%E4%BD%8D%E7%BA%BF%E4%B8%8ANative%E5%B4%A9%E6%BA%83/20220405002616.jpg">
+<meta property="og:image" content="http://z-xj.com/2022/04/05/Android%E7%B2%BE%E5%87%86%E5%AE%9A%E4%BD%8D%E7%BA%BF%E4%B8%8ANative%E5%B4%A9%E6%BA%83/20220405111410.jpg">
+<meta property="og:image" content="http://z-xj.com/2022/04/05/Android%E7%B2%BE%E5%87%86%E5%AE%9A%E4%BD%8D%E7%BA%BF%E4%B8%8ANative%E5%B4%A9%E6%BA%83/20220405115220.jpg">
+<meta property="og:image" content="http://z-xj.com/2022/04/05/Android%E7%B2%BE%E5%87%86%E5%AE%9A%E4%BD%8D%E7%BA%BF%E4%B8%8ANative%E5%B4%A9%E6%BA%83/20220405125537.jpg">
+<meta property="og:image" content="http://z-xj.com/2022/04/05/Android%E7%B2%BE%E5%87%86%E5%AE%9A%E4%BD%8D%E7%BA%BF%E4%B8%8ANative%E5%B4%A9%E6%BA%83/20220405130229.jpg">
 <meta property="article:published_time" content="2022-04-05T00:28:56.000Z">
-<meta property="article:modified_time" content="2022-04-05T06:49:14.271Z">
+<meta property="article:modified_time" content="2022-04-05T07:44:22.704Z">
 <meta property="article:author" content="Charles Zhang">
 <meta property="article:tag" content="Android">
 <meta property="article:tag" content="Crash">
 <meta property="article:tag" content="ida">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://z-xj.com/.com//20220405002616.jpg">
+<meta name="twitter:image" content="http://z-xj.com/2022/04/05/Android%E7%B2%BE%E5%87%86%E5%AE%9A%E4%BD%8D%E7%BA%BF%E4%B8%8ANative%E5%B4%A9%E6%BA%83/20220405002616.jpg">
     
     
       
@@ -161,7 +161,7 @@
   <div class="content" itemprop="articleBody">
     <h2 id="背景">背景</h2>
 <p>一直以来线上的Android Native崩溃都是通过第三方SDK收集到的信息作为主要的分析方向，但是最近一段时间频繁出现了大量异常的崩溃信息，表现在出现崩溃的用户设备的内存可用占比都是低于10%。</p>
-<p><img src="/.com//20220405002616.jpg" alt="环境信息"></p>
+<p><img src="20220405002616.jpg" alt="环境信息"></p>
 <p>起初以为是某个版本做了改动出现了内存泄露，导致线上OOM将其归结为内存优化处理。随着更多的线上崩溃出现，从其中一部分日志调用栈里发现崩溃的地方大部分并非内存分配的调用。既然不是OOM导致的崩溃，就需要分析背后的原因。</p>
 <h2 id="现有手段">现有手段</h2>
 <p>对于Android而言，native层Crash相比于Java层更难捕获与定位，线上发布的so更是去除了调试信息。目前已知的分析工具有以下几种:</p>
@@ -199,9 +199,9 @@
 <li>最后一个参数&gt; 表示将结果输出到~/Desktop/1.txt文件</li>
 </ol>
 <p>执行命令无误我们将得到一个包含汇编代码的文本文件。接下来我们需要从崩溃日志中提取崩溃点的PC(Program Counter)地址定位到对应的汇编代码。</p>
-<p><img src="/.com//20220405111410.jpg" alt="崩溃日志"></p>
+<p><img src="20220405111410.jpg" alt="崩溃日志"></p>
 <p>也就是蓝色箭头所指的地方0x268e28，接着打开我们刚才导出的汇编代码文件</p>
-<p><img src="/.com//20220405115220.jpg" alt="汇编文件"></p>
+<p><img src="20220405115220.jpg" alt="汇编文件"></p>
 <p>查找268e28就可以定位到具体崩溃的汇编语句，这句的汇编的伪代码：</p>
 <pre class="line-numbers language-c" data-language="c"><code class="language-c">&#x2F;&#x2F; LDR指令用于从存储器中将一个32位的字数据传送到目的寄存器中。
 &#x2F;&#x2F; ldr	w19, [x0,#4]
@@ -212,11 +212,11 @@ float w19 &#x3D; *(float *)(x0 + 4);  &#x2F;&#x2F; 将寄存器x0的值 + 4之�
 <p>虽然最终通过汇编的方式解决了问题，但是如果在崩溃的点是栈上的地址就要往上回溯，中间还得处理各种跳转指令一不小心就会在汇编指令中迷失方向。</p>
 <p>那么有没有更好的方法? 既然都已经到了汇编这一层，基于之前的逆向经验我想是否可以使用IDA来分析？</p>
 <p>说干就干，将so拖入ida64。一路下一步之后等待它分析完成。分析完成后快捷键<strong>g</strong>跳转到我们崩溃地址268e28</p>
-<p><img src="/.com//20220405125537.jpg" alt="ida"></p>
+<p><img src="20220405125537.jpg" alt="ida"></p>
 <p>你可能会说这不是跟我们导出的汇编代码文件一样吗？只是多了代码高亮。</p>
 <p>当然如果只是这样没必要使用ida，但是它还有另外一种流程视图可以把所有的分支跳转帮我们理清代码逻辑，快速定位到这块代码的具体逻辑分支。</p>
 <p>按下快捷键<strong>空格</strong></p>
-<p><img src="/.com//20220405130229.jpg" alt="ida 流程视图"></p>
+<p><img src="20220405130229.jpg" alt="ida 流程视图"></p>
 <p>最后我们只需要关注分析这块代码逻辑，并且可以顺着调用链往上追溯需要跟踪的信息。</p>
 <h2 id="总结">总结</h2>
 <p>虽然最终通过ida的方式解决了问题，但是比起直接通过符号表的方式去排查问题，效率会低了一点。不过汇编的方式能够比较精确的定位到所在问题，毕竟通过行号定位有可能出现逻辑太多不能确定是哪个变量出问题。</p>
