@@ -1,12 +1,15 @@
 {
-  "date": "2026-09-07",
-  "url": "https://z-xj.com/daily/2026-09-07/",
-  "count": 5,
+  "date": "2026-09-08",
+  "url": "https://z-xj.com/daily/2026-09-08/",
+  "count": 8,
   "titles": [
-    "在 macOS 上让编程 Agent 驱动 Blender",
-    "用 100 步 GRPO 微调 3.5 亿参数模型以提升结构化输出",
-    "给编程 Agent 一份你拥有的记忆",
-    "Codex 桌面应用捆绑了 LibreOffice",
-    "AI 原生公司如何把工作流变成运营能力"
+    "设计Claude调用的命令行子代理：多代理架构探讨",
+    "AI脚本与无代码工具：生产自动化如何分工",
+    "八仓库十四配置：测试AI代理是否言行一致",
+    "25餐实测：主流LLM卡路里估算准确率对比",
+    "50美元24小时：AI代理如何意外拿到60%回复率",
+    "九步搭建本地3D建模管线：llama.cpp驱动FreeCAD",
+    "GPT-6 Astra开发者预览：细节与3D生成亮点",
+    "GPT-6 Astra定价与基准：直指Claude Fable"
   ]
 }

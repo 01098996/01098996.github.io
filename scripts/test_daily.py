@@ -46,6 +46,10 @@ class DailyTests(unittest.TestCase):
         self.assertIn('&lt;img&gt;',daily.render_translation('<img>'))
         page=daily.article_page({'date':'2026-09-07','articles':[]},dict(title='<b>x</b>',url='https://example.com/<>',category='c',source='s',published='2026-09-07'),1)
         self.assertNotIn('<b>x</b>',page)
+    def test_no_markdown_links_rendered(self):
+        html=daily.render_translation('可以从[这里](https://example.com/x)下载')
+        self.assertNotIn('href',html)
+        self.assertIn('这里',html)
     def test_trim_boilerplate_and_markdown(self):
         body='Back to Articles\nUpvote\n+70\niamleonie\n'+'但是正文段落足够长，包含大量中文内容，用来模拟真实的文章正文行，必须超过一百五十个字符的长度阈值才会被保留下来，这里是填充句子。'*3+'\nShare\n1 234'
         trimmed=daily.trim_boilerplate(body)
