@@ -3,12 +3,12 @@
   "url": "https://z-xj.com/daily/2026-09-08/",
   "count": 7,
   "titles": [
-    "GPT-6 Astra 开发者版本登场",
-    "GPT-6 Astra：OpenAI 对标 Fable 的新模型",
-    "Legora 用 GPT-6 Astra 数分钟审完 41 份文档",
-    "Playco 用 GPT-6 Astra 把游戏原型修复量砍半",
-    "Gemini 推出代理式视频理解",
-    "BenchMIRT：细粒度审视 LLM 基准到底在测什么",
-    "用多向量模型直接读懂 PDF 里的图表与表格"
+    "OpenAI 发布面向开发者的 GPT-6 Astra",
+    "GPT-6 Astra 性能与定价速览",
+    "Legora 用 GPT-6 Astra 数分钟审阅 41 份文档",
+    "Playco 用 GPT-6 Astra 减少一半游戏原型手工修改",
+    "Google 为 Gemini 引入代理式视频理解",
+    "BenchMIRT：逐题审视 LLM 基准在测什么",
+    "用晚交互多向量模型抽取 PDF 中的图表与表格"
   ]
 }
