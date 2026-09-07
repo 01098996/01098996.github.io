@@ -46,6 +46,12 @@ class DailyTests(unittest.TestCase):
         self.assertIn('&lt;img&gt;',daily.render_translation('<img>'))
         page=daily.article_page({'date':'2026-09-07','articles':[]},dict(title='<b>x</b>',url='https://example.com/<>',category='c',source='s',published='2026-09-07'),1)
         self.assertNotIn('<b>x</b>',page)
+    def test_trim_boilerplate_and_markdown(self):
+        body='Back to Articles\nUpvote\n+70\niamleonie\n'+'但是正文段落足够长，包含大量中文内容，用来模拟真实的文章正文行，必须超过一百五十个字符的长度阈值才会被保留下来，这里是填充句子。'*3+'\nShare\n1 234'
+        trimmed=daily.trim_boilerplate(body)
+        self.assertNotIn('Upvote',trimmed); self.assertNotIn('iamleonie',trimmed); self.assertNotIn('Share',trimmed)
+        html=daily.render_translation('## 标题\n\n**加粗**和`代码`词\n\n```py\nx=1\n```')
+        self.assertIn('<h3>标题</h3>',html); self.assertIn('<strong>加粗</strong>',html); self.assertIn('<code>代码</code>',html)
     def test_translation_skip_rules(self):
         a=dict(_fulltext='这是一段足够长的中文正文，' * 40); daily.translate_one(a,(None,None,None))
         self.assertEqual(a['translation_kind'],'original')
