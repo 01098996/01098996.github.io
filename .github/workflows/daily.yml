@@ -15,7 +15,7 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 20
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -33,6 +33,7 @@ jobs:
           DAILY_LLM_ENDPOINT: ${{ vars.DAILY_LLM_ENDPOINT }}
           DAILY_LLM_MODEL: ${{ vars.DAILY_LLM_MODEL }}
           DAILY_SITE_URL: ${{ vars.DAILY_SITE_URL }}
+          WECHAT_PUSH_KEY: ${{ secrets.WECHAT_PUSH_KEY }}
         run: python scripts/daily.py
       - name: Preserve edition and deduplication history
         run: |
