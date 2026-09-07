@@ -1,0 +1,77 @@
+{
+  "date": "2026-09-07",
+  "generated_at": "2026-09-07T09:16:48.912235+08:00",
+  "articles": [
+    {
+      "title": "Using Blender with coding agents on macOS",
+      "url": "https://simonwillison.net/2026/Sep/5/blender-coding-agents-macos",
+      "source": "Simon Willison",
+      "published": "2026-09-05T15:51:09+00:00",
+      "excerpt": "",
+      "category": "AI 编程实践",
+      "score": 9.3,
+      "title_zh": "让编码 Agent 调用 Blender：把自然语言变成三维场景",
+      "summary": "作者在 macOS 上让编码 Agent 通过 Blender 的 Python API 创建场景，并通过连续反馈逐步改进画面。这个小实验展示了通用编码助手如何调用已有桌面工具，把任务推进到实际渲染结果。",
+      "why": "适合探索 AI 与专业软件结合的工作流。",
+      "question": "如何让 Agent 在每轮修改后自动渲染并检查结果？",
+      "summary_kind": "reviewed"
+    },
+    {
+      "title": "Fine-tuning a 350M Model for Better Structured Outputs in 100 GRPO Steps",
+      "url": "https://huggingface.co/blog/grpo-with-trl-ifstruct",
+      "source": "Hugging Face",
+      "published": "2026-09-03T00:00:00+00:00",
+      "excerpt": "",
+      "category": "进阶工作流",
+      "score": 8.97,
+      "title_zh": "用 100 步 GRPO 微调改善小模型的结构化输出",
+      "summary": "文章给出基于 TRL 的可运行流程，用约 500 个样本微调 350M 模型，并在相同推理环境下比较训练前后表现。作者报告 IFStruct 通过率从 22.6% 提升到 29.7%；这也说明格式合规仍远未解决。",
+      "why": "包含训练、奖励设计与独立评测，适合研究输出可靠性。",
+      "question": "你的业务是否需要微调，还是先用约束解码与校验重试就够了？",
+      "summary_kind": "reviewed"
+    },
+    {
+      "title": "Give Your Coding Agents a Memory You Own",
+      "url": "https://huggingface.co/blog/funes",
+      "source": "Hugging Face",
+      "published": "2026-09-03T00:00:00+00:00",
+      "excerpt": "",
+      "category": "Agent 开发",
+      "score": 6.97,
+      "title_zh": "给编码 Agent 一份由你掌控的持久记忆",
+      "summary": "funes 把现有 Agent 会话转换成可检索的数据，结合向量检索、BM25 和重排找回过去的决策。返回结果保留会话与轮次来源，也支持跨机器共享。文章强调原始证据与可追溯性，而不是只存一份压缩摘要。",
+      "why": "适合经常更换 Agent、机器或长时间维护同一项目的开发者。",
+      "question": "记忆检索命中时，能否追溯原始证据并识别已经过时的决定？",
+      "summary_kind": "reviewed"
+    },
+    {
+      "title": "Codex bundles LibreOffice",
+      "url": "https://simonwillison.net/2026/Sep/1/codex-libreoffice",
+      "source": "Simon Willison",
+      "published": "2026-09-01T19:03:01+00:00",
+      "excerpt": "",
+      "category": "AI 编程实践",
+      "score": 6.37,
+      "title_zh": "编码助手如何利用本地文档工具链",
+      "summary": "作者检查桌面应用的运行环境，发现其中包含 Python、Node.js、Poppler 和 LibreOffice 等工具，以及告诉助手如何使用它们的技能说明。它提供了一个理解 Agent 文档处理能力的具体观察视角。",
+      "why": "有助于把“模型能做什么”拆解成模型、工具与操作说明的协作。",
+      "question": "你的自动化是否有生成后渲染、检查成品的环节？",
+      "summary_kind": "reviewed"
+    },
+    {
+      "title": "How AI-native companies turn workflows into operating capability",
+      "url": "https://openai.com/index/ai-native-company-workflows",
+      "source": "OpenAI",
+      "published": "2026-09-01T17:00:00+00:00",
+      "excerpt": "",
+      "category": "进阶工作流",
+      "score": 4.33,
+      "title_zh": "把 AI 工作流变成组织里的日常能力",
+      "summary": "这篇来源介绍 Basis、Clay 和 Exa Labs 在入职、客户管理及开发者集成中的 Agent 应用。当前获取的是官方订阅摘要；具体实施过程和效果需阅读原文核对，可作为寻找落地案例的入口。",
+      "why": "适合关注 AI 工作流如何进入日常业务的读者。",
+      "question": "案例的效果是否有明确基线、成本和失败处理方式？",
+      "summary_kind": "reviewed"
+    }
+  ],
+  "errors": []
+}
