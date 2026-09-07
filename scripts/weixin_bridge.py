@@ -49,8 +49,9 @@ def start_login(path,qr_path):
     if not data.get('qrcode') or not data.get('qrcode_img_content'): raise RuntimeError('Missing QR code')
     save(path,{'qr':data['qrcode'],'qr_created':time.time(),'api':API})
     import qrcode
+    from qrcode.image.pure import PyPNGImage
     qr_path=Path(qr_path); qr_path.parent.mkdir(parents=True,exist_ok=True)
-    qrcode.make(data['qrcode_img_content']).save(qr_path)
+    qrcode.make(data['qrcode_img_content'],image_factory=PyPNGImage).save(str(qr_path))
     print('Scan the QR image with WeChat and confirm the pairing on your phone.',flush=True)
 
 def complete_login(path,seconds):
