@@ -1,15 +1,14 @@
 {
   "date": "2026-09-08",
   "url": "https://z-xj.com/daily/2026-09-08/",
-  "count": 8,
+  "count": 7,
   "titles": [
-    "设计Claude调用的命令行子代理：多代理架构探讨",
-    "AI脚本与无代码工具：生产自动化如何分工",
-    "八仓库十四配置：测试AI代理是否言行一致",
-    "25餐实测：主流LLM卡路里估算准确率对比",
-    "50美元24小时：AI代理如何意外拿到60%回复率",
-    "九步搭建本地3D建模管线：llama.cpp驱动FreeCAD",
-    "GPT-6 Astra开发者预览：细节与3D生成亮点",
-    "GPT-6 Astra定价与基准：直指Claude Fable"
+    "GPT-6 Astra 开发者版本登场",
+    "GPT-6 Astra：OpenAI 对标 Fable 的新模型",
+    "Legora 用 GPT-6 Astra 数分钟审完 41 份文档",
+    "Playco 用 GPT-6 Astra 把游戏原型修复量砍半",
+    "Gemini 推出代理式视频理解",
+    "BenchMIRT：细粒度审视 LLM 基准到底在测什么",
+    "用多向量模型直接读懂 PDF 里的图表与表格"
   ]
 }

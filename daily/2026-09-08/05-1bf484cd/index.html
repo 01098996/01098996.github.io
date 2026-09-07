@@ -1,0 +1,33 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>Gemini 推出代理式视频理解 · 2026-09-08 AI 日报 · 面向Google编程</title><meta name="description" content="Google 在 Gemini 3.7 Flash、3.6 Flash 与 3.5 Flash-Lite 上线代理式视频理解能力，模型可动态扫描视频片段，官方称准确率提升的同时 token 用量最多减少 88%、成本最多下降 66%。用户可在 Google AI Studio 或 Gemini 企业代理平台中将 API 配置设为 agentic 即时启用。"><meta property="og:title" content="Gemini 推出代理式视频理解 · 2026-09-08 AI 日报"><meta property="og:description" content="Google 在 Gemini 3.7 Flash、3.6 Flash 与 3.5 Flash-Lite 上线代理式视频理解能力，模型可动态扫描视频片段，官方称准确率提升的同时 token 用量最多减少 88%、成本最多下降 66%。用户可在 Google AI Studio 或 Gemini 企业代理平台中将 API 配置设为 agentic 即时启用。"><meta property="og:type" content="article"><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/daily/style.css"><link rel="alternate" type="application/atom+xml" title="AI 日报" href="/daily/atom.xml"></head><body><a class="skip" href="#main">跳到正文</a><div class="page"><header><a class="brand" href="/">面向Google编程<span>CHARLES ZHANG</span></a><nav aria-label="主导航"><a href="/">博客</a><a class="active" href="/daily/">AI 日报</a><a href="/daily/archive.html">往期</a></nav></header><main id="main"><section class="intro"><p class="eyebrow">AI DAILY / 2026-09-08</p><h1>Gemini 推出代理式视频理解</h1><p class="original">Introducing agentic video understanding with Gemini</p><div class="meta"><span class="tag">Agent 开发</span><span>Google DeepMind · 2026-09-01</span></div></section><p class="muted">全文中文翻译 · AI 生成，仅供学习交流</p><section class="translation"><h2>推出 Gemini 的智能体视频理解（agentic video understanding）能力</h2><p>Google 刚刚为 Gemini 3.7 Flash、3.6 Flash 和 3.5 Flash-Lite 推出了智能体视频理解。这个功能让模型动态扫描视频片段，准确率更高，token 用量最多砍 88%，成本最多降 66%。今天就能用，在 Google AI Studio 或 Gemini Enterprise Agent Platform 里把 API 配置改成「agentic」就行。</p><p>今天，我们在最新的三款模型 Gemini 3.7 Flash、3.6 Flash、3.5 Flash-Lite 上全面上线了智能体视频理解。这项新能力在大幅压缩视频分析 token 用量和成本的同时，准确率还能往上提。思路和我们之前做的智能体视觉（agentic vision）类似，那个是把代码执行（code execution）和 Gemini 的原生图像理解能力结合起来。智能体视频理解则是调用 Gemini 原生的视频工具来提升表现，解锁了一批新能力，比如亚秒级时刻检索、更准确的异常检测、精确计数等等。</p><p>功能今天就能用，通过 Gemini API 接入 Google AI Studio 和 Gemini Enterprise Agent Platform，支持视频上传和 YouTube 视频。</p><h3>基准测试</h3><p>传统处理方式是「静态」的，模型按固定帧率（frames-per-second，默认 1 FPS，API 可调）往里灌。智能体视频理解换了一种打法，把模型的核心推理和原生视频工具串起来，能在视觉帧、音频、字幕之间动态搜索、扫描、定位目标片段。在标准视频分析基准测试上，开了智能体视频理解的 Gemini 模型，分析成本最多降 66%，token 消耗最多砍 88%，准确率最多涨 7%。</p><p>这种效率提升在长视频上尤其明显。从 10 分钟的教程，到 90 分钟的讲座，再到几个小时的录播，都算长视频。静态处理在这种场景下逼着开发者二选一，要么硬扛高昂的 token 成本，要么用一些会丢关键细节的技巧。</p><p>把智能体视频理解打开之后，Gemini 3.7 Flash 的 token 消耗最多降 88%，准确率最多涨 7%。</p><p>三款支持的模型都有收益，但 Gemini 3.7 Flash 开智能体视频理解之后整体质量最好，质量与成本效率的组合也是最优的，在这次测过的视频理解模型里卡在了准确率—成本的帕累托前沿（pareto frontier）上。</p><p>智能体视频理解让 Gemini 3.7 Flash 站上了视频分析的准确率—成本帕累托前沿。</p><h3>工作原理</h3><p>静态处理是按固定帧率往模型里灌媒体流。智能体视频理解不一样，它让 Gemini 主动出击，以目标为导向地决定该看什么、以什么速度看、用哪种模态（modality，帧、音频、字幕都行）去看，只拉取它真正需要的那几段画面和信号。开发者以前也能手动做这件事，但有了智能体视频理解，Gemini 可以自己跑一个智能体循环（agentic loop），调内部工具把视频文件对应的部分加载进来，开发开销小了很多。</p><h3>能力与应用场景</h3><p>智能体视频理解改变了开发者处理长视频内容的方式，在各种高要求的应用场景下都能用上。</p><p>- <strong>亚秒级时刻检索（sub-second moment retrieval）</strong>。精确定位瞬间的状态变化和紧凑的剪辑切换点，这些在 1 FPS 下很容易漏掉。有了它，自动化精确视频剪辑就变成了可能。<br>- <strong>长视频大海捞针（needle-in-a-haystack search）</strong>。在长达数小时的视频里回答复杂问题，不用烧掉几百万 token。<br>- <strong>异常检测（anomaly detection）</strong>。把感兴趣的时间窗口用更高 FPS 重采样（resample），仔细看快速运动和细微的视觉伪影（artifact）。<br>- <strong>动作与目标计数（counting action &amp; object）</strong>。在一段时间内准确追踪重复出现的物理动作和不同的物体。</p><p><strong>高效 token 的长视频分析</strong><br>看看 Gemini 3.7 Flash 在 LongVideoBench（一个长视频理解基准）上，开和不开智能体视频理解的对比。token 砍了一大截，准确率反而涨了。</p><p><strong>动态 FPS 下的快速动作精确分析</strong><br>开了智能体视频理解之后，3.7 Flash 能按需用不同帧率去扫描、回看视频，准确数出快速运动的次数。</p><p><strong>Token 高效的大海捞针搜索</strong><br>智能体视频理解加持下，Gemini 3.7 能基于视频内容准确回答复杂问题，比静态分析少用非常多 token。</p><h3>真实场景下的结果</h3><p>不少早期接入的合作伙伴在测试智能体视频理解时都拿到了很漂亮的成绩。下面是他们的一些反馈。</p><h3>入门指南</h3><p>智能体视频理解走 Gemini API，可以在 Google AI Studio 和 Gemini Enterprise Agent Platform 上用，覆盖 Gemini 3.7 Flash、3.6 Flash、3.5 Flash-Lite 三款模型。定价按 Gemini API 的标准 token 价格走，不额外收功能费。</p><p>启用方法很简单，在 API 配置里把 processing 设为「agentic」就行。想了解更多细节和上手步骤，可以看看我们的开发者指南。</p><pre><code>from google import genai
+
+client = genai.Client()
+
+interaction = client.interactions.create(
+
+  model=&quot;gemini-3.7-flash&quot;,
+
+  input=[
+
+    {
+
+      &quot;type&quot;: &quot;video&quot;,
+
+      &quot;uri&quot;: &quot;https://youtu.be/7Z5Vy9JBANs&quot;,
+
+      &quot;processing&quot;: &quot;agentic&quot;
+
+    },
+
+    {
+
+      &quot;type&quot;: &quot;text&quot;,
+
+      &quot;text&quot;: &quot;What are the 3 most important announcements in this keynote?&quot;,
+
+    },
+
+  ],
+
+)
+
+print(interaction.output_text)</code></pre><p>我们还会把智能体视频理解的效率和质量提升带到 Google 全产品里，惠及数十亿用户。功能很快会在 Gemini 应用里向所有用户推出，覆盖 Flash 和 Flash-Lite 模型。接下来的几个月里，智能体视频理解还会接管 YouTube 的</p></section><aside class="about"><h2>编辑导读</h2><p>Google 在 Gemini 3.7 Flash、3.6 Flash 与 3.5 Flash-Lite 上线代理式视频理解能力，模型可动态扫描视频片段，官方称准确率提升的同时 token 用量最多减少 88%、成本最多下降 66%。用户可在 Google AI Studio 或 Gemini 企业代理平台中将 API 配置设为 agentic 即时启用。</p><p><strong>为什么读</strong>把代理式思路从图像扩展到视频，并给出可观的成本压缩幅度。</p><p><strong>带着问题读</strong>代理式扫描具体如何决定重看哪些片段，是否会引入新的响应延迟？</p></aside><aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="https://deepmind.google/blog/introducing-agentic-video-in-gemini" rel="noopener noreferrer">Introducing agentic video understanding with Gemini ↗</a></p><p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="/daily/2026-09-08/05-1bf484cd/">返回本期 →</a></p></aside></main><footer><span>AI 日报 · 保持好奇，动手验证</span><a href="/daily/atom.xml">RSS 订阅 ↗</a></footer></div></body></html>

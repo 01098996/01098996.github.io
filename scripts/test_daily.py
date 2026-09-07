@@ -50,6 +50,13 @@ class DailyTests(unittest.TestCase):
         html=daily.render_translation('可以从[这里](https://example.com/x)下载')
         self.assertNotIn('href',html)
         self.assertIn('这里',html)
+    def test_untangle_hn(self):
+        a=daily.untangle_hn(dict(source='Hacker News',url='https://example.com/post',excerpt='Article URL: https://example.com/post Comments URL: https://news.ycombinator.com/item?id=1 Points: 156'))
+        self.assertEqual(a['url'],'https://example.com/post')
+        self.assertEqual(a['discussion'],'https://news.ycombinator.com/item?id=1')
+        self.assertEqual(a['excerpt'],'')
+        b=daily.untangle_hn(dict(source='Hugging Face',url='https://example.com/a',excerpt='x'))
+        self.assertEqual(b['excerpt'],'x'); self.assertNotIn('discussion',b)
     def test_trim_boilerplate_and_markdown(self):
         body='Back to Articles\nUpvote\n+70\niamleonie\n'+'但是正文段落足够长，包含大量中文内容，用来模拟真实的文章正文行，必须超过一百五十个字符的长度阈值才会被保留下来，这里是填充句子。'*3+'\nShare\n1 234'
         trimmed=daily.trim_boilerplate(body)
