@@ -155,7 +155,7 @@ def render():
     (daily/'index.html').write_text(shell('AI 日报',issue_body(issues[0],True)))
     links=''.join(f'<li><a href="/daily/{i["date"]}/"><time>{i["date"]}</time><span>{len(i["articles"])} 篇精选</span><b>→</b></a></li>' for i in issues)
     (daily/'archive.html').write_text(shell('日报归档',f'<section class="intro"><p class="eyebrow">AI DAILY / ARCHIVE</p><h1>往期日报</h1><p class="lede">值得回看的实践与方法</p></section><ul class="archive">{links}</ul>'))
-    base=(os.environ.get('DAILY_SITE_URL') or 'http://z-xj.com').rstrip('/')
+    base=(os.environ.get('DAILY_SITE_URL') or 'https://z-xj.com').rstrip('/')
     latest=issues[0]; (daily/'latest.json').write_text(json.dumps({'date':latest['date'],'url':base+'/daily/'+latest['date']+'/','count':len(latest['articles']),'titles':[a.get('title_zh',a['title']) for a in latest['articles']]},ensure_ascii=False,indent=2)+'\n')
     feed=ET.Element('feed',xmlns='http://www.w3.org/2005/Atom'); ET.SubElement(feed,'title').text='AI 日报'; ET.SubElement(feed,'id').text=base+'/daily/'; ET.SubElement(feed,'updated').text=latest['generated_at']; ET.SubElement(feed,'link',href=base+'/daily/atom.xml',rel='self')
     for i in issues[:30]:

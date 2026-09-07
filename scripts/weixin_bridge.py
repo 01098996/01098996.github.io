@@ -112,7 +112,7 @@ def send_edition(path,state,issue):
     print('WeChat accepted edition '+date,flush=True); return True
 
 def main():
-    p=argparse.ArgumentParser(); p.add_argument('command',choices=['login-start','login-wait','once','watch']); p.add_argument('--state',required=True); p.add_argument('--qr'); p.add_argument('--site',default='https://01098996.github.io'); p.add_argument('--seconds',type=int,default=50); a=p.parse_args(); path=state_path(a.state)
+    p=argparse.ArgumentParser(); p.add_argument('command',choices=['login-start','login-wait','once','watch']); p.add_argument('--state',required=True); p.add_argument('--qr'); p.add_argument('--site',default='https://z-xj.com'); p.add_argument('--seconds',type=int,default=50); a=p.parse_args(); path=state_path(a.state)
     if a.command=='login-start':
         if not a.qr: p.error('--qr is required')
         start_login(path,a.qr); return
