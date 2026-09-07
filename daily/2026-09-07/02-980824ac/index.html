@@ -1,70 +1,70 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>用 100 步 GRPO 微调 3.5 亿参数模型以提升结构化输出 · 2026-09-07 AI 日报 · 面向Google编程</title><meta name="description" content="文章指出结构化输出决定 LLM 能否接入下游系统，但常被混入通用评测。作者提供一个在 GPU 上运行的微调流程，用 GRPO 在 100 步内改进小型模型的 schema 合规性，目标并非复现 IFStruct 基准分数，而是说明小模型任务微调可媲美大模型。文中还提示训练管线与 IFStruct 博客不同。"><meta property="og:title" content="用 100 步 GRPO 微调 3.5 亿参数模型以提升结构化输出 · 2026-09-07 AI 日报"><meta property="og:description" content="文章指出结构化输出决定 LLM 能否接入下游系统，但常被混入通用评测。作者提供一个在 GPU 上运行的微调流程，用 GRPO 在 100 步内改进小型模型的 schema 合规性，目标并非复现 IFStruct 基准分数，而是说明小模型任务微调可媲美大模型。文中还提示训练管线与 IFStruct 博客不同。"><meta property="og:type" content="article"><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/daily/style.css"><link rel="alternate" type="application/atom+xml" title="AI 日报" href="/daily/atom.xml"></head><body><a class="skip" href="#main">跳到正文</a><div class="page"><header><a class="brand" href="/">面向Google编程<span>CHARLES ZHANG</span></a><nav aria-label="主导航"><a href="/">博客</a><a class="active" href="/daily/">AI 日报</a><a href="/daily/archive.html">往期</a></nav></header><main id="main"><section class="intro"><p class="eyebrow">AI DAILY / 2026-09-07</p><h1>用 100 步 GRPO 微调 3.5 亿参数模型以提升结构化输出</h1><p class="original">Fine-tuning a 350M Model for Better Structured Outputs in 100 GRPO Steps</p><div class="meta"><span class="tag">进阶工作流</span><span>Hugging Face · 2026-09-03</span></div></section><p class="summary">文章指出结构化输出决定 LLM 能否接入下游系统，但常被混入通用评测。作者提供一个在 GPU 上运行的微调流程，用 GRPO 在 100 步内改进小型模型的 schema 合规性，目标并非复现 IFStruct 基准分数，而是说明小模型任务微调可媲美大模型。文中还提示训练管线与 IFStruct 博客不同。</p><p class="note"><strong>为什么读</strong>为结构化输出这一被低估的能力提供了小模型 + GRPO 的可复现微调思路。</p><p class="note"><strong>带着问题读</strong>该 100 步微调在何种数据集与 schema 类型上验证，是否覆盖嵌套 JSON 等复杂结构？</p><p class="muted">节选中文翻译（原文较长）· AI 生成</p><section class="translation"><h2>用 100 步 GRPO 微调一个 350M 模型以获得更好的结构化输出</h2><p>结构化输出是 LLM 最常见的现实任务之一，但大多数基准测试把它并入更广泛的推理或抽取分数中，而不是单独衡量它。一个模型是否能稳定返回符合请求格式与形状的、可解析的有效输出——即 schema 合规性（schema compliance）——往往决定了它能否被接入下游系统。</p><p>注意，这里描述的训练流程并不是用于训练 IFStruct 博客中所述 RL 模型的流程。本 notebook 并不旨在复现 IFStruct 基准分数，而是展示针对任务的微调如何提升小模型性能，并使其与更大的模型相匹配。</p><h3>先决条件</h3><p>本指南分为在两处运行的两部分：</p><p><strong>微调（Fine-tuning）</strong> 在 GPU 上运行。配套 notebook 适配免费版的 Colab 或 Kaggle GPU。</p><p><strong>评估（Evaluation）</strong> 可在 MacBook（本例中为搭载 Apple M5 Max 和 36 GB 统一内存的 MacBook Pro）上本地运行，通过 llama.cpp 暴露一个与 OpenAI 兼容的服务器，IFStruct 评估器会与之通信。</p><p>我们需要 uv 来管理 Python 工具链，并需要 llama.cpp 来提供推理服务。参考 Liquid AI 的 llama.cpp 部署文档，使用 Homebrew 安装 llama.cpp，并验证 llama-server 可用：</p><pre><code>brew install llama.cpp
-llama-server --version</code></pre><h3>在 LFM2.5-350M（基座模型）上进行 IFStruct 评估</h3><p>在开始之前，我们先在 IFStruct 基准上评估 LFM2.5-350M，看看是否能复现报告的 21.1% 分数。</p><p>IFStruct 是一个用于测试 LLM 输出有效性与 schema 遵从度的基准。该基准在 Liquid4All/ifstruct 开源，公开的基准数据集在 Hugging Face 上的 LiquidAI/ifstruct-v1.0。</p><pre><code>git clone https://github.com/Liquid4All/ifstruct.git</code></pre><p>为了对比评估，我们在 MacBook 上用 llama.cpp 提供本地推理服务。我们将使用 BF16 版本的 GGUF（LiquidAI/LFM2.5-350M-GGUF）。</p><p>然后用如下命令启动基座模型服务器：</p><pre><code>llama-server \
-  -hf LiquidAI/LFM2.5-350M-GGUF:BF16 \
-  -c 32768 \
-  -np 4 \
-  -ngl 99 \
-  --alias LiquidAI/LFM2.5-350M \
-  --host 127.0.0.1 \
-  --port 8080</code></pre><p>- <code>--alias</code>：IFStruct 发送给 OpenAI 兼容端点的模型名称<br>- <code>-ngl 99</code>：在 GPU 可用时，请求 llama.cpp 将所有层卸载到 GPU<br>- <code>-np 4</code>：并行处理 4 个请求<br>- <code>-c 32768</code>：提示上下文的大小</p><p>服务器运行后，我们就可以用 2000 条样本运行完整基准：</p><pre><code>uv run ifstruct-eval \
-  --model LiquidAI/LFM2.5-350M \
-  --base-url http://localhost:8080/v1 \
-  --api-key dummy \
-  --dataset data/test.jsonl \
-  --results-file results/lfm2.5-350m-llamacpp-base.json \
-  --n-threads 4 \
-  --max-tokens 2048 \
-  -v</code></pre><pre><code>============================================================
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>用 100 步 GRPO 微调 3.5 亿参数模型以提升结构化输出 · 2026-09-07 AI 日报 · 面向Google编程</title><meta name="description" content="文章指出结构化输出常被并入推理或抽取评测，缺少独立衡量。作者以 schema 合规为焦点，演示在小模型上做任务级微调也能逼近更大模型表现。流程分两段：微调在 GPU 上跑，配套 Notebook 提供完整复现路径，但说明其管线并非训练 IFStruct 博客模型的同一套。"><meta property="og:title" content="用 100 步 GRPO 微调 3.5 亿参数模型以提升结构化输出 · 2026-09-07 AI 日报"><meta property="og:description" content="文章指出结构化输出常被并入推理或抽取评测，缺少独立衡量。作者以 schema 合规为焦点，演示在小模型上做任务级微调也能逼近更大模型表现。流程分两段：微调在 GPU 上跑，配套 Notebook 提供完整复现路径，但说明其管线并非训练 IFStruct 博客模型的同一套。"><meta property="og:type" content="article"><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/daily/style.css"><link rel="alternate" type="application/atom+xml" title="AI 日报" href="/daily/atom.xml"></head><body><a class="skip" href="#main">跳到正文</a><div class="page"><header><a class="brand" href="/">面向Google编程<span>CHARLES ZHANG</span></a><nav aria-label="主导航"><a href="/">博客</a><a class="active" href="/daily/">AI 日报</a><a href="/daily/archive.html">往期</a></nav></header><main id="main"><section class="intro"><p class="eyebrow">AI DAILY / 2026-09-07</p><h1>用 100 步 GRPO 微调 3.5 亿参数模型以提升结构化输出</h1><p class="original">Fine-tuning a 350M Model for Better Structured Outputs in 100 GRPO Steps</p><div class="meta"><span class="tag">进阶工作流</span><span>Hugging Face · 2026-09-03</span></div></section><p class="muted">全文中文翻译 · AI 生成，仅供学习交流</p><section class="translation"><h2>100 步 GRPO 微调 350M 模型以获得更优的结构化输出</h2><p>结构化输出是 LLM 最常见的现实任务之一，但大多数基准测试都把它并入更广泛的推理或抽取评分中，而没有单独衡量它。一个模型是否能够在请求的格式与形态下可靠地返回有效、可解析的输出——即模式合规性（schema compliance）——往往决定了它能否被接入下游系统。</p><p>请注意，本文所述的训练流程并非用于训练</p><p>IFStruct 博客</p><p>中所述 RL 模型的那一套。本 notebook 的目标并非复现 IFStruct 基准分数，而是展示针对特定任务对较小模型进行微调可以提升其表现，并使其与远大于它的模型相媲美。</p><h2>先决条件</h2><p>本指南分为两个在不同环境运行的部分：</p><p>微调（Fine-tuning）</p><p>在 GPU 上运行。随附的 notebook 针对 Colab 或 Kaggle 的免费层 GPU 设计。</p><p>评估（Evaluation）</p><p>可在 MacBook（此处为搭载 Apple M5 Max 与 36 GB 统一内存的 MacBook Pro）上本地运行，方法是借助</p><p>llama.cpp</p><p>，它暴露了一个 OpenAI 兼容的服务器，供 IFStruct 评估器调用。</p><p>我们需要的工具包括</p><p>uv</p><p>（用于 Python 工具链）和</p><p>llama.cpp</p><p>（用于服务化）。遵循</p><p>Liquid AI llama.cpp 部署文档</p><p>，使用 Homebrew 安装</p><p>llama.cpp</p><p>并验证</p><p>llama-server</p><p>可用：</p><pre><code>brew install llama.cpp
+llama-server --version</code></pre><h2>LFM2.5-350M（基础模型）的 IFStruct 评估</h2><p>在我们开始之前，先在</p><p>IFStruct 基准</p><p>上评估 LFM2.5-350M，看能否</p><p>复现报告的 21.1% 分数</p><p>。</p><p>IFStruct</p><p>是一个用于测试 LLM 输出有效性与模式遵循能力的基准。该基准在</p><p>Liquid4All/ifstruct</p><p>开源，公开的基准数据集可在 Hugging Face 上的</p><p>LiquidAI/ifstruct-v1.0</p><p>获取。</p><pre><code>git clone https://github.com/Liquid4All/ifstruct.git</code></pre><p>为进行评估对比，我们在 MacBook 上用</p><p>llama.cpp</p><p>本地服务该模型。我们将使用</p><p>BF16</p><p>GGUF（</p><p>LiquidAI/LFM2.5-350M-GGUF</p><p>）。</p><p>随后用以下命令启动基础模型服务器：</p><pre><code>llama-server \
+-hf LiquidAI/LFM2.5-350M-GGUF:BF16 \
+-c 32768 \
+-np 4 \
+-ngl 99 \
+--alias LiquidAI/LFM2.5-350M \
+--host 127.0.0.1 \
+--port 8080</code></pre><p>- <code>--alias</code>：IFStruct 发送至 OpenAI 兼容端点的模型名<br>- <code>-ngl 99</code>：在 GPU 可用时，要求</p><p>llama.cpp</p><p>将所有层卸载到 GPU<br>- <code>-np 4</code>：并行处理四个请求<br>- <code>-c 32768</code>：提示词上下文大小</p><p>服务器运行后，我们可以在 2000 个样本上运行完整基准：</p><pre><code>uv run ifstruct-eval \
+--model LiquidAI/LFM2.5-350M \
+--base-url http://localhost:8080/v1 \
+--api-key dummy \
+--dataset data/test.jsonl \
+--results-file results/lfm2.5-350m-llamacpp-base.json \
+--n-threads 4 \
+--max-tokens 2048 \
+-v</code></pre><pre><code>============================================================
 Model: LiquidAI/LFM2.5-350M
 ============================================================
 Overall: 452/2000 passed (22.6%)
 Average latency: 1453ms
 
 By format:
-JSON: 180/1000 passed (18.0%)
-YAML: 272/1000 passed (27.2%)
+  JSON:  180/1000 passed (18.0%)
+  YAML:  272/1000 passed (27.2%)
 
 By top-level structure:
-Wrapper key 288/1011 passed (28.5%)
-Bare list   164/989 passed (16.6%)
+  Wrapper key   288/1011 passed (28.5%)
+  Bare list     164/989  passed (16.6%)
 
 By entity type:
-test__camera_review                 6/83 passed (7.2%)
-test__clinical_trial                20/104 passed (19.2%)
-test__conference_schedule           7/87 passed (8.0%)
-test__escaping__bug_report_batch    24/89 passed (27.0%)
-test__escaping__config_snippet_audit 15/85 passed (17.6%)
-test__escaping__customer_email_thread 5/73 passed (6.8%)
-test__escaping__dialogue_sample     14/95 passed (14.7%)
-test__escaping__interview_transcript_segment 21/80 passed (26.2%)
-test__escaping__log_parser_examples 21/72 passed (29.2%)
-test__escaping__pr_discussion       22/87 passed (25.3%)
-test__escaping__repro_steps_batch   16/73 passed (21.9%)
-test__escaping__screenplay_scene    16/92 passed (17.4%)
-test__escaping__short_story_chapter 15/84 passed (17.9%)
-test__escaping__support_ticket_batch 27/73 passed (37.0%)
-test__escaping__terminal_session_notes 20/70 passed (28.6%)
-test__event_ticket_booking          49/107 passed (45.8%)
-test__gpu_review                    6/94 passed (6.4%)
-test__invoice                       28/86 passed (32.6%)
-test__job_posting                   25/85 passed (29.4%)
-test__real_estate_listing           31/82 passed (37.8%)
-test__recipe                        3/70 passed (4.3%)
-test__rental_car_booking            27/79 passed (34.2%)
-test__scientific_experiment         13/69 passed (18.8%)
-test__travel_itinerary              21/81 passed (25.9%)
+  test__camera_review                          6/83  passed (7.2%)
+  test__clinical_trial                        20/104 passed (19.2%)
+  test__conference_schedule                    7/87  passed (8.0%)
+  test__escaping__bug_report_batch            24/89  passed (27.0%)
+  test__escaping__config_snippet_audit        15/85  passed (17.6%)
+  test__escaping__customer_email_thread        5/73  passed (6.8%)
+  test__escaping__dialogue_sample             14/95  passed (14.7%)
+  test__escaping__interview_transcript_segment 21/80 passed (26.2%)
+  test__escaping__log_parser_examples         21/72  passed (29.2%)
+  test__escaping__pr_discussion               22/87  passed (25.3%)
+  test__escaping__repro_steps_batch           16/73  passed (21.9%)
+  test__escaping__screenplay_scene            16/92  passed (17.4%)
+  test__escaping__short_story_chapter         15/84  passed (17.9%)
+  test__escaping__support_ticket_batch        27/73  passed (37.0%)
+  test__escaping__terminal_session_notes      20/70  passed (28.6%)
+  test__event_ticket_booking                 49/107 passed (45.8%)
+  test__gpu_review                             6/94  passed (6.4%)
+  test__invoice                               28/86  passed (32.6%)
+  test__job_posting                           25/85  passed (29.4%)
+  test__real_estate_listing                   31/82  passed (37.8%)
+  test__recipe                                 3/70  passed (4.3%)
+  test__rental_car_booking                    27/79  passed (34.2%)
+  test__scientific_experiment                13/69  passed (18.8%)
+  test__travel_itinerary                      21/81  passed (25.9%)
 
 Common errors:
-7228x required field missing
-738x wrong item count
-540x type mismatch
-317x Unclosed code block
-190x extraneous field &#x27;notes&#x27;
-181x extraneous field &#x27;path&#x27;
-175x extraneous field &#x27;constraints&#x27;
-170x extraneous field &#x27;type&#x27;
-170x missing code block
-100x expected bare list, got wrapper</code></pre><p>IFStruct 发布博客报告的 LFM2.5-350M 分数为 21.1%。我们的本地 llama.cpp/BF16 部署测得 22.6%，与博客报告的 21.1% 接近。我们以这一本地结果作为同一推理栈对比的基线。</p><h3>使用 TRL 对结构化输出进行 GRPO 微调</h3><p>完整、可运行的流水线在配套 notebook 中。本节只涵盖其中的关键部分。</p><h4>训练数据</h4><p>我们使用 nvidia/Nemotron-RL-instruction_following-structured_outputs，它将每个提示与目标 JSON Schema 以及期望字段数量配对。我们使用约 500 条样本进行训练。</p><p>由于 Nemotron 数据分布与 IFStruct 评估不同，我们对提示做了增强，以弥合它们之间的两个差距：</p><p>- 40% 的提示追加了一条&quot;将输出放在围栏代码块（fenced code block）内&quot;的指令，让模型学会遵循格式指令，而不是总是直接输出原始 JSON。<br>- 另外不重合的 20% 被转换为顶层数组任务（schema 被包裹在一个 array 中，并要求一个 item 数量），用于训练裸列表（bare list）输出与 item 数量遵从。</p><h4>模型与 LoRA</h4><p>我们加载 LiquidAI/LFM2.5-350M 并附加一个 LoRA 适配器。由于 LFM2.5 采用混合注意力/卷积架构，我们针对 LFM 特定的模块名：</p><pre><code>lora_config = LoraConfig(
+  7228x required field missing
+  738x wrong item count
+  540x type mismatch
+  317x Unclosed code block
+  190x extraneous field &#x27;notes&#x27;
+  181x extraneous field &#x27;path&#x27;
+  175x extraneous field &#x27;constraints&#x27;
+  170x extraneous field &#x27;type&#x27;
+  170x missing code block
+  100x expected bare list, got wrapper</code></pre><p>IFStruct 发布博客报告 LFM2.5-350M 为 21.1%</p><p>。我们本地的 llama.cpp/BF16 设置测得 22.6%，与 IFStruct 博客报告的 21.1% 相近。我们将此本地结果作为同一服务栈对比的基线。</p><h2>使用 TRL 对结构化输出进行 GRPO 微调</h2><p>完整、可运行的流水线位于</p><p>随附 notebook</p><p>。本节仅覆盖相关要点。</p><h2>训练数据</h2><p>我们使用</p><p>nvidia/Nemotron-RL-instruction_following-structured_outputs</p><p>，它将每个提示与一个目标 JSON Schema 以及期望的字段数配对。我们使用约 500 个样本进行训练。</p><p>由于 Nemotron 数据分布与 IFStruct 评估不同，我们对提示做了增强以弥合两者之间的两个差距：</p><p>40%</p><p>的样本在末尾追加一条&quot;将输出放入围栏代码块内&quot;的指令，使模型学会</p><p>遵循格式指令</p><p>，而非始终直接输出原始 JSON。</p><p>与之不相交的另外</p><p>20%</p><p>被转换为顶层数组任务（模式被包裹在一个</p><p>array</p><p>中，并指定必需的条目数），以此训练裸列表输出与条目数合规性。</p><h2>模型与 LoRA</h2><p>我们加载</p><p>LiquidAI/LFM2.5-350M</p><p>并为其附加一个 LoRA 适配器。由于 LFM2.5 使用混合注意力/卷积架构，我们针对 LFM 特定的模块名进行指定：</p><pre><code>lora_config = LoraConfig(
     r=,
     lora_alpha=,
     bias=&quot;none&quot;,
@@ -79,98 +79,97 @@ Common errors:
         &quot;w2&quot;,
         &quot;w3&quot;,
     ],
-)</code></pre><p>这会训练约 6M 个参数，大约占模型的 1.66%。</p><h4>奖励函数</h4><p>然后我们定义三个奖励函数，每个都在 [0, 1] 区间内，根据所抽取的 structure（结构）是否正确对每个补全进行打分：</p><p>- <code>json_format_reward</code>：输出是否可解析，并采用所要求的格式？所要求的格式（围栏 vs. 原始）得满分 1.0；可解析但格式错误得 0.2；不可解析得 0.0。<br>- <code>field_count_reward</code>：对象是否具有期望数量的顶层字段？精确匹配得 1.0，分数随偏差线性衰减。<br>- <code>schema_validation_reward</code>：输出是否能通过该行对应的 JSON Schema 校验？它会统计每一条约束违反，并在必需键覆盖完整的前提下才发放部分奖励。</p><p>我们将三者以加权和方式组合，使用 <code>reward_weights=[1.0, 0.5, 2.0]</code>。</p><h4>训练</h4><p>我们训练 100 步，每个提示组采样 8 个生成，配置适配免费版 16 GB GPU：</p><pre><code>from trl import GRPOConfig
+)</code></pre><p>这会训练约 6M 个参数，约为模型总参数的 1.66%。</p><h2>奖励函数</h2><p>接着我们定义三个奖励函数，每个都在</p><p>[0, 1]</p><p>区间上取值，对每个补全根据其抽取出的</p><p>结构</p><p>是否正确进行打分：</p><p>- <code>json_format_reward</code>：输出是否可解析，并且是否为请求的形式？请求形式（围栏代码块 vs. 原始）得满分（</p><p>1.0</p><p>），可解析但形式错误得</p><p>0.2</p><p>，无法解析得</p><p>0.0</p><p>。<br>- <code>field_count_reward</code>：对象是否具有期望数量的顶层字段？精确匹配得</p><p>1.0</p><p>，分数随偏差线性衰减。<br>- <code>schema_validation_reward</code>：输出是否针对该行的 JSON Schema 通过校验？它统计每一条约束违反，并在必要键覆盖基础上给予部分奖励。</p><p>我们将三者以加权和方式组合，权重为 <code>reward_weights=[1.0, 0.5, 2.0]</code>。</p><h2>训练</h2><p>我们针对免费层 16 GB GPU 设计，进行 100 步训练，每个提示组采样 8 个生成：</p><pre><code>from trl import GRPOConfig
 
 training_args = GRPOConfig(
     output_dir=&quot;./outputs/lfm25-350m-nemotron-schema-grpo&quot;,
     learning_rate=5e-5,
     max_steps=,
     warmup_steps=,
-    num_generations=,        # 每个提示组采样的补全数
+    num_generations=,            # 每个提示组采样的补全数
     per_device_train_batch_size=,
-    gradient_accumulation_steps=,   # 每优化器步对应 4 个提示组
+    gradient_accumulation_steps=, # 每个优化器步处理 4 个提示组
     steps_per_generation=,
-    max_completion_length=,         # 为嵌套 JSON 留出空间
+    max_completion_length=,      # 为嵌套 JSON 留出空间
     mask_truncated_completions=False,
-    temperature=1.1,                # 较高的采样温度以保持组内多样性
-    beta=0.01,                      # 相对参考模型的 KL 惩罚
+    temperature=1.1,             # 较高的采样温度让组内样本更具多样性
+    beta=0.01,                   # 相对参考模型的 KL 惩罚
     reward_weights=[1.0, 0.5, 2.0], # json_format, field_count, schema_validation
     logging_steps=,
     save_steps=,
-)</code></pre><p>正如你在 notebook 中所看到的，整个训练过程中，三个奖励分量都在上升；与参考模型的 KL 在 warmup 后从零抬升；被截断补全的比例始终接近零。</p><h4>合并并保存模型</h4><p>最后，我们将 LoRA 适配器合并回基座权重，并保存为单一自包含的检查点（checkpoint），以便转换为 GGUF 用于推理服务：</p><pre><code>MERGED_DIR = f&quot;{training_args.output_dir}-merged&quot;
+)</code></pre><p>正如 notebook 中所示，整个训练过程中，三个奖励分量均稳步上升；相对参考模型的 KL 在预热后从零抬升；截断补全的比例始终接近零。</p><h2>合并并保存模型</h2><p>最后，我们将 LoRA 适配器合并回基础权重，并将其保存为单一自包含的检查点，以便转换为 GGUF 用于服务化：</p><pre><code>MERGED_DIR = f&quot;{training_args.output_dir}-merged&quot;
 merged_model = trainer.model.merge_and_unload()
 merged_model.save_pretrained(MERGED_DIR)
-tokenizer.save_pretrained(MERGED_DIR)</code></pre><h3>GRPO 微调后 LFM2.5-350M 的 IFStruct 评估</h3><p>GRPO 微调完成后，我们重新运行 IFStruct 评估。为此，我们需要将合并后的模型检查点转换为 BF16 GGUF。转换脚本随 llama.cpp 源码一起提供，因此只需克隆一次仓库并安装其 gguf 包：</p><pre><code>git clone --depth 1 https://github.com/ggml-org/llama.cpp
+tokenizer.save_pretrained(MERGED_DIR)</code></pre><h2>GRPO 微调后 LFM2.5-350M 的 IFStruct 评估</h2><p>GRPO 微调完成后，我们重新运行 IFStruct 评估。为此，我们需要将合并后的模型检查点转换为 BF16 GGUF。转换脚本随 llama.cpp 源码一起发布，因此我们只需克隆一次仓库并安装其</p><p><code>gguf</code></p><p>包。</p><pre><code>git clone --depth 1 https://github.com/ggml-org/llama.cpp
 pip install ./llama.cpp/gguf-py
 
 mkdir -p models
-
 python llama.cpp/convert_hf_to_gguf.py \
-  PATH_TO_YOUR_MERGED_MODEL \
-  --outfile ./models/lfm25-350m-grpo-bf16.gguf \
-  --outtype bf16</code></pre><p>然后用如下命令启动合并后的模型服务：</p><pre><code>llama-server \
-  -m ./models/lfm25-350m-grpo-bf16.gguf \
-  --alias lfm25-350m-grpo-structured-output \
-  -c 32768 \
-  -np 4 \
-  -ngl 99 \
-  --host 127.0.0.1 \
-  --port 8081</code></pre><p>接下来，我们使用微调后的模型再次运行完整的 IFStruct 评估：</p><pre><code>uv run ifstruct-eval \
-  --model lfm25-350m-grpo-structured-output \
-  --base-url http://localhost:8081/v1 \
-  --api-key dummy \
-  --dataset data/test.jsonl \
-  --results-file results/lfm25-350m-grpo.json \
-  --n-threads 4 \
-  --max-tokens 2048 \
-  -v</code></pre><pre><code>============================================================
+    PATH_TO_YOUR_MERGED_MODEL \
+    --outfile ./models/lfm25-350m-grpo-bf16.gguf \
+    --outtype bf16</code></pre><p>随后用以下命令服务化合并后的模型：</p><pre><code>llama-server \
+-m ./models/lfm25-350m-grpo-bf16.gguf \
+--alias lfm25-350m-grpo-structured-output \
+-c 32768 \
+-np 4 \
+-ngl 99 \
+--host 127.0.0.1 \
+--port 8081</code></pre><p>然后，我们使用微调后的模型再次运行完整的 IFStruct 评估：</p><pre><code>uv run ifstruct-eval \
+--model lfm25-350m-grpo-structured-output \
+--base-url http://localhost:8081/v1 \
+--api-key dummy \
+--dataset data/test.jsonl \
+--results-file results/lfm25-350m-grpo.json \
+--n-threads 4 \
+--max-tokens 2048 \
+-v</code></pre><pre><code>============================================================
 Model: lfm25-350m-grpo-structured-output
 ============================================================
 Overall: 594/2000 passed (29.7%)
 Average latency: 1518ms
 
 By format:
-JSON: 319/1000 passed (31.9%)
-YAML: 275/1000 passed (27.5%)
+  JSON:  319/1000 passed (31.9%)
+  YAML:  275/1000 passed (27.5%)
 
 By top-level structure:
-Wrapper key 300/1011 passed (29.7%)
-Bare list   294/989 passed (29.7%)
+  Wrapper key   300/1011 passed (29.7%)
+  Bare list     294/989  passed (29.7%)
 
 By entity type:
-test__camera_review                 5/83 passed (6.0%)
-test__clinical_trial                31/104 passed (29.8%)
-test__conference_schedule           11/87 passed (12.6%)
-test__escaping__bug_report_batch    32/89 passed (36.0%)
-test__escaping__config_snippet_audit 24/85 passed (28.2%)
-test__escaping__customer_email_thread 9/73 passed (12.3%)
-test__escaping__dialogue_sample     17/95 passed (17.9%)
-test__escaping__interview_transcript_segment 13/80 passed (16.2%)
-test__escaping__log_parser_examples 33/72 passed (45.8%)
-test__escaping__pr_discussion       26/87 passed (29.9%)
-test__escaping__repro_steps_batch   23/73 passed (31.5%)
-test__escaping__screenplay_scene    34/92 passed (37.0%)
-test__escaping__short_story_chapter 24/84 passed (28.6%)
-test__escaping__support_ticket_batch 36/73 passed (49.3%)
-test__escaping__terminal_session_notes 23/70 passed (32.9%)
-test__event_ticket_booking          62/107 passed (57.9%)
-test__gpu_review                    7/94 passed (7.4%)
-test__invoice                       36/86 passed (41.9%)
-test__job_posting                   33/85 passed (38.8%)
-test__real_estate_listing           32/82 passed (39.0%)
-test__recipe                        7/70 passed (10.0%)
-test__rental_car_booking            37/79 passed (46.8%)
-test__scientific_experiment         14/69 passed (20.3%)
-test__travel_itinerary              25/81 passed (30.9%)
+  test__camera_review                          5/83  passed (6.0%)
+  test__clinical_trial                        31/104 passed (29.8%)
+  test__conference_schedule                   11/87  passed (12.6%)
+  test__escaping__bug_report_batch            32/89  passed (36.0%)
+  test__escaping__config_snippet_audit        24/85  passed (28.2%)
+  test__escaping__customer_email_thread        9/73  passed (12.3%)
+  test__escaping__dialogue_sample             17/95  passed (17.9%)
+  test__escaping__interview_transcript_segment 13/80 passed (16.2%)
+  test__escaping__log_parser_examples         33/72  passed (45.8%)
+  test__escaping__pr_discussion               26/87  passed (29.9%)
+  test__escaping__repro_steps_batch           23/73  passed (31.5%)
+  test__escaping__screenplay_scene            34/92  passed (37.0%)
+  test__escaping__short_story_chapter         24/84  passed (28.6%)
+  test__escaping__support_ticket_batch        36/73  passed (49.3%)
+  test__escaping__terminal_session_notes      23/70  passed (32.9%)
+  test__event_ticket_booking                 62/107 passed (57.9%)
+  test__gpu_review                             7/94  passed (7.4%)
+  test__invoice                               36/86  passed (41.9%)
+  test__job_posting                           33/85  passed (38.8%)
+  test__real_estate_listing                   32/82  passed (39.0%)
+  test__recipe                                 7/70  passed (10.0%)
+  test__rental_car_booking                    37/79  passed (46.8%)
+  test__scientific_experiment                14/69  passed (20.3%)
+  test__travel_itinerary                      25/81  passed (30.9%)
 
 Common errors:
-7331x required field missing
-890x wrong item count
-555x type mismatch
-102x expected bare list, got wrapper
-62x extraneous field &#x27;metadata.tone&#x27;
-55x 6 is greater than maximum 5
-49x extraneous field &#x27;speaker_labels&#x27;
-47x extraneous field &#x27;tone&#x27;
-44x &#x27;cups&#x27; not in allowed values [&#x27;mg&#x27;, &#x27;g&#x27;, &#x27;kg&#x27;, &#x27;oz&#x27;, &#x27;lb&#x27;, &#x27;ml&#x27;, &#x27;l&#x27;, &#x27;cl&#x27;, &#x27;dl&#x27;
-44x extraneous field &#x27;notes&#x27;</code></pre><p>在完全相同的推理栈上对比两次运行：</p><p>| IFStruct 组 | 基座 | GRPO 微调 | Δ |<br>|---|---|---|---|<br>| 总计 | 22.6% | 29.7% | +7.1 |<br>| JSON | 18.0% | 31.9% | +13.9 |<br>| YAML | 27.2% | 27.5 |</p></section><p class="notice">原文较长，本页仅节选翻译，完整内容请阅读原文。</p><aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="https://huggingface.co/blog/grpo-with-trl-ifstruct" rel="noopener noreferrer">Fine-tuning a 350M Model for Better Structured Outputs in 100 GRPO Steps ↗</a></p><p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="/daily/2026-09-07/02-980824ac/">返回本期 →</a></p></aside></main><footer><span>AI 日报 · 保持好奇，动手验证</span><a href="/daily/atom.xml">RSS 订阅 ↗</a></footer></div></body></html>
+  7331x required field missing
+  890x wrong item count
+  555x type mismatch
+  102x expected bare list, got wrapper
+  62x extraneous field &#x27;metadata.tone&#x27;
+  55x 6 is greater than maximum 5
+  49x extraneous field &#x27;speaker_labels&#x27;
+  47x extraneous field &#x27;tone&#x27;
+  44x &#x27;cups&#x27; not in allowed values [&#x27;mg&#x27;, &#x27;g&#x27;, &#x27;kg&#x27;, &#x27;oz&#x27;, &#x27;lb&#x27;, &#x27;ml&#x27;, &#x27;l&#x27;, &#x27;cl&#x27;, &#x27;dl&#x27;
+  44x extraneous field &#x27;notes&#x27;</code></pre><p>在同一服务栈上比较两次运行：</p><p>| IFStruct 分组 | 基础 | GRPO 微调后 | Δ |<br>| --- | --- | --- | --- |<br>| Overall | 22.6% | 29.7% | +7.1 |<br>| JSON | 18.0% | 31.9% | +13.9 |<br>| YAML | 27.2% | 27.5% | +0.3 |<br>| Wrapper key | 28.5% | 29.7% | +1.2 |<br>| Bare list | 16.6% | 29.7% | +13.1 |</p><p>收益恰好落在训练所针对之处：JSON 通过率上升了近 14 个百分点（18.0% → 31.9%），而 YAML 基本保持不变。尽管这仍低于</p><p>Qwen3.5-2B 的 33.15% 分数</p><p>，但它表明即便是轻量的任务特定微调，也能让一个小模型逼近更大的模型。</p><h2>结论</h2><p>仅用约 500 个样本、100 步的简短 GRPO 训练，就能将一个 3.5 亿参数的小模型在 IFStruct 上的表现从 22.6% 提升到 29.7%。其要点在于：一种廉价、任务特定的奖励信号，能够显著提升小模型在结构化输出可靠性上的表现。</p></section><aside class="about"><h2>编辑导读</h2><p>文章指出结构化输出常被并入推理或抽取评测，缺少独立衡量。作者以 schema 合规为焦点，演示在小模型上做任务级微调也能逼近更大模型表现。流程分两段：微调在 GPU 上跑，配套 Notebook 提供完整复现路径，但说明其管线并非训练 IFStruct 博客模型的同一套。</p><p><strong>为什么读</strong>提供了一个低成本验证“小模型 + GRPO”能否在格式遵从上追赶大模型的范式。</p><p><strong>带着问题读</strong>100 步 GRPO 之后在哪些 schema 类型上仍显著落后于大模型？</p></aside><aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="https://huggingface.co/blog/grpo-with-trl-ifstruct" rel="noopener noreferrer">Fine-tuning a 350M Model for Better Structured Outputs in 100 GRPO Steps ↗</a></p><p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="/daily/2026-09-07/02-980824ac/">返回本期 →</a></p></aside></main><footer><span>AI 日报 · 保持好奇，动手验证</span><a href="/daily/atom.xml">RSS 订阅 ↗</a></footer></div></body></html>

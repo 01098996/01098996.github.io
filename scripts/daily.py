@@ -21,7 +21,8 @@ TOPICS = {
     '进阶工作流': [r'workflow', r'prompt.engineer', r'structured.output', r'fine.tun'],
 }
 FULLTEXT_CAP = 20000   # characters sent to the translation provider at most
-TRANSLATE_CAP = 12000  # characters translated per article; longer texts are excerpted
+TRANSLATE_CAP = 20000  # characters translated per article; longer texts are excerpted
+BROWSER_UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
 THINK_RE = re.compile(r'<think>.*?(</think>|$)', re.S)  # some models inline reasoning in content
 
 def provider():
@@ -117,13 +118,15 @@ def enrich(a):
     text=''
     try:
         from bs4 import BeautifulSoup
-        for attempt in (1,2):
+        for attempt in (1,2,3):
             try:
-                req=urllib.request.Request(a['url'],headers={'User-Agent':'Charles-AI-Daily/1.0'})
+                # Honest UA first; some sites (e.g. openai.com) 403 unknown UAs, retry as a plain browser.
+                ua=BROWSER_UA if attempt>=2 else 'Charles-AI-Daily/1.0'
+                req=urllib.request.Request(a['url'],headers={'User-Agent':ua})
                 with urllib.request.urlopen(req,timeout=20) as r: data=r.read(1_500_000)
                 break
             except Exception:
-                if attempt==2: raise
+                if attempt==3: raise
                 time.sleep(2)
         soup=BeautifulSoup(data,'html.parser')
         best=''
@@ -171,12 +174,21 @@ def translate_one(a,cfg):
                 '保留原文的段落、标题与代码块结构，标题用 # 语法，代码块用三反引号包裹。'
                 '输入开头或结尾可能混有网站导航、作者信息、点赞收藏等页面杂质：这些不要翻译，直接跳过，从正文第一段开始。'
                 '只输出译文，不要任何解释、前言或总结。')
-        out=model_text(cfg,{'temperature':0.1,'max_tokens':20000,'messages':[
-            {'role':'system','content':prompt},
-            {'role':'user','content':'文章标题：'+a['title']+'\n\n'+text[:TRANSLATE_CAP]}]},240)
+        out=''
+        for attempt in (1,2):
+            try:
+                out=model_text(cfg,{'temperature':0.1,'max_tokens':20000,'messages':[
+                    {'role':'system','content':prompt},
+                    {'role':'user','content':'文章标题：'+a['title']+'\n\n'+text[:TRANSLATE_CAP]}]},240)
+                if len(out)>=80: break
+                if attempt==1: time.sleep(3)
+            except Exception:
+                if attempt==2: raise
+                time.sleep(3)
         if len(out)<80: raise ValueError('Translation suspiciously short')
         a['translation']=out
         a['translation_kind']='partial' if len(text)>TRANSLATE_CAP else 'full'
+        a['translation_source']=a.get('evidence_kind','article')
     except Exception as e:
         print('Translation failed for one article:',type(e).__name__,file=sys.stderr)
         a['translation_kind']='failed'
@@ -221,21 +233,27 @@ def render_translation(text):
 def article_page(issue,a,n):
     date=issue['date']; local='/daily/'+date+'/'+art_slug(a['url'],n)+'/'; title=a.get('title_zh') or a['title']
     head=f'''<section class="intro"><p class="eyebrow">AI DAILY / {esc(date)}</p><h1>{esc(title)}</h1><p class="original">{esc(a['title'])}</p><div class="meta"><span class="tag">{esc(a['category'])}</span><span>{esc(a['source'])} · {esc(a['published'][:10])}</span></div></section>'''
-    notes=''
-    if a.get('summary'): notes+=f'<p class="summary">{esc(a["summary"])}</p>'
-    if a.get('why'): notes+=f'<p class="note"><strong>为什么读</strong>{esc(a["why"])}</p>'
-    if a.get('question'): notes+=f'<p class="note"><strong>带着问题读</strong>{esc(a["question"])}</p>'
-    kind=a.get('translation_kind')
+    kind=a.get('translation_kind'); source=a.get('translation_source','article')
     if a.get('translation'):
-        label={'full':'全文中文翻译 · AI 生成，仅供学习交流','partial':'节选中文翻译（原文较长）· AI 生成','original':'原文正文','failed':'翻译生成失败'}.get(kind,'中文译文')
+        if kind=='original': label='原文正文'
+        elif kind=='partial': label='节选中文翻译（原文较长）· AI 生成'
+        elif source=='feed': label='中文翻译 · AI 生成，仅供学习交流'
+        else: label='全文中文翻译 · AI 生成，仅供学习交流'
         body=f'<p class="muted">{label}</p><section class="translation">'+render_translation(a['translation'])+'</section>'
-        if kind=='partial': body+='<p class="notice">原文较长，本页仅节选翻译，完整内容请阅读原文。</p>'
+        if kind=='partial': body+='<p class="notice">原文较长，本页仅节选翻译，完整内容请阅读文末原文链接。</p>'
     elif a.get('excerpt'):
         body='<p class="notice">中文翻译暂未生成，以下为原文节选。</p><section class="translation" lang="en">'+render_translation(a['excerpt'])+'</section>'
     else:
         body='<p class="notice">正文暂未获取，请直接阅读原文。</p>'
+    notes=''
+    if a.get('summary') or a.get('why') or a.get('question'):
+        notes='<aside class="about"><h2>编辑导读</h2>'
+        if a.get('summary'): notes+=f'<p>{esc(a["summary"])}</p>'
+        if a.get('why'): notes+=f'<p><strong>为什么读</strong>{esc(a["why"])}</p>'
+        if a.get('question'): notes+=f'<p><strong>带着问题读</strong>{esc(a["question"])}</p>'
+        notes+='</aside>'
     tail=f'''<aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="{esc(a['url'])}" rel="noopener noreferrer">{esc(a['title'])} ↗</a></p><p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="{local}">返回本期 →</a></p></aside>'''
-    return shell(title+' · '+date+' AI 日报',head+notes+body+tail,description=a.get('summary') or a['title'])
+    return shell(title+' · '+date+' AI 日报',head+body+notes+tail,description=a.get('summary') or a['title'])
 
 def cards(issue):
     out=[]
@@ -255,7 +273,7 @@ def cards(issue):
         extras=''
         if a.get('why'): extras+=f'<p class="note"><strong>为什么读</strong>{esc(a["why"])}</p>'
         if a.get('question'): extras+=f'<p class="note"><strong>带着问题读</strong>{esc(a["question"])}</p>'
-        label='全文译文已落盘' if translated else '中文导读' if summarized else '来源片段节选'
+        label='全文译文已落盘' if translated and a.get('translation_source','article')=='article' else '摘要译文已落盘' if translated else '中文导读' if summarized else '来源片段节选'
         out.append(f'''<article class="article"><div class="number">{n:02d}</div><div class="article-body"><div class="meta"><span class="tag">{esc(a['category'])}</span><span>{esc(a['source'])} · {esc(a['published'][:10])}</span></div><h2><a href="{local}">{esc(a.get('title_zh',a['title']))}</a></h2>{f'<p class="original">{esc(a["title"])}</p>' if a.get('title_zh') else ''}{body}{extras}<div class="article-foot"><small>{label}</small><a class="read" href="{local}">阅读译文 →</a></div></div></article>''')
     return ''.join(out)
 
