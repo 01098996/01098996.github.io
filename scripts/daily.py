@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Fetch trusted RSS/Atom, rank unseen articles, translate full texts, and publish static daily pages."""
-import argparse, concurrent.futures, datetime as dt, email.utils, hashlib, html, json, os, re, sys, time
+import argparse, concurrent.futures, datetime as dt, email.utils, hashlib, html, io, json, os, re, sys, time
 import urllib.parse, urllib.request, xml.etree.ElementTree as ET
 from collections import Counter
 from html.parser import HTMLParser
@@ -189,6 +189,29 @@ def sniff_ext(data,ctype):
     if ctype.startswith('image/'): return 'jpg'
     return None
 
+def compress_image(path):
+    """Re-encode in place (JPEG q0.95 / WEBP q90 / PNG optimize, max side 2000px). Keep only if smaller."""
+    try:
+        from PIL import Image
+    except ImportError:
+        return None
+    try:
+        before=path.stat().st_size
+        img=Image.open(path); img.load()
+        fmt=(img.format or '').upper()
+        if fmt not in ('JPEG','WEBP','PNG'): return None
+        if max(img.size)>2000: img.thumbnail((2000,2000),Image.LANCZOS)
+        buf=io.BytesIO()
+        if fmt=='JPEG': img=img.convert('RGB'); img.save(buf,'JPEG',quality=0.95,optimize=True,progressive=True)
+        elif fmt=='WEBP': img.save(buf,'WEBP',quality=90,method=6)
+        else: img.save(buf,'PNG',optimize=True)
+        if buf.tell()>=before: return None
+        path.write_bytes(buf.getvalue())
+        return (before,buf.tell())
+    except Exception as e:
+        print('Image compress failed:',path.name,type(e).__name__,file=sys.stderr)
+        return None
+
 def download_images(a,date,n):
     urls=a.pop('_image_urls',None) or []
     if not urls: return
@@ -211,7 +234,10 @@ def download_images(a,date,n):
                     if attempt==2: raise
                     time.sleep(2)
             folder.mkdir(parents=True,exist_ok=True)
-            (folder/(str(i)+'.'+ext)).write_bytes(data)
+            target=folder/(str(i)+'.'+ext)
+            target.write_bytes(data)
+            compressed=compress_image(target)
+            if compressed: print('Image compressed:',target.name,compressed[0],'->',compressed[1],file=sys.stderr)
             files.append('img/'+str(i)+'.'+ext)
         except Exception as e:
             print('Image download failed:',url[:70],type(e).__name__,file=sys.stderr)
@@ -382,7 +408,7 @@ def render_translation(text,images=None):
             parts.append('<figure><img src="'+esc(img)+'" loading="lazy" alt="原文配图"></figure>')
     return ''.join(parts)
 
-def article_page(issue,a,n):
+def article_page(issue,a,n,prev=None,next=None):
     date=issue['date']; local='/daily/'+date+'/'+art_slug(a['url'],n)+'/'; title=a.get('title_zh') or a['title']
     head=f'''<section class="intro"><p class="eyebrow">AI DAILY / {esc(date)}</p><h1>{esc(title)}</h1><p class="original">{esc(a['title'])}</p><div class="meta"><span class="tag">{esc(a['category'])}</span><span>{esc(a['source'])} · {esc(a['published'][:10])}</span></div></section>'''
     kind=a.get('translation_kind'); source=a.get('translation_source','article')
@@ -405,7 +431,11 @@ def article_page(issue,a,n):
         if a.get('question'): notes+=f'<p><strong>带着问题读</strong>{esc(a["question"])}</p>'
         notes+='</aside>'
     tail=f'''<aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="{esc(a['url'])}" rel="noopener noreferrer">{esc(a['title'])} ↗</a></p>{f'<p>Discussion：<a href="{esc(a["discussion"])}" rel="noopener noreferrer">Hacker News 讨论区 ↗</a></p>' if a.get('discussion') else ''}<p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="{local}">返回本期 →</a></p></aside>'''
-    return shell(title+' · '+date+' AI 日报',head+body+notes+tail,description=a.get('summary') or a['title'])
+    nav='<nav class="postnav" aria-label="上下篇">'
+    nav+=f'<a class="prev" href="{esc(prev["url"])}"><span class="dir">← 上一篇</span>{esc(prev["title"])}</a>' if prev else '<span></span>'
+    nav+=f'<a class="next" href="{esc(next["url"])}"><span class="dir">下一篇 →</span>{esc(next["title"])}</a>' if next else '<span></span>'
+    nav+='</nav>'
+    return shell(title+' · '+date+' AI 日报',head+body+notes+tail+nav,description=a.get('summary') or a['title'])
 
 def cards(issue):
     out=[]
@@ -438,12 +468,19 @@ def issue_body(issue,latest=False):
 def render():
     daily=ROOT/'daily'; issues=[json.loads(p.read_text()) for p in sorted((daily/'data').glob('????-??-??.json'),reverse=True)]
     if not issues: return
-    for issue in issues:
-        folder=daily/issue['date']; folder.mkdir(exist_ok=True)
-        (folder/'index.html').write_text(shell(issue['date']+' AI 日报',issue_body(issue)))
-        for n,a in enumerate(issue['articles'],1):
-            adir=folder/art_slug(a['url'],n); adir.mkdir(exist_ok=True)
-            (adir/'index.html').write_text(article_page(issue,a,n))
+    seq=[]
+    for issue in reversed(issues):
+        for n,a in enumerate(issue['articles'],1): seq.append((issue['date'],n,a))
+    for idx,(date,n,a) in enumerate(seq):
+        prev=None; nxt=None
+        if idx>0:
+            pd,pn,pa=seq[idx-1]; prev={'url':'/daily/'+pd+'/'+art_slug(pa['url'],pn)+'/','title':pa.get('title_zh') or pa['title']}
+        if idx<len(seq)-1:
+            nd,nn,na=seq[idx+1]; nxt={'url':'/daily/'+nd+'/'+art_slug(na['url'],nn)+'/','title':na.get('title_zh') or na['title']}
+        folder=daily/date; folder.mkdir(exist_ok=True)
+        (folder/'index.html').write_text(shell(date+' AI 日报',issue_body(next(i for i in issues if i['date']==date))))
+        adir=folder/art_slug(a['url'],n); adir.mkdir(exist_ok=True)
+        (adir/'index.html').write_text(article_page(next(i for i in issues if i['date']==date),a,n,prev,nxt))
     (daily/'index.html').write_text(shell('AI 日报',issue_body(issues[0],True)))
     links=''.join(f'<li><a href="/daily/{i["date"]}/"><time>{i["date"]}</time><span>{len(i["articles"])} 篇精选</span><b>→</b></a></li>' for i in issues)
     (daily/'archive.html').write_text(shell('日报归档',f'<section class="intro"><p class="eyebrow">AI DAILY / ARCHIVE</p><h1>往期日报</h1><p class="lede">值得回看的实践与方法</p></section><ul class="archive">{links}</ul>'))
