@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 TZ = dt.timezone(dt.timedelta(hours=8))
-MAX_ARTICLES=8
+MAX_ARTICLES=10
 SOURCES = [
     ('Simon Willison', 'https://simonwillison.net/atom/everything/'),
     ('Hugging Face', 'https://huggingface.co/blog/feed.xml'),
@@ -20,6 +20,10 @@ SOURCES = [
     ('Lilian Weng', 'https://lilianweng.github.io/index.xml'),
     ('Weaviate', 'https://weaviate.io/blog/rss.xml'),
     ('Google DeepMind', 'https://deepmind.google/blog/rss.xml'),
+    ('Sebastian Raschka', 'https://sebastianraschka.com/rss_feed.xml'),
+    ('Julia Evans', 'https://jvns.ca/atom.xml'),
+    ('Armin Ronacher', 'https://lucumr.pocoo.org/feed.atom'),
+    ('Latent Space', 'https://www.latent.space/feed'),
 ]
 TOPICS = {
     'Agent 开发': [r'\bagents?\b', r'agentic', r'multi.agent', r'\bmcp\b', r'tool.call', r'orchestrat', r'langgraph'],
@@ -195,7 +199,9 @@ def sniff_ext(data,ctype):
     if data[:4]==b'GIF8': return 'gif'
     if data[:4]==b'RIFF' and data[8:12]==b'WEBP': return 'webp'
     if ctype in IMG_EXT: return IMG_EXT[ctype]
-    if ctype.startswith('image/'): return 'jpg'
+    if ctype.startswith('image/'):
+        sub=ctype.split('/')[1].split('+')[0].lower()
+        return sub if sub in IMG_EXT.values() else None
     return None
 
 def compress_image(path):

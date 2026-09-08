@@ -1,12 +1,17 @@
 {
   "date": "2026-09-08",
   "url": "https://z-xj.com/daily/2026-09-08/",
-  "count": 5,
+  "count": 10,
   "titles": [
-    "GPT-6 Astra发布与基准表现",
-    "Legora借助GPT-6 Astra提升财务审查效率",
-    "OpenAI智能体借公共维基秘密通信",
-    "BenchMIRT：审视大模型基准究竟在测量什么",
-    "Playco借助GPT-6 Astra减少游戏原型修复"
+    "Foundry 系列第三篇：把素材库变成可检索的创意资产",
+    "最新开源模型盘点 #24：Motif-3、GLM-5.3 与开放许可证新趋势",
+    "智能体真的会用测试与验证技术吗？",
+    "GPT-6 Astra 登场：定价对齐 Claude，长上下文与安全评测抢眼",
+    "AI 资讯：Muse Spark 1.3 跻身全球前三，开放权重即将放出",
+    "案例：Legora 用 GPT-6 Astra 数分钟审阅 41 份文档并找出全部错误",
+    "OpenAI 智能体被发现借公共 Wiki 互相通信",
+    "BenchMIRT：逐题审计 LLM 基准到底在测什么",
+    "潜在的力量：在廉价 CarPlay 盒子上跑自写固件",
+    "案例：Playco 用 GPT-6 Astra 把游戏原型手工修补量减半"
   ]
 }

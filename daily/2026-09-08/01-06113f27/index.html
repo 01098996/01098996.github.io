@@ -1,0 +1,105 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>Foundry 系列第三篇：把素材库变成可检索的创意资产 · 2026-09-08 AI 日报 · 面向Google编程</title><meta name="description" content="文章介绍 Foundry 工具如何通过只读扫描、生成描述与标签、再同步到 Weaviate 向量库，把杂乱无章的本地素材目录转成可搜索的创意库。过程不移动或改名原文件，结果仍指向原始资源，并支持关键词、语义与混合检索。"><meta property="og:title" content="Foundry 系列第三篇：把素材库变成可检索的创意资产 · 2026-09-08 AI 日报"><meta property="og:description" content="文章介绍 Foundry 工具如何通过只读扫描、生成描述与标签、再同步到 Weaviate 向量库，把杂乱无章的本地素材目录转成可搜索的创意库。过程不移动或改名原文件，结果仍指向原始资源，并支持关键词、语义与混合检索。"><meta property="og:type" content="article"><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/daily/style.css"><link rel="alternate" type="application/atom+xml" title="AI 日报" href="/daily/atom.xml"></head><body><a class="skip" href="#main">跳到正文</a><div class="page wide"><header><a class="brand" href="/">面向Google编程<span>CHARLES ZHANG</span></a><nav aria-label="主导航"><a href="/">博客</a><a class="active" href="/daily/">AI 日报</a><a href="/daily/archive.html">往期</a></nav></header><div class="layout"><main id="main"><section class="intro"><p class="eyebrow">AI DAILY / 2026-09-08</p><h1>Foundry 系列第三篇：把素材库变成可检索的创意资产</h1><p class="original">Building Foundry Part 3: From archive to creative search</p><div class="meta"><span class="tag">上下文与记忆</span><span>Weaviate · 2026-09-08</span></div></section><p class="muted">全文中文翻译 · AI 生成，仅供学习交流</p><section class="translation"><h2>构建 Foundry 第三部分：从归档到创意检索</h2><p>第一部分提出了问题。第二部分说明了随着归档（archive）不断增长，常见的工作组织方式为何会变得不再可靠。现在我们来构建解决方案。</p><p>Foundry 把已有的归档转换成一个可检索的创意库。它会扫描文件，记录扫描结果，为每个资产做好准备以便检索，并把最终结果同步到 Weaviate。文件本身不会被移动或重命名。每一条检索结果仍然可以追溯到原始来源。</p><pre><code>creative archive
+↓
+read-only scanner
+↓
+manifest and descriptions
+↓
+Weaviate collection
+↓
+keyword, semantic, or hybrid search
+↓
+source asset</code></pre><h3>从我们已有的归档开始</h3><p>我们的测试归档包含来自五个虚构项目的 23 个资产。其中有概念美术、设计导出文件、制作笔记、音频、视频和参考图。</p><p>文件名被故意弄得不一致：</p><pre><code>final_FINAL_v7.svg
+BROLL_NEW2.svg
+scene_14_USE_THIS.svg
+logo_options_FINAL3.svg
+bridge_texture.svg</code></pre><p>这种混乱是有意为之。Foundry 应该能直接用在团队现有的归档上，而不是那种永远抽不出时间去搭建的完美归档。</p><h3>第一步：扫描，不改动源文件</h3><p>Foundry 从一次只读扫描开始。它会遍历所选文件夹，记录每个受支持文件的信息。</p><pre><code>npm install
+npm run demo</code></pre><p>扫描器会捕获源路径、项目、文件类型、大小、修改日期以及内容哈希（content hash）。结果会写入：</p><pre><code>output/manifest.json</code></pre><figure><img src="img/1.jpg" loading="lazy" alt="原文配图"></figure><p>内容哈希为每个资产赋予一个稳定的标识。即使文件名保持不变，它也能让 Foundry 检测出变化，并在没有变化时跳过处理。</p><p>浏览器把这份清单变成可视化的形式。图片可以预览，视频可以播放，文档即使没有缩略图也依然可见。</p><p>这第一个检查点很重要：检索找不到扫描器遗漏的东西。</p><h3>第二步：为检索准备记录</h3><p>清单告诉我们哪些文件存在。下一步是描述这些文件里到底包含什么。</p><p>准备阶段会补充描述、标签（tags）、抽取出的文本、关系角色（relationship role）以及源 URI。一条准备好的图片记录看起来像这样：</p><pre><code>{
+
+&quot;fileName&quot;
+
+:
+
+&quot;rain-floor.jpg&quot;
+
+,
+
+&quot;relativePath&quot;
+
+:
+
+&quot;RAIN TRAILER/References/rain-floor.jpg&quot;
+
+,
+
+&quot;project&quot;
+
+:
+
+&quot;RAIN TRAILER&quot;
+
+,
+
+&quot;assetType&quot;
+
+:
+
+&quot;image&quot;
+
+,
+
+&quot;relationshipRole&quot;
+
+:
+
+&quot;reference&quot;
+
+,
+
+&quot;description&quot;
+
+:
+
+&quot;Heavy rain striking a reflective floor with bright droplets and bokeh.&quot;
+
+,
+
+&quot;tags&quot;
+
+:
+
+[
+
+&quot;rain&quot;
+
+,
+
+&quot;wet floor&quot;
+
+,
+
+&quot;reflection&quot;
+
+,
+
+&quot;atmosphere&quot;
+
+]
+
+,
+
+&quot;sourceUri&quot;
+
+:
+
+&quot;foundry://RAIN TRAILER/References/rain-floor.jpg&quot;
+
+}</code></pre><p><code>foundry://</code> 这个 URI 指向资产本身，但并不把 Weaviate 当成文件存储来用。生产版本可以使用 DAM 链接、挂载路径、S3 链接或应用路由。</p><p>目前，演示版本使用一份固定的精简增强清单（enrichment manifest），让每次运行都产生相同的结果。后续版本可以从图片描述、OCR、字幕转录和视频关键帧中自动生成这些上下文信息。</p><h3>第三步：同步到 Weaviate</h3><p>在同步之前，Foundry 会准确展示将要被索引的内容。用户可以在任何数据进入 Weaviate 之前，审阅描述、元数据和源路径。</p><figure><img src="img/2.jpg" loading="lazy" alt="原文配图"></figure><p>随后，应用会创建或更新 <code>Foundry</code> 集合（collection）。Weaviate 会生成嵌入向量（embeddings），并把它们与元数据一起存储下来。每个对象都保留它的源路径和权利状态。</p><figure><img src="img/3.jpg" loading="lazy" alt="原文配图"></figure><p>再次运行这一流程并不会产生重复。确定性的标识符确保每个资产都更新到同一个对象上。</p><p>同样的流程也可以通过命令行执行：</p><pre><code>npm run scan
+npm run ingest:prepare
+npm run ingest:cloud</code></pre><p>云端凭据保存在本地的 <code>.env</code> 文件中：</p><pre><code>WEAVIATE_URL=https://your-cluster.weaviate.network
+WEAVIATE_API_KEY=replace-with-a-read-write-api-key
+WEAVIATE_COLLECTION=Foundry</code></pre><h3>第四步：检索归档</h3><p>同步完成后，归档就变成了一个实时的检索工作空间。</p><p>第一个测试查询很容易描述，却很难对应到某个文件名：</p><pre><code>white rabbit in a grassy landscape</code></pre><figure><img src="img/4.jpg" loading="lazy" alt="原文配图"></figure><p>结果中包括一张兔子参考图、Big Buck Bunny 的预告片（译注：Big Buck Bunny 是 Blender 基金会发布的开源短片，主角正是一只大兔子），以及相关的风景素材。用户无需记住文件名或文件夹，只要描述自己记得的内容，Foundry 就会把相关的作品带回眼前。</p><p>Foundry 提供三种检索模式：</p><pre><code>keyword  → exact words and names
+semantic → meaning represented by embeddings
+hybrid   → keyword and semantic signals combined</code></pre><p>关键词检索（keyword search）适用于记得文件名或制作术语的场景。语义检索（semantic search）适用于记得内容的场景。混合检索（hybrid search）则把两种记忆合并到同一组结果中。</p><p>过滤器让这些结果更实用。用户可以按项目、文件类型或关系角色来缩小归档范围。同样的模式还可以支持审批状态、权利、过期日期和交付格式等条件。</p><h3>这个原型证明了什么</h3><p>原型现在已经走完了从源文件夹到可用结果的完整流程：</p><p>- 它在不改动源文件的前提下扫描嵌套归档。<br>- 它通过内容哈希创建稳定记录，并检测变化。<br>- 它在导入前就丰富记录内容，而不是只依赖文件名。<br>- 它在 Weaviate 中存储可检索的记录以及被管理的嵌入向量。<br>- 它在同一个归档上对比了关键词、语义和混合检索。<br>- 它返回的图片和视频都带有指回源文件的链接。</p><p>Foundry 仍然只是一个原型。自动增强、增量重新扫描、基于权利的过滤以及相关性反馈，将是这个项目的下一次更新。</p><h3>运行 Foundry</h3><p>该项目已在 GitHub 上开源。</p><pre><code>cp .env.example .env
+# Add your Weaviate Cloud URL and API key
+npm install
+npm run demo</code></pre><p>请使用 Node.js 22 或更高版本来进行云端同步和实时检索。本地清单无需云端凭据即可运行。</p><p>&gt; <strong>提示</strong><br>&gt;<br>&gt; 探索 Foundry 仓库并按照 README 扫描示例归档，或接入你自己的 Weaviate Cloud 集合。</p><h3>从隐藏的文件到有用的历史</h3><p>Foundry 起源于一种常见的创作烦恼：记得作品，却不记得它在哪里。</p><p>它并不取代背后的文件夹、工具或习惯。它只是给归档提供了一种新的展现方式。一个原本只能依靠正确的文件名、文件夹或同事才能找到的资产，现在可以通过它背后的那个想法被找到。</p></section><aside class="about"><h2>编辑导读</h2><p>文章介绍 Foundry 工具如何通过只读扫描、生成描述与标签、再同步到 Weaviate 向量库，把杂乱无章的本地素材目录转成可搜索的创意库。过程不移动或改名原文件，结果仍指向原始资源，并支持关键词、语义与混合检索。</p><p><strong>为什么读</strong>对想给既有混乱素材库加上语义检索能力的团队，提供了一个不破坏现有文件结构的可落地流程示例。</p><p><strong>带着问题读</strong>用只读扫描+外部向量库的方式是否能真正满足大型素材库的实时检索与权限隔离需求？</p></aside><aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="https://weaviate.io/blog/building-foundry-creative-search" rel="noopener noreferrer">Building Foundry Part 3: From archive to creative search ↗</a></p><p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="/daily/2026-09-08/01-06113f27/">返回本期 →</a></p></aside><nav class="postnav" aria-label="上下篇"><a class="prev" href="/daily/2026-09-07/05-4be3ed23/"><span class="dir">← 上一篇</span>AI 原生公司如何把工作流变成运营能力</a><a class="next" href="/daily/2026-09-08/02-ba0502e1/"><span class="dir">下一篇 →</span>最新开源模型盘点 #24：Motif-3、GLM-5.3 与开放许可证新趋势</a></nav></main><aside class="sidebar"><section class="sideblock"><h2>相关阅读</h2><ul><li><a href="/daily/2026-09-08/06-d54e7a3a/">案例：Legora 用 GPT-6 Astra 数分钟审阅 41 份文档并找出全部错误</a><span class="meta">2026-09-08 · OpenAI</span></li><li><a href="/daily/2026-09-08/04-e52d34cd/">GPT-6 Astra 登场：定价对齐 Claude，长上下文与安全评测抢眼</a><span class="meta">2026-09-08 · Simon Willison</span></li><li><a href="/daily/2026-09-08/10-9a8f1e3a/">案例：Playco 用 GPT-6 Astra 把游戏原型手工修补量减半</a><span class="meta">2026-09-08 · OpenAI</span></li><li><a href="/daily/2026-09-07/05-4be3ed23/">AI 原生公司如何把工作流变成运营能力</a><span class="meta">2026-09-07 · OpenAI</span></li><li><a href="/daily/2026-09-07/04-5aeae568/">Codex 桌面应用捆绑了 LibreOffice</a><span class="meta">2026-09-07 · Simon Willison</span></li></ul><p class="more"><a href="/daily/archive.html">全部往期 →</a></p></section></aside></div><footer><span>AI 日报 · 保持好奇，动手验证</span><a href="/daily/atom.xml">RSS 订阅 ↗</a></footer></div></body></html>
