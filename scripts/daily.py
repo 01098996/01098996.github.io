@@ -45,6 +45,7 @@ POLISH_PROMPT=(
  '- 杀掉翻译腔：把英语式长句拆成中文的短句，长短交替，一句可以是独立成段的重点；衔接靠聊天的自然语气，不靠书面连接词\n'
  '- 这些词一出现就是 AI 味，必须换掉：说白了、这意味着、意味着什么、本质上、换句话说、不可否认、综上所述、值得注意的是、不难发现、首先…其次…最后、让我们来看看、随着…的发展、在当今…的时代\n'
  '- 标点规则：正文不用冒号（改用逗号或句号自然衔接）、不用破折号——、不用双引号（需要引用就用「」）\n'
+ '- 初稿中形如 [[IMG1]] 的图片占位标记必须原样保留在原位置，不要翻译、移动或删除\n'
  '- markdown 结构保留，标题层级照旧（# 语法），``` 包裹的代码块一字不动\n'
  '- 初稿里已有的（译注：……）要保留并润顺；原文里的梗、文化典故、圈内笑话或人物指代直译会让读者困惑的，在句末用括号补一句简短译注，格式（译注：……），内容只能依据原文和公开常识，不得编造\n'
  '- 数字、版本号、评测数据一个都不能改\n'
@@ -151,6 +152,71 @@ def trim_boilerplate(text):
     if longs: lines=lines[longs[0]:longs[-1]+1]
     return '\n\n'.join(lines)
 
+IMG_SKIP=re.compile(r'logo|avatar|icon|sprite|emoji|badge|gravatar|favicon|pixel|banner',re.I)
+IMG_EXT={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif','image/avif':'avif'}
+FIG_RE=re.compile(r'\[\[IMG(\d+)\]\]')
+def harvest_images(node,base_url,limit=4):
+    """Replace content <img> with [[IMGn]] markers; return the mapped URLs."""
+    from bs4 import NavigableString
+    urls=[]
+    for img in node.find_all('img'):
+        url=img.get('src') or img.get('data-src') or ''
+        if not url and img.get('srcset'):
+            candidates=[c.strip().split(' ')[0] for c in img.get('srcset').split(',') if c.strip()]
+            url=candidates[-1] if candidates else ''
+        alt=img.get('alt') or ''
+        cls=' '.join(img.get('class') or [])
+        keep=False
+        if url and not url.startswith('data:'):
+            if url.startswith('//'): url='https:'+url
+            elif url.startswith('/'):
+                parts=urllib.parse.urlsplit(base_url); url=parts.scheme+'://'+parts.netloc+url
+            if url.startswith(('http://','https://')) and not IMG_SKIP.search(url) and not IMG_SKIP.search(alt+' '+cls) and url not in urls and len(urls)<limit:
+                keep=True
+        if keep:
+            urls.append(url)
+            img.insert_after(NavigableString(' [[IMG'+str(len(urls))+']] '))
+        img.extract()
+    return urls
+
+def sniff_ext(data,ctype):
+    """Identify image format by magic bytes first; some CDNs send octet-stream."""
+    if data[:8]==b'\x89PNG\r\n\x1a\n': return 'png'
+    if data[:3]==b'\xff\xd8\xff': return 'jpg'
+    if data[:4]==b'GIF8': return 'gif'
+    if data[:4]==b'RIFF' and data[8:12]==b'WEBP': return 'webp'
+    if ctype in IMG_EXT: return IMG_EXT[ctype]
+    if ctype.startswith('image/'): return 'jpg'
+    return None
+
+def download_images(a,date,n):
+    urls=a.pop('_image_urls',None) or []
+    if not urls: return
+    folder=ROOT/'daily'/date/art_slug(a['url'],n)/'img'
+    files=[]
+    for i,url in enumerate(urls,1):
+        try:
+            for attempt in (1,2):
+                try:
+                    ua=BROWSER_UA if attempt>=2 else 'Charles-AI-Daily/1.0'
+                    req=urllib.request.Request(url,headers={'User-Agent':ua,'Accept':'image/*'})
+                    with urllib.request.urlopen(req,timeout=25) as r:
+                        ctype=(r.headers.get('Content-Type') or '').split(';')[0].strip().lower()
+                        data=r.read(4_200_000)
+                    if len(data)>4_000_000: raise ValueError('image too large')
+                    ext=sniff_ext(data,ctype)
+                    if not ext: raise ValueError('not an image: '+ctype)
+                    break
+                except Exception:
+                    if attempt==2: raise
+                    time.sleep(2)
+            folder.mkdir(parents=True,exist_ok=True)
+            (folder/(str(i)+'.'+ext)).write_bytes(data)
+            files.append('img/'+str(i)+'.'+ext)
+        except Exception as e:
+            print('Image download failed:',url[:70],type(e).__name__,file=sys.stderr)
+    a['images']=files
+
 def enrich(a):
     # Read only article/main content; never include scripts, forms, or comments.
     text=''
@@ -167,14 +233,19 @@ def enrich(a):
                 if attempt==3: raise
                 time.sleep(2)
         soup=BeautifulSoup(data,'html.parser')
-        best=''
+        best_node=None; best=''
         for sel in ('article .prose','main .prose','.prose','article','main'):
             node=soup.select_one(sel)
             if not node: continue
-            for tag in node.select('script,style,nav,form,footer,aside,img'): tag.decompose()
+            for tag in node.select('script,style,nav,form,footer,aside'): tag.decompose()
             body=trim_boilerplate(node.get_text('\n',strip=True))
-            if len(body)>=1200: best=body; break
-            if len(body)>len(best): best=body
+            if len(body)>=1200: best_node=node; best=body; break
+            if len(body)>len(best): best_node=node; best=body
+        if best_node is not None:
+            urls=harvest_images(best_node,a['url'])
+            body2=trim_boilerplate(best_node.get_text('\n',strip=True))
+            if len(body2)>=len(best)*0.5: best=body2
+            a['_image_urls']=urls
         text=best[:FULLTEXT_CAP]
     except Exception as e:
         print('Full-text extraction failed for',a['url'][:80],':',type(e).__name__,file=sys.stderr)
@@ -219,6 +290,7 @@ def translate_one(a,cfg):
                 '技术术语首次出现时在括号中保留英文；代码、命令、链接、专有名词保持原样不翻译；'
                 '保留原文的段落、标题与代码块结构，标题用 # 语法，代码块用三反引号包裹。'
                 '原文里的梗、文化典故、圈内笑话或人物指代，如果直译会让中文读者困惑，就在该句末尾用括号补一句简短译注，格式为（译注：……），内容只能依据原文和公开常识，不得编造。'
+                '译文中形如 [[IMG1]] 的图片占位标记必须原样保留在对应位置，不要翻译、移动或删除。'
                 '不要输出任何链接，也不使用 [文字](URL) 形式；原文里提到链接的地方用文字自然带过。'
                 '输入开头或结尾可能混有网站导航、作者信息、点赞收藏等页面杂质：这些不要翻译，直接跳过，从正文第一段开始。'
                 '只输出译文，不要任何解释、前言或总结。')
@@ -277,24 +349,38 @@ def inline_md(s):
     s=re.sub(r'\[([^\]]+)\]\([^)]*\)',r'\1',s)
     return s
 
-def render_translation(text):
-    out=[]
-    for i,chunk in enumerate(re.split(r'```',text)):
-        if i%2:
-            lines=chunk.split('\n')
-            if lines and re.fullmatch(r'[\w.+-]*',lines[0].strip()): lines=lines[1:]
-            out.append('<pre><code>'+esc('\n'.join(lines).strip('\n'))+'</code></pre>')
+def render_translation(text,images=None):
+    images=images or []
+    out=[]; used=set(); last=0
+    for m in FIG_RE.finditer(text):
+        if m.start()>last: out.append(('text',text[last:m.start()]))
+        out.append(('img',int(m.group(1)))); last=m.end()
+    if last<len(text): out.append(('text',text[last:]))
+    parts=[]
+    for kind,val in out:
+        if kind=='img':
+            if 1<=val<=len(images):
+                parts.append('<figure><img src="'+esc(images[val-1])+'" loading="lazy" alt="原文配图"></figure>'); used.add(val)
         else:
-            for para in re.split(r'\n\s*\n',chunk):
-                para=para.strip()
-                if not para: continue
-                head=re.match(r'^(#{1,6})\s+(.*)$',para,re.S)
-                if head:
-                    level=min(len(head.group(1))+1,5)
-                    out.append(f'<h{level}>'+inline_md(esc(re.sub(r'\s*\n\s*',' ',head.group(2))))+f'</h{level}>')
+            for i,chunk in enumerate(re.split(r'```',val)):
+                if i%2:
+                    lines=chunk.split('\n')
+                    if lines and re.fullmatch(r'[\w.+-]*',lines[0].strip()): lines=lines[1:]
+                    parts.append('<pre><code>'+esc('\n'.join(lines).strip('\n'))+'</code></pre>')
                 else:
-                    out.append('<p>'+inline_md(esc(para)).replace('\n','<br>')+'</p>')
-    return ''.join(out)
+                    for para in re.split(r'\n\s*\n',chunk):
+                        para=para.strip()
+                        if not para: continue
+                        head=re.match(r'^(#{1,6})\s+(.*)$',para,re.S)
+                        if head:
+                            level=min(len(head.group(1))+1,5)
+                            parts.append(f'<h{level}>'+inline_md(esc(re.sub(r'\s*\n\s*',' ',head.group(2))))+f'</h{level}>')
+                        else:
+                            parts.append('<p>'+inline_md(esc(para)).replace('\n','<br>')+'</p>')
+    for i,img in enumerate(images,1):
+        if i not in used:
+            parts.append('<figure><img src="'+esc(img)+'" loading="lazy" alt="原文配图"></figure>')
+    return ''.join(parts)
 
 def article_page(issue,a,n):
     date=issue['date']; local='/daily/'+date+'/'+art_slug(a['url'],n)+'/'; title=a.get('title_zh') or a['title']
@@ -305,10 +391,10 @@ def article_page(issue,a,n):
         elif kind=='partial': label='节选中文翻译（原文较长）· AI 生成'
         elif source=='feed': label='中文翻译 · AI 生成，仅供学习交流'
         else: label='全文中文翻译 · AI 生成，仅供学习交流'
-        body=f'<p class="muted">{label}</p><section class="translation">'+render_translation(a['translation'])+'</section>'
+        body=f'<p class="muted">{label}</p><section class="translation">'+render_translation(a['translation'],a.get('images'))+'</section>'
         if kind=='partial': body+='<p class="notice">原文较长，本页仅节选翻译，完整内容请阅读文末原文链接。</p>'
     elif a.get('excerpt'):
-        body='<p class="notice">中文翻译暂未生成，以下为原文节选。</p><section class="translation" lang="en">'+render_translation(a['excerpt'])+'</section>'
+        body='<p class="notice">中文翻译暂未生成，以下为原文节选。</p><section class="translation" lang="en">'+render_translation(a['excerpt'],a.get('images'))+'</section>'
     else:
         body='<p class="notice">正文暂未获取，请直接阅读原文。</p>'
     notes=''
@@ -415,7 +501,9 @@ def main():
         text=a.pop('_fulltext','')
         lead=' '.join(text.split())[:900] if text else ' '.join(a.get('excerpt','').split())[:900]
         a['excerpt']=lead
-    issue={'date':str(now.date()),'generated_at':now.isoformat(),'articles':chosen,'errors':errors}
+    date=str(now.date())
+    for n,a in enumerate(chosen,1): download_images(a,date,n)
+    issue={'date':date,'generated_at':now.isoformat(),'articles':chosen,'errors':errors}
     target.write_text(json.dumps(issue,ensure_ascii=False,indent=2)+'\n'); render()
     print('Published',target.name,len(chosen),'articles')
     try: notify(issue)

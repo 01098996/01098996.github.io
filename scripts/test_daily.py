@@ -50,6 +50,16 @@ class DailyTests(unittest.TestCase):
         html=daily.render_translation('可以从[这里](https://example.com/x)下载')
         self.assertNotIn('href',html)
         self.assertIn('这里',html)
+    def test_image_markers(self):
+        html=daily.render_translation('开头段\n\n[[IMG1]]\n\n结尾段',['img/1.jpg','img/2.png'])
+        self.assertIn('<figure><img src="img/1.jpg"',html)
+        self.assertIn('img/2.png',html)
+        self.assertNotIn('IMG1',html)
+        html2=daily.render_translation('没有标记的译文',['img/1.jpg'])
+        self.assertIn('<figure><img src="img/1.jpg"',html2)
+        html3=daily.render_translation('越界标记 [[IMG3]] 结束',['img/1.jpg'])
+        self.assertNotIn('IMG3',html3)
+        self.assertNotIn('img/2.png',html3)
     def test_untangle_hn(self):
         a=daily.untangle_hn(dict(source='Hacker News',url='https://example.com/post',excerpt='Article URL: https://example.com/post Comments URL: https://news.ycombinator.com/item?id=1 Points: 156'))
         self.assertEqual(a['url'],'https://example.com/post')
