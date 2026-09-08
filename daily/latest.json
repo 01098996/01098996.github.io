@@ -3,11 +3,11 @@
   "url": "https://z-xj.com/daily/2026-09-08/",
   "count": 6,
   "titles": [
-    "GPT-6 Astra开发者预览介绍",
-    "GPT-6 Astra发布与基准表现综述",
-    "Legora借助GPT-6 Astra加速文档审阅",
-    "Playco使用GPT-6 Astra减少游戏原型修补",
-    "Gemini推出代理式视频理解功能",
-    "BenchMIRT：在提示级别审计LLM基准"
+    "llm 0.35 发布说明",
+    "面向开发者的 GPT-6 Astra 介绍",
+    "Legora 用 GPT-6 Astra 数分钟审查 41 份文档",
+    "Playco 用 GPT-6 Astra 制作游戏原型，手工修补减半",
+    "Gemini 推出代理式视频理解能力",
+    "BenchMIRT：大模型评测基准究竟在测什么"
   ]
 }
