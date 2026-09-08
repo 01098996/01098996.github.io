@@ -89,7 +89,7 @@ class DailyTests(unittest.TestCase):
         self.assertEqual(a['translation_kind'],'original')
         b=dict(_fulltext='short'); daily.translate_one(b,(None,None,None))
         self.assertEqual(b['translation_kind'],'unavailable')
-        c=dict(_fulltext='word '*5000)
+        c=dict(title='t',_fulltext='word '*5000)
         with patch('urllib.request.urlopen',side_effect=OSError('offline')):
             daily.translate_one(c,('k','https://example.com','m'))
         self.assertEqual(c['translation_kind'],'failed')
