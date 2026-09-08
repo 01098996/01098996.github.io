@@ -60,6 +60,17 @@ class DailyTests(unittest.TestCase):
         html3=daily.render_translation('越界标记 [[IMG3]] 结束',['img/1.jpg'])
         self.assertNotIn('IMG3',html3)
         self.assertNotIn('img/2.png',html3)
+    def test_related_sidebar(self):
+        seq=[('2026-09-0'+str(day),i,dict(title='Agent post '+str(day)+'-'+str(i),url='https://example.com/'+str(day)+str(i),category='Agent 开发',source='S',published='2026-09-0'+str(day),title_zh='智能体文章'+str(day)+str(i))) for day in (6,7) for i in (1,2)]
+        picks=daily.related_for(seq,0)
+        self.assertEqual(len(picks),min(5,len(seq)-1))
+        self.assertTrue(all(p['url'].startswith('/daily/') for p in picks))
+        self.assertTrue(all(p['url']!='/daily/2026-09-06/'+daily.art_slug(seq[0][2]['url'],1)+'/' for p in picks))
+        issue={'date':'2026-09-06','articles':[seq[0][2]]}
+        html=daily.article_page(issue,seq[0][2],1,related=picks)
+        self.assertIn('相关阅读',html)
+        self.assertIn('sideblock',html)
+        self.assertIn('page wide',html)
     def test_untangle_hn(self):
         a=daily.untangle_hn(dict(source='Hacker News',url='https://example.com/post',excerpt='Article URL: https://example.com/post Comments URL: https://news.ycombinator.com/item?id=1 Points: 156'))
         self.assertEqual(a['url'],'https://example.com/post')

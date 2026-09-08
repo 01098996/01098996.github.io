@@ -364,8 +364,10 @@ def translate(articles):
     return True
 
 def esc(s): return html.escape(str(s),quote=True)
-def shell(title,body,description='AI Agent 开发与 AI 进阶实践，每日精选阅读。'):
-    return f'''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>{esc(title)} · 面向Google编程</title><meta name="description" content="{esc(description)}"><meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(description)}"><meta property="og:type" content="article"><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/daily/style.css"><link rel="alternate" type="application/atom+xml" title="AI 日报" href="/daily/atom.xml"></head><body><a class="skip" href="#main">跳到正文</a><div class="page"><header><a class="brand" href="/">面向Google编程<span>CHARLES ZHANG</span></a><nav aria-label="主导航"><a href="/">博客</a><a class="active" href="/daily/">AI 日报</a><a href="/daily/archive.html">往期</a></nav></header><main id="main">{body}</main><footer><span>AI 日报 · 保持好奇，动手验证</span><a href="/daily/atom.xml">RSS 订阅 ↗</a></footer></div></body></html>'''
+def shell(title,body,description='AI Agent 开发与 AI 进阶实践，每日精选阅读。',sidebar=None):
+    layout=f'<div class="layout"><main id="main">{body}</main><aside class="sidebar">{sidebar}</aside></div>' if sidebar else f'<main id="main">{body}</main>'
+    wide=' wide' if sidebar else ''
+    return f'''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>{esc(title)} · 面向Google编程</title><meta name="description" content="{esc(description)}"><meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(description)}"><meta property="og:type" content="article"><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/daily/style.css"><link rel="alternate" type="application/atom+xml" title="AI 日报" href="/daily/atom.xml"></head><body><a class="skip" href="#main">跳到正文</a><div class="page{wide}"><header><a class="brand" href="/">面向Google编程<span>CHARLES ZHANG</span></a><nav aria-label="主导航"><a href="/">博客</a><a class="active" href="/daily/">AI 日报</a><a href="/daily/archive.html">往期</a></nav></header>{layout}<footer><span>AI 日报 · 保持好奇，动手验证</span><a href="/daily/atom.xml">RSS 订阅 ↗</a></footer></div></body></html>'''
 
 def art_slug(url,n): return f'{n:02d}-'+hashlib.md5(url.encode()).hexdigest()[:8]
 
@@ -408,7 +410,28 @@ def render_translation(text,images=None):
             parts.append('<figure><img src="'+esc(img)+'" loading="lazy" alt="原文配图"></figure>')
     return ''.join(parts)
 
-def article_page(issue,a,n,prev=None,next=None):
+def related_for(seq,idx,count=5):
+    """Deterministic related posts: same category + token overlap, prefer newer."""
+    date,n,a=seq[idx]
+    def tokens(s):
+        s=(s or '').lower()
+        return set(re.findall(r'[a-z][a-z0-9.+-]{2,}',s)) | {s[i:i+2] for i in range(len(s)-1) if '\u4e00'<=s[i]<='\u9fff'}
+    my=tokens(a.get('title_zh','')+' '+a['title']+' '+a.get('summary',''))
+    scored=[]
+    for j,(d2,n2,b) in enumerate(seq):
+        if j==idx: continue
+        score=3 if b.get('category')==a.get('category') else 0
+        score+=min(6,len(my&tokens(b.get('title_zh','')+' '+b['title']+' '+b.get('summary',''))))
+        scored.append((score,j))
+    scored.sort(key=lambda x:(-x[0],-x[1]))
+    if scored and scored[0][0]==0: scored.sort(key=lambda x:-x[1])
+    picks=[]
+    for score,j in scored[:count]:
+        d2,n2,b=seq[j]
+        picks.append({'url':'/daily/'+d2+'/'+art_slug(b['url'],n2)+'/','title':b.get('title_zh') or b['title'],'meta':d2+' · '+b['source']})
+    return picks
+
+def article_page(issue,a,n,prev=None,next=None,related=None):
     date=issue['date']; local='/daily/'+date+'/'+art_slug(a['url'],n)+'/'; title=a.get('title_zh') or a['title']
     head=f'''<section class="intro"><p class="eyebrow">AI DAILY / {esc(date)}</p><h1>{esc(title)}</h1><p class="original">{esc(a['title'])}</p><div class="meta"><span class="tag">{esc(a['category'])}</span><span>{esc(a['source'])} · {esc(a['published'][:10])}</span></div></section>'''
     kind=a.get('translation_kind'); source=a.get('translation_source','article')
@@ -431,11 +454,15 @@ def article_page(issue,a,n,prev=None,next=None):
         if a.get('question'): notes+=f'<p><strong>带着问题读</strong>{esc(a["question"])}</p>'
         notes+='</aside>'
     tail=f'''<aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="{esc(a['url'])}" rel="noopener noreferrer">{esc(a['title'])} ↗</a></p>{f'<p>Discussion：<a href="{esc(a["discussion"])}" rel="noopener noreferrer">Hacker News 讨论区 ↗</a></p>' if a.get('discussion') else ''}<p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="{local}">返回本期 →</a></p></aside>'''
-    nav='<nav class="postnav" aria-label="上下篇">'
-    nav+=f'<a class="prev" href="{esc(prev["url"])}"><span class="dir">← 上一篇</span>{esc(prev["title"])}</a>' if prev else '<span></span>'
-    nav+=f'<a class="next" href="{esc(next["url"])}"><span class="dir">下一篇 →</span>{esc(next["title"])}</a>' if next else '<span></span>'
-    nav+='</nav>'
-    return shell(title+' · '+date+' AI 日报',head+body+notes+tail+nav,description=a.get('summary') or a['title'])
+    nav=('<nav class="postnav" aria-label="上下篇">'
+         + (f'<a class="prev" href="{esc(prev["url"])}"><span class="dir">← 上一篇</span>{esc(prev["title"])}</a>' if prev else '<span></span>')
+         + (f'<a class="next" href="{esc(next["url"])}"><span class="dir">下一篇 →</span>{esc(next["title"])}</a>' if next else '<span></span>')
+         + '</nav>')
+    side='<section class="sideblock"><h2>相关阅读</h2><ul>'
+    for item in (related or []):
+        side+=f'<li><a href="{esc(item["url"])}">{esc(item["title"])}</a><span class="meta">{esc(item["meta"])}</span></li>'
+    side+='</ul><p class="more"><a href="/daily/archive.html">全部往期 →</a></p></section>'
+    return shell(title+' · '+date+' AI 日报',head+body+notes+tail+nav,description=a.get('summary') or a['title'],sidebar=side)
 
 def cards(issue):
     out=[]
@@ -480,7 +507,7 @@ def render():
         folder=daily/date; folder.mkdir(exist_ok=True)
         (folder/'index.html').write_text(shell(date+' AI 日报',issue_body(next(i for i in issues if i['date']==date))))
         adir=folder/art_slug(a['url'],n); adir.mkdir(exist_ok=True)
-        (adir/'index.html').write_text(article_page(next(i for i in issues if i['date']==date),a,n,prev,nxt))
+        (adir/'index.html').write_text(article_page(next(i for i in issues if i['date']==date),a,n,prev,nxt,related_for(seq,idx)))
     (daily/'index.html').write_text(shell('AI 日报',issue_body(issues[0],True)))
     links=''.join(f'<li><a href="/daily/{i["date"]}/"><time>{i["date"]}</time><span>{len(i["articles"])} 篇精选</span><b>→</b></a></li>' for i in issues)
     (daily/'archive.html').write_text(shell('日报归档',f'<section class="intro"><p class="eyebrow">AI DAILY / ARCHIVE</p><h1>往期日报</h1><p class="lede">值得回看的实践与方法</p></section><ul class="archive">{links}</ul>'))
