@@ -121,16 +121,25 @@ def untangle_hn(a):
     a['excerpt']=''
     return a
 
+ANNOUNCE_RE=re.compile(r'introducing|announc|launch(es|ed|ing)?|now (generally )?available|is (now )?(out|live|here)[\s.,]|release notes|changelog|generally available|shipped?\b|debuts?|unveils?|open.sourc(e|ed|ing)|comes to|now supports|added support|new (model|version|feature)s?\b|version \d+\.\d+|\bv\d+\.\d+\b',re.I)
+DEEP_RE=re.compile(r'deep.dive|hands-?on|review|tips|tricks|lessons|field notes|postmortem|case study|benchmark|evals?|technique|patterns?|workflow|guide|tutorial|how (i|to|we)|what (i|we) learned|debugg|optimiz|practical| tested |compar(e|ed|ing)|investigat|under the hood|internals|building|implement|pitfall|mistakes?')
 def rank(a,now):
     title=a['title'].lower(); text=(title+' '+a['excerpt'][:2500]).lower()
     age=(now-dateparse(a['published'])).total_seconds()/86400
     if age < -0.05 or age>7: return None
     if re.search(r'funding|raises? \$|acqui[rs]|partnership|hiring|\bjoin us\b',title): return None
+    if ANNOUNCE_RE.search(title): return None
     scores={topic:sum(4 if re.search(p,title) else 1 for p in patterns if re.search(p,text)) for topic,patterns in TOPICS.items()}
     score=max(scores.values())
     if not score: return None
-    score+=sum(2 for p in ['how to','building','lessons','guide','implement','code','practical','using','memory'] if p in title)
+    score+=min(9,sum(3 for m in DEEP_RE.finditer(title)))
+    score+=sum(1 for m in DEEP_RE.finditer(text))
+    if len(a['excerpt'])<600: score-=3
     return dict(a,category=max(scores,key=scores.get),score=round(score+max(0,3-age/2),2))
+
+def depth_ok(a):
+    """Require substantial source text: announcements and link-post stubs die here."""
+    return len(a.get('_fulltext') or '')>=2000
 
 def select(articles,seen,now):
     ranked=[r for a in articles if a['url'] not in seen and (r:=rank(a,now))]
@@ -140,7 +149,7 @@ def select(articles,seen,now):
         title=re.sub(r'\W','',a['title'].lower())
         if a['url'] in urls or title in titles or sources[a['source']]>=2: continue
         chosen.append(a); titles.add(title); urls.add(a['url']); sources[a['source']]+=1
-        if len(chosen)==MAX_ARTICLES: break
+        if len(chosen)==MAX_ARTICLES+6: break
     return chosen
 
 UI_JUNK=re.compile(r'^(Back to|Upvote|Follow|Share|Copy link|Update on GitHub|Published|Written by|Read more|Comments|Sign in|Sign up|Log in|Subscribe|Download|Star|Fork|Table of contents)\b|^[\s·|+-]*$|^\+?\d[\d,+\s]*$',re.I)
@@ -557,7 +566,10 @@ def main():
     if args.candidates:
         args.candidates.write_text(json.dumps(chosen,ensure_ascii=False,indent=2)); print('Candidates:',len(chosen)); return
     if chosen:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as pool: chosen=list(pool.map(enrich,chosen))
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool: chosen=list(pool.map(enrich,chosen))
+        chosen=[a for a in chosen if depth_ok(a)]
+        chosen=sorted(chosen,key=lambda a:-a['score'])[:MAX_ARTICLES]
+        print('After depth gate:',len(chosen),'articles')
         try: summarize(chosen)
         except Exception as e: print('Chinese summary unavailable:',type(e).__name__,str(e)[:120],file=sys.stderr)
         translate(chosen)

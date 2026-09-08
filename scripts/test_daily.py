@@ -1,4 +1,4 @@
-import datetime as dt, json, tempfile, unittest
+import datetime as dt, json, re, tempfile, unittest
 from pathlib import Path
 from unittest.mock import patch
 import daily
@@ -78,6 +78,16 @@ class DailyTests(unittest.TestCase):
         self.assertEqual(a['excerpt'],'')
         b=daily.untangle_hn(dict(source='Hugging Face',url='https://example.com/a',excerpt='x'))
         self.assertEqual(b['excerpt'],'x'); self.assertNotIn('discussion',b)
+    def test_announcement_filter_and_depth(self):
+        now=dt.datetime(2026,9,8,tzinfo=dt.timezone.utc)
+        def row(title,excerpt='x'*700): return dict(title=title,url='https://e.com/'+re.sub(r'\W','',title)[:14],source='A',published=now.isoformat(),excerpt=excerpt)
+        self.assertIsNone(daily.rank(row('Introducing GPT-6 Astra for developers'),now))
+        self.assertIsNone(daily.rank(row('Announcing v2.1 of our agent framework'),now))
+        self.assertIsNone(daily.rank(row('Now available: structured outputs'),now))
+        deep=daily.rank(row('A hands-on review of building coding agents: lessons and pitfalls',excerpt='we benchmark agent memory workflows and evals '*30),now)
+        self.assertIsNotNone(deep); self.assertGreater(deep['score'],5)
+        self.assertFalse(daily.depth_ok({'_fulltext':'short'}))
+        self.assertTrue(daily.depth_ok({'_fulltext':'x'*2500}))
     def test_trim_boilerplate_and_markdown(self):
         body='Back to Articles\nUpvote\n+70\niamleonie\n'+'但是正文段落足够长，包含大量中文内容，用来模拟真实的文章正文行，必须超过一百五十个字符的长度阈值才会被保留下来，这里是填充句子。'*3+'\nShare\n1 234'
         trimmed=daily.trim_boilerplate(body)
