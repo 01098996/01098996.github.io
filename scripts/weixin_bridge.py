@@ -26,8 +26,11 @@ def api(endpoint,payload=None,token=None,base=API,timeout=40):
         payload={**payload,'base_info':{'channel_version':VERSION,'bot_agent':'CharlesDaily/1.0'}}
     request=urllib.request.Request(trusted_api(base)+'/'+endpoint,data=json.dumps(payload).encode() if payload is not None else None,headers=headers)
     with urllib.request.build_opener(NoRedirect).open(request,timeout=timeout) as r: data=json.load(r)
+    if isinstance(data,dict): data['_ep']=endpoint
     if data.get('ret',0)!=0 or data.get('errcode',0)!=0:
-        raise RuntimeError('iLink rejected request, code '+str(data.get('errcode',data.get('ret'))))
+        code=str(data.get('errcode',data.get('ret')))
+        hint='。会话上下文可能已过期，请在微信里向机器人发一条消息以刷新' if code=='-2' and 'sendmessage' in (data.get('_ep') or '') else ''
+        raise RuntimeError('iLink rejected request, code '+code+hint)
     return data
 
 def save(path,state):
