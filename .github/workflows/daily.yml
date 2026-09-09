@@ -53,6 +53,8 @@ jobs:
           fi
       - uses: actions/configure-pages@v5
       - name: Package only public website files
+        env:
+          ANALYTICS_SNIPPET: ${{ vars.ANALYTICS_SNIPPET }}
         run: python scripts/package_site.py
       - uses: actions/upload-pages-artifact@v3
         with:
