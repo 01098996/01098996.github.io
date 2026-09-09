@@ -532,8 +532,7 @@ def cards(issue):
 def issue_body(issue,latest=False):
     articles=issue['articles']; date=issue['date']
     empty='<section class="empty"><h2>今天没有需要补充的新文章</h2><p>本轮没有筛到未推荐过的相关内容，可以看看往期。</p></section>' if not articles else ''
-    health=f'<p class="notice">本轮有 {len(issue.get("errors",[]))} 个来源暂时无法读取，精选范围可能不完整。</p>' if issue.get('errors') else ''
-    return f'''<section class="intro"><p class="eyebrow">AI DAILY / {esc(date)}</p><h1>{'AI 日报' if latest else esc(date)+' 日报'}</h1><p class="lede">Agent 开发与 AI 进阶实践</p><div class="edition"><span>{len(articles)} 篇精选 · 近 7 天 · 已去重</span><a href="/daily/archive.html">查看往期 →</a></div></section>{health}{cards(issue)}{empty}<aside class="about"><h2>关于这份日报</h2><p>每天北京时间 09:00 后更新，优先实践、代码、评测和方法论。每篇精选都会落盘为独立的文章页：英文文章附带全文中文翻译，文末保留原文链接。译文由 AI 生成，仅供学习交流，以原文为准。没有合适的新文章时不凑数。</p><p>在微信中收藏本页，即可持续阅读。<a href="/daily/{esc(date)}/">本期固定链接 ↗</a></p></aside>'''
+    return f'''<section class="intro"><p class="eyebrow">AI DAILY / {esc(date)}</p><h1>{'AI 日报' if latest else esc(date)+' 日报'}</h1><p class="lede">Agent 开发与 AI 进阶实践</p><div class="edition"><span>{len(articles)} 篇精选 · 近 7 天 · 已去重</span><a href="/daily/archive.html">查看往期 →</a></div></section>{cards(issue)}{empty}<aside class="about"><h2>关于这份日报</h2><p>每天北京时间 09:00 后更新，优先实践、代码、评测和方法论。每篇精选都会落盘为独立的文章页：英文文章附带全文中文翻译，文末保留原文链接。译文由 AI 生成，仅供学习交流，以原文为准。没有合适的新文章时不凑数。</p><p>在微信中收藏本页，即可持续阅读。<a href="/daily/{esc(date)}/">本期固定链接 ↗</a></p></aside>'''
 
 def tags_page(seq):
     groups={}
