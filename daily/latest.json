@@ -1,11 +1,10 @@
 {
   "date": "2026-09-09",
   "url": "https://z-xj.com/daily/2026-09-09/",
-  "count": 4,
+  "count": 3,
   "titles": [
-    "Qwen3.8 27B 量化评测：4-bit 仍可用，1-bit 明显失效",
-    "前沿模型会推荐什么？AEO 追踪器揭示选择格局与偏差",
-    "GPT-5.6 Sol 如何辅助量子计算实验",
-    "1Password 借助 Codex 将工程生产力提升 21%"
+    "AINews速览：OpenAI智能体集群二次事件与GPT-6 Astra首发反馈",
+    "HFresh：Weaviate推出的磁盘优先向量索引",
+    "OpenAI据称解决Navier-Stokes问题，遭合作者指控抢先剽窃"
   ]
 }
