@@ -577,7 +577,8 @@ def render():
     def sm_add(loc,mod=None):
         u=ET.SubElement(sm,'url'); ET.SubElement(u,'loc').text=base+loc
         if mod: ET.SubElement(u,'lastmod').text=mod[:10]
-    sm_add('/daily/',latest['generated_at']); sm_add('/daily/archive.html',latest['generated_at']); sm_add('/daily/tags.html',latest['generated_at'])
+    sm_add('/',latest['generated_at']); sm_add('/daily/',latest['generated_at']); sm_add('/daily/archive.html',latest['generated_at']); sm_add('/daily/tags.html',latest['generated_at'])
+    sm_add('/2022/04/05/精准定位Android Native崩溃/',latest['generated_at'])
     for i in reversed(issues):
         sm_add('/daily/'+i['date']+'/',i['generated_at'])
         for n2,a2 in enumerate(i['articles'],1): sm_add('/daily/'+i['date']+'/'+art_slug(a2['url'],n2)+'/',i['generated_at'])
