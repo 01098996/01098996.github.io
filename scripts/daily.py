@@ -8,7 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 TZ = dt.timezone(dt.timedelta(hours=8))
-MAX_ARTICLES=10
+MAX_ARTICLES=12
 SOURCES = [
     ('Simon Willison', 'https://simonwillison.net/atom/everything/'),
     ('Hugging Face', 'https://huggingface.co/blog/feed.xml'),
@@ -24,6 +24,9 @@ SOURCES = [
     ('Julia Evans', 'https://jvns.ca/atom.xml'),
     ('Armin Ronacher', 'https://lucumr.pocoo.org/feed.atom'),
     ('Latent Space', 'https://www.latent.space/feed'),
+    ('Microsoft Research', 'https://www.microsoft.com/en-us/research/feed/'),
+    ('量子位', 'https://www.qbitai.com/feed'),
+    ('Hacker News·LLM', 'https://hnrss.org/newest?q=llm+agent&points=25'),
 ]
 TOPICS = {
     'Agent 开发': [r'\bagents?\b', r'agentic', r'multi.agent', r'\bmcp\b', r'tool.call', r'orchestrat', r'langgraph'],
