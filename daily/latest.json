@@ -1,13 +1,16 @@
 {
   "date": "2026-09-09",
   "url": "https://z-xj.com/daily/2026-09-09/",
-  "count": 6,
+  "count": 9,
   "titles": [
-    "AINews周报：OpenAI智能体集群事件与GPT-6 Astra发布",
-    "Weaviate推出HFresh磁盘向量索引，面向大规模向量搜索场景",
-    "OpenAI内部模型宣称解决Navier–Stokes问题，但被指抢发Anthropic员工成果",
-    "MIT研究生用GPT-5.6 Sol驱动量子比特实验自动化",
+    "AI周报：OpenAI智能体集群事件与GPT-6 Astra全面铺开",
+    "HFresh：Weaviate推出的内存友好型磁盘向量索引",
+    "OpenAI未发布模型疑似解决Navier–Stokes：一场千禧难题风波",
+    "okf-agent-memory：为AI编程代理提供Git原生持久记忆",
+    "bang-motion：浏览器中生成动效图文的代理技能",
+    "GPT-5.6 Sol驱动量子芯片例行测量",
+    "Omni-Interaction-Agent：开源全双工音视频协作代理",
     "1Password借助Codex将工程生产力提升21%",
-    "GPT-6 Astra：OpenAI称其在计算机使用、编码、安全与科学领域达到新SOTA"
+    "GPT-6 Astra：OpenAI新一代旗舰模型发布"
   ]
 }

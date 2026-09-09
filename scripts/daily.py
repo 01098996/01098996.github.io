@@ -101,6 +101,24 @@ def dateparse(s):
         except (ValueError,TypeError): return None
     return d.replace(tzinfo=dt.timezone.utc) if d.tzinfo is None else d
 
+def fetch_github_new():
+    """New (<=7d) AI repos with traction, via GitHub Search API."""
+    since=(dt.datetime.now(dt.timezone.utc)-dt.timedelta(days=7)).strftime('%Y-%m-%d')
+    url='https://api.github.com/search/repositories?'+urllib.parse.urlencode({
+        'q':f'llm OR agent OR mcp OR rag created:>{since} stars:>20',
+        'sort':'stars','order':'desc','per_page':25})
+    req=urllib.request.Request(url,headers={'User-Agent':'Charles-AI-Daily/1.0','Accept':'application/vnd.github+json'})
+    with urllib.request.urlopen(req,timeout=25) as r: data=json.load(r)
+    articles=[]
+    for it in data.get('items',[]):
+        desc=' '.join((it.get('description') or '').split())
+        topics=' '.join('#'+t for t in (it.get('topics') or [])[:6])
+        excerpt=f"{desc} [★{it.get('stargazers_count',0)} {it.get('language') or ''} {topics}]".strip()
+        articles.append(dict(title=it['full_name'],url=canonical(it['html_url']),source='GitHub',
+            published=(it.get('created_at') or '') or dt.datetime.now(dt.timezone.utc).isoformat(),
+            excerpt=excerpt[:5500]))
+    return [a for a in articles if a['url'] and a['excerpt']]
+
 def fetch(source):
     name,url=source
     req=urllib.request.Request(url,headers={'User-Agent':'Charles-AI-Daily/1.0 (RSS reader)'})
@@ -157,7 +175,8 @@ def select(articles,seen,now):
     chosen=[]; sources=Counter(); titles=set(); urls=set()
     for a in ranked:
         title=re.sub(r'\W','',a['title'].lower())
-        if a['url'] in urls or title in titles or sources[a['source']]>=2: continue
+        cap=4 if a['source']=='GitHub' else 2
+        if a['url'] in urls or title in titles or sources[a['source']]>=cap: continue
         chosen.append(a); titles.add(title); urls.add(a['url']); sources[a['source']]+=1
         if len(chosen)==MAX_ARTICLES+6: break
     return chosen
@@ -619,6 +638,7 @@ def main():
     collected=[]; errors=[]
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
         futures={pool.submit(fetch,s):s[0] for s in SOURCES}
+        futures[pool.submit(fetch_github_new)]='GitHub 新项目'
         for f in concurrent.futures.as_completed(futures):
             try: collected.extend(f.result())
             except Exception as e: errors.append(futures[f]); print('Source unavailable:',futures[f],type(e).__name__,file=sys.stderr)
