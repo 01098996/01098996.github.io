@@ -6,7 +6,7 @@
 
 `.github/workflows/daily.yml` 每天北京时间 **09:07** 抓取文章、抓取全文、翻译、生成页面并通过 GitHub Pages 发布。GitHub 定时执行可能延迟，不保证准点。首次部署须在 **Settings → Pages → Source** 选择 **GitHub Actions**。也可在 Actions → AI Daily → Run workflow 手动运行。
 
-- 来源：Simon Willison、Hugging Face、OpenAI、Hacker News（100+ 分热帖，自动指向原文）、Chip Huyen、Eugene Yan、Interconnects、Lilian Weng、Weaviate、Google DeepMind、Sebastian Raschka、Julia Evans、Armin Ronacher、Latent Space，共 14 个 RSS/Atom 源。
+- 来源：Simon Willison、Hugging Face、OpenAI、Hacker News（100+ 分热帖，自动指向原文）、Chip Huyen、Eugene Yan、Interconnects、Lilian Weng、Weaviate、Google DeepMind、Sebastian Raschka、Julia Evans、Armin Ronacher、Latent Space、Hamel Husain、Matt Rickard、Google Research，共 20 个 RSS/Atom 源。
 - 内容过滤：公告式短讯（Introducing/Announcing/release notes 等）直接拒收；标题与正文带深度信号的（hands-on、review、benchmark、tips、how we…）优先；抓完全文后不足 2000 字符的淘汰——宁缺毋滥。
 - 每期最多 **10** 篇，每个来源最多 2 篇；无新增内容时明确显示空状态。
 - 来源失败只记录在 CI 构建日志中，不在页面上展示；全部失败则终止更新并保留旧日报。

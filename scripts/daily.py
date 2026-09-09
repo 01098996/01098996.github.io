@@ -27,6 +27,9 @@ SOURCES = [
     ('Microsoft Research', 'https://www.microsoft.com/en-us/research/feed/'),
     ('量子位', 'https://www.qbitai.com/feed'),
     ('Hacker News·LLM', 'https://hnrss.org/newest?q=llm+agent&points=25'),
+    ('Hamel Husain', 'https://hamel.dev/index.xml'),
+    ('Matt Rickard', 'https://matt-rickard.com/rss'),
+    ('Google Research', 'https://research.google/blog/rss/'),
 ]
 TOPICS = {
     'Agent 开发': [r'\bagents?\b', r'agentic', r'multi.agent', r'\bmcp\b', r'tool.call', r'orchestrat', r'langgraph'],
