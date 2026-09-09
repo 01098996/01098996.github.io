@@ -28,6 +28,11 @@ class DailyTests(unittest.TestCase):
             self.assertIn('今天没有', (data.parent/'index.html').read_text())
             self.assertEqual(json.loads((data.parent/'latest.json').read_text())['date'],'2026-09-07')
             self.assertIn('2026-09-06', (data.parent/'archive.html').read_text())
+            sm=(Path(directory)/'sitemap.xml').read_text()
+            self.assertIn('/daily/tags.html',sm)
+            self.assertIn('sitemaps.org/schemas/sitemap',sm)
+            self.assertIn('/daily/tags.html">标签',(data.parent/'index.html').read_text())
+            self.assertIn('sitemap',(Path(directory)/'sitemap.xml').read_text()[:200])
     def test_render_writes_article_pages(self):
         with tempfile.TemporaryDirectory() as directory,patch.object(daily,'ROOT',Path(directory)):
             data=Path(directory)/'daily/data'; data.mkdir(parents=True)
@@ -78,6 +83,18 @@ class DailyTests(unittest.TestCase):
         self.assertEqual(a['excerpt'],'')
         b=daily.untangle_hn(dict(source='Hugging Face',url='https://example.com/a',excerpt='x'))
         self.assertEqual(b['excerpt'],'x'); self.assertNotIn('discussion',b)
+    def test_reflow_joins_wrapped_lines(self):
+        raw='我们之前曾指出，虽然现在让编程 agent 达到某个质量门槛比以往更容易，\n但软件质量似乎正在变差\n\n，这说明默认配置可能效果不佳。\n我们将复用\n此前讨论过的 Zstd 实现评测。'
+        out=daily.reflow(raw)
+        self.assertNotIn('\n\n，',out)
+        self.assertIn('但软件质量似乎正在变差，这说明默认配置可能效果不佳。',out)
+        self.assertIn('我们将复用此前讨论过的 Zstd 实现评测。',out)
+        kept=daily.reflow('第一段到这里结束。\n- 列表项保持独立\n第二段。')
+        self.assertIn('- 列表项保持独立',kept)
+    def test_render_merges_fragments(self):
+        html=daily.render_translation('但软件质量似乎正在变差\n\n，这说明默认配置可能效果不佳。')
+        self.assertNotIn('<p>，这说明',html)
+        self.assertIn('变差，这说明',html)
     def test_announcement_filter_and_depth(self):
         now=dt.datetime(2026,9,8,tzinfo=dt.timezone.utc)
         def row(title,excerpt='x'*700): return dict(title=title,url='https://e.com/'+re.sub(r'\W','',title)[:14],source='A',published=now.isoformat(),excerpt=excerpt)

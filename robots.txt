@@ -1,3 +1,4 @@
 User-agent: *
 Disallow: 
-Sitemap: http://z-xj.com/atom.xml
+Sitemap: https://z-xj.com/sitemap.xml
+Sitemap: https://z-xj.com/atom.xml
