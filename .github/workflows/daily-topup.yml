@@ -1,0 +1,57 @@
+name: AI Daily Top-up
+on:
+  schedule:
+    - cron: '7 10 * * *' # 18:07 Asia/Shanghai; top up the day's edition
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: ai-daily-pages
+  cancel-in-progress: false
+jobs:
+  topup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r scripts/requirements.txt
+      - name: Verify daily pipeline
+        run: python -m unittest discover -s scripts -p 'test_*.py'
+      - name: Top up today's edition with new articles
+        env:
+          DAILY_LLM_API_KEY: ${{ secrets.DAILY_LLM_API_KEY }}
+          DAILY_LLM_ENDPOINT: ${{ vars.DAILY_LLM_ENDPOINT }}
+          DAILY_LLM_MODEL: ${{ vars.DAILY_LLM_MODEL }}
+          DAILY_SITE_URL: ${{ vars.DAILY_SITE_URL }}
+          WECHAT_PUSH_KEY: ${{ secrets.WECHAT_PUSH_KEY }}
+        run: python scripts/daily.py --force
+      - name: Preserve edition and deduplication history
+        run: |
+          git config user.name 'AI Daily'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add daily
+          if ! git diff --cached --quiet; then
+            git commit -m "Top up AI daily edition"
+            git push origin HEAD:master
+          fi
+      - uses: actions/configure-pages@v5
+      - name: Package only public website files
+        env:
+          ANALYTICS_SNIPPET: ${{ vars.ANALYTICS_SNIPPET }}
+        run: python scripts/package_site.py
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Deploy website
+        id: deployment
+        uses: actions/deploy-pages@v4

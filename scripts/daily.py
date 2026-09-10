@@ -608,6 +608,11 @@ def render():
         for n2,a2 in enumerate(i['articles'],1): sm_add('/daily/'+i['date']+'/'+art_slug(a2['url'],n2)+'/',i['generated_at'])
     ET.ElementTree(sm).write(ROOT/'sitemap.xml',encoding='utf-8',xml_declaration=True)
 
+def merge_edition(existing,new,max_articles):
+    """Top-up today's edition: keep published articles, append new ones."""
+    have={a['url'] for a in existing}
+    return (existing+[a for a in new if a['url'] not in have])[:max_articles]
+
 def notify(issue):
     """Push the published edition to personal WeChat via ServerChan or PushPlus."""
     key=os.environ.get('WECHAT_PUSH_KEY')
@@ -631,9 +636,9 @@ def main():
     if args.render_only: render(); return
     now=dt.datetime.now(TZ); target=ROOT/'daily/data'/f'{now.date()}.json'
     if target.exists() and not args.force: print('Today already published; keeping edition unchanged.'); render(); return
+    existing=json.loads(target.read_text()).get('articles',[]) if (target.exists() and args.force) else []
     seen=set()
     for p in (ROOT/'daily/data').glob('*.json'):
-        if p==target and args.force: continue
         seen.update(a['url'] for a in json.loads(p.read_text())['articles'])
     collected=[]; errors=[]
     with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
@@ -650,8 +655,9 @@ def main():
     if chosen:
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool: chosen=list(pool.map(enrich,chosen))
         chosen=[a for a in chosen if depth_ok(a)]
-        chosen=sorted(chosen,key=lambda a:-a['score'])[:MAX_ARTICLES]
-        print('After depth gate:',len(chosen),'articles')
+        chosen=sorted(chosen,key=lambda a:-a['score'])
+        chosen=[a for a in chosen if a['url'] not in {x['url'] for x in existing}][:max(0,MAX_ARTICLES-len(existing))]
+        print('After depth gate:',len(chosen),'new articles (edition has',len(existing),')')
         try: summarize(chosen)
         except Exception as e: print('Chinese summary unavailable:',type(e).__name__,str(e)[:120],file=sys.stderr)
         translate(chosen)
@@ -660,10 +666,13 @@ def main():
         lead=' '.join(text.split())[:900] if text else ' '.join(a.get('excerpt','').split())[:900]
         a['excerpt']=lead
     date=str(now.date())
-    for n,a in enumerate(chosen,1): download_images(a,date,n)
-    issue={'date':date,'generated_at':now.isoformat(),'articles':chosen,'errors':errors}
+    merged=merge_edition(existing,chosen,MAX_ARTICLES)
+    new_urls={a['url'] for a in chosen}
+    for i,a in enumerate(merged,1):
+        if a['url'] in new_urls: download_images(a,date,i)
+    issue={'date':date,'generated_at':now.isoformat(),'articles':merged,'errors':errors}
     target.write_text(json.dumps(issue,ensure_ascii=False,indent=2)+'\n'); render()
-    print('Published',target.name,len(chosen),'articles')
+    print('Published',target.name,len(merged),'articles (',len(chosen),'new )')
     try: notify(issue)
     except Exception as e: print('WeChat push unavailable:',type(e).__name__,file=sys.stderr)
 if __name__=='__main__': main()

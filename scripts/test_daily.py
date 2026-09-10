@@ -95,6 +95,11 @@ class DailyTests(unittest.TestCase):
         html=daily.render_translation('但软件质量似乎正在变差\n\n，这说明默认配置可能效果不佳。')
         self.assertNotIn('<p>，这说明',html)
         self.assertIn('变差，这说明',html)
+    def test_merge_edition_topup(self):
+        a1=dict(title='a',url='u1'); a2=dict(title='b',url='u2'); a3=dict(title='c',url='u3')
+        merged=daily.merge_edition([a1],[a2,a1],3)
+        self.assertEqual([m['url'] for m in merged],['u1','u2'])
+        self.assertEqual([m['url'] for m in daily.merge_edition([a1],[a2,a3],1)],['u1'])
     def test_announcement_filter_and_depth(self):
         now=dt.datetime(2026,9,8,tzinfo=dt.timezone.utc)
         def row(title,excerpt='x'*700): return dict(title=title,url='https://e.com/'+re.sub(r'\W','',title)[:14],source='A',published=now.isoformat(),excerpt=excerpt)
