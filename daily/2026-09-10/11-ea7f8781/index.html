@@ -1,0 +1,124 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>Qanat：以DAG为原语的智能体量化回测工作流引擎 · 2026-09-10 AI 日报 · 面向Google编程</title><meta name="description" content="Qanat是面向智能体的量化因子开发与回测工作流引擎，将alpha表达为有向无环图（DAG），每个步骤读写staged表。用户以SQL或Python定义节点，系统自动解析依赖、依序执行，并在控制台实时展示数据填充过程与盈亏结果。"><meta property="og:title" content="Qanat：以DAG为原语的智能体量化回测工作流引擎 · 2026-09-10 AI 日报"><meta property="og:description" content="Qanat是面向智能体的量化因子开发与回测工作流引擎，将alpha表达为有向无环图（DAG），每个步骤读写staged表。用户以SQL或Python定义节点，系统自动解析依赖、依序执行，并在控制台实时展示数据填充过程与盈亏结果。"><meta property="og:type" content="article"><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/daily/style.css"><link rel="alternate" type="application/atom+xml" title="AI 日报" href="/daily/atom.xml"></head><body><a class="skip" href="#main">跳到正文</a><div class="page wide"><header><a class="brand" href="/">面向Google编程<span>CHARLES ZHANG</span></a><nav aria-label="主导航"><a href="/">博客</a><a class="active" href="/daily/">AI 日报</a><a href="/daily/tags.html">标签</a><a href="/daily/archive.html">往期</a></nav></header><div class="layout"><main id="main"><section class="intro"><p class="eyebrow">AI DAILY / 2026-09-10</p><h1>Qanat：以DAG为原语的智能体量化回测工作流引擎</h1><p class="original">fidetolabs/qanat</p><div class="meta"><span class="tag">Agent 开发</span><span>GitHub · 2026-09-05</span></div><div class="tags"><a class="tag-pill" href="/daily/tags.html#Qanat">Qanat</a><a class="tag-pill" href="/daily/tags.html#DAG%E5%B7%A5%E4%BD%9C%E6%B5%81">DAG工作流</a><a class="tag-pill" href="/daily/tags.html#%E9%87%8F%E5%8C%96%E5%9B%9E%E6%B5%8B">量化回测</a><a class="tag-pill" href="/daily/tags.html#alpha%E5%9B%A0%E5%AD%90">alpha因子</a><a class="tag-pill" href="/daily/tags.html#Agent%E5%8E%9F%E7%94%9F">Agent原生</a></div></section><p class="muted">全文中文翻译 · AI 生成，仅供学习交流</p><section class="translation"><figure><img src="img/1.jpg" loading="lazy" alt="原文配图"></figure><p>Qanat 把 alpha 声明为 DAG（Directed Acyclic Graph，有向无环图）。把回测交给一个智能体（agent）来跑。</p><p>快速上手 智能体 工作原理 控制台 阶段契约（stage contract） 一个项目文件 向后与向前 回测 连接器 状态 贡献 词汇表 Qanat 是一个面向智能体（agent-native）的工作流引擎，用于把 alpha 构建和回测为 DAG。</p><p>一个 alpha 就是写出权重表（weights table）的那一步：每个标的（symbol）一个目标权重，不带预算。</p><p>它的背后是一个 DAG ， 它读入的特征（feature）以及这些特征来自的表，一直追溯到源头。</p><p>你把数据源（source）指向已分阶段（staged）的表，每一步写成 .sql 或 .py 文件。Qanat 解析图，按顺序执行步骤，并提供一个控制台（console）让你看着表被一行行填满。</p><p>一个项目里四个 alpha。每个 alpha 写出自己的权重表，旁边各有一张 pnl 表，记录它赚到的收益。</p><p>low_vol + momentum 是其中的两个被当作一本书（book）来定价的，这也是为什么有两支箭头指向它的结果。</p><p><code>qanat init --demo</code> 会构建一个像这样的项目。</p><p>存储就是一个本地数据库：默认是一个 DuckDB 文件，也可以是 localhost 上的 Postgres（<code>qanat init --postgres</code>，或 <code>docker compose</code>）。Qanat 自身不会发起网络请求；唯一的出站请求就是你配置的数据源发起的那些。附带了一份真实数据集 ， <code>examples/fx-bundled</code> 里 27 年的 ECB 参考汇率，其他数据源都需要你自己配置。</p><p>第一个正式打包的发布版本，也是一次公开测试。</p><p>它在我自己的项目上确实做到了本页所说的事情，但还没有其他人跑过。如果哪里出错或者看起来不对劲，请提 issue 或在 Discord 上说一声。</p><h2>快速上手</h2><p>两种入口。两种都会到达同一个控制台：<code>http://127.0.0.1:8420</code>。</p><p>安装。</p><p>需要 Python 3.10+：</p><pre><code>uv tool install qanat-fdtl
+# 或者：
+pip install qanat-fdtl
+qanat init my-alpha --demo &amp;&amp; cd my-alpha
+qanat serve</code></pre><p>或者在 Docker 中运行。</p><p>只需要 Docker，自带 Postgres：</p><pre><code>git clone https://github.com/fidetolabs/qanat.git &amp;&amp; cd qanat
+docker compose up --build</code></pre><p><code>--demo</code> 会接入四个现成的 alpha，跑通整条管道（pipeline）并为每一个定价，因此控制台打开时已经是一本带数字的书。大约十秒。去掉 <code>--demo</code> 就得到一个空的起步项目，然后用 <code>qanat check</code> 把它按阶段契约（stage contract）校验一遍，再用 <code>qanat run</code> 跑一遍图。</p><p>无论哪种方式，数据都是合成的（synthetic），所以第一次运行无需 API key 也无需网络。</p><p>准备好之后，把数据源指向一个真实的数据源。其它什么都不用改 ， 这就是 <code>examples/fx-bundled</code> 和 <code>examples/fx-real</code>，同一个项目，一个读文件，一个通过 HTTP 抓取。</p><h3>其它运行方式，以及 Docker 启动失败时怎么办</h3><p>PyPI 上的包名是 <code>qanat-fdtl</code>；它安装的命令是 <code>qanat</code>。还没有 uv？</p><pre><code>curl -LsSf https://astral.sh/uv/install.sh | sh</code></pre><p>从一份克隆下来的代码运行，把 <code>qanat …</code> 换成 <code>uv run qanat …</code>，详见 <code>CONTRIBUTING.md</code>。</p><h4>Postgres，不要 Docker</h4><p><code>qanat init my-alpha --postgres</code> ， 用 <code>localhost:5432</code> 上的真实服务器代替文件</p><h4>只要控制台</h4><p><code>qanat serve --no-schedule</code> ， 读取表并手动运行，不靠定时器</p><h4>单次跑一遍，不开服务器</h4><p><code>qanat run</code> ， 把图跑一遍就退出。可以放进你自己的 cron（定时任务）或 CI 里在 Docker 中，Postgres 在 <code>localhost:5433</code> 而不是 <code>5432</code>，因为 <code>5432</code> 经常已被占用。用户名、密码和数据库名都是 <code>qanat</code>。要使用你自己的项目而不是 demo，请把一个目录绑定到 <code>/project</code>。</p><p>清掉 Postgres 和项目，从头开始：</p><pre><code>docker compose down -v &amp;&amp; docker compose up --build</code></pre><p>保留 Postgres 数据，只重置 demo 项目：</p><pre><code>QANAT_RESET=1 docker compose up --build</code></pre><p>端口已被占用？自行设置主机端口：</p><pre><code>POSTGRES_HOST_PORT=5434 QANAT_HOST_PORT=8421 docker compose up --build</code></pre><h2>把它交给智能体</h2><p>大多数人会通过智能体而不是 CLI 来操作它。把它加到任何 MCP（Model Context Protocol，模型上下文协议）客户端：</p><pre><code>{
+  &quot;mcpServers&quot;: {
+    &quot;qanat&quot;: {
+      &quot;command&quot;: &quot;qanat&quot;,
+      &quot;args&quot;: [&quot;mcp&quot;],
+      &quot;cwd&quot;: &quot;/path/to/my-alpha&quot;
+    }
+  }
+}</code></pre><p>Claude Code：</p><pre><code>claude mcp add qanat -- qanat mcp</code></pre><p>加上 <code>--read-only</code>，它会保留 20 个读类工具，丢掉 7 个写类工具。</p><p>控制台和 MCP 服务器是同一层服务之上的两个薄适配器，在它们之上没有任何逻辑。这就是这里 &quot;agent-native&quot; 的含义，并且是可测试的：一个智能体能做控制台能做的所有事，而这两者对项目状态的看法不可能不一致。</p><h3>27 个工具</h3><p>- <strong>发现（Discover）</strong> <code>list_tables</code>, <code>describe_table</code>, <code>sample_table</code>（支持 <code>as_of</code>）, <code>lineage</code>, <code>list_steps</code>, <code>read_step</code><br>- <strong>校验（Validate）</strong> <code>check</code>, <code>plan</code>, <code>stale_tables</code><br>- <strong>挑选（Choose）</strong> <code>list_alphas</code>, <code>read_alpha</code>, <code>use_alpha</code>, <code>alpha_book</code>, <code>backtest_conditions</code><br>- <strong>运行（Run）</strong> <code>run</code>, <code>backtest</code>, <code>list_backtests</code>, <code>report</code>, <code>period</code>, <code>weights</code>, <code>compare</code>, <code>list_runs</code><br>- <strong>编写（Author）</strong> <code>save_step</code>, <code>remove_step</code>, <code>save_source</code><br>- <strong>观察（Watch）</strong> <code>open_console</code>, <code>console_status</code></p><h3>实际看上去什么样</h3><p>&gt; &quot;这个项目里有什么，momentum 这个 alpha 的数据来自哪里？&quot;</p><p>智能体调用 <code>list_tables</code>，然后是 <code>lineage</code>，拿到的是数据而不是一段话：</p><pre><code>{
+  &quot;ref&quot;: &quot;weights.momentum&quot;,
+  &quot;upstream&quot;: [
+    { &quot;from&quot;: &quot;normalized.prices&quot;, &quot;step&quot;: &quot;alpha_momentum&quot; }
+  ],
+  &quot;breaks_portfolio&quot;: false
+}</code></pre><p>&gt; &quot;加一个 momentum alpha 并做回测。&quot;</p><p><code>list_alphas</code> → <code>use_alpha</code> → <code>run</code> → <code>backtest_conditions</code> → <code>backtest</code>。第四个调用是关键。它不会去猜窗口，而是返回这个项目实际能回答的内容，以及需要先问你的事项清单：</p><pre><code>{
+  &quot;ask_the_person_for&quot;: [
+    &quot;alpha&quot;, &quot;from&quot;, &quot;to&quot;, &quot;universe&quot;, &quot;rebalance&quot;, &quot;decay&quot;, &quot;split&quot;
+  ],
+  &quot;window&quot;: {
+    &quot;data_available&quot;: {
+      &quot;earliest&quot;: &quot;2025-07-13&quot;,
+      &quot;latest&quot;: &quot;2026-09-05&quot;
+    }
+  },
+  &quot;rebalance&quot;: {
+    &quot;default&quot;: &quot;5d&quot;,
+    &quot;note&quot;: &quot;shorter means more decisions and more turnover&quot;
+  },
+  &quot;why&quot;: &quot;each one changes the number. A backtest run on conditions nobody chose is a guess with a decimal point on it.&quot;
+}</code></pre><p>&gt; &quot;我的哪些 alpha 真的有效？&quot;</p><p><code>alpha_book</code> 返回每一个 alphaset（alpha 组合）及其收益，智能体据此做比较而不是凭空猜测。</p><p><code>report</code> 和 <code>compare</code> 可以把任意两个并排打开。</p><p>&gt; &quot;为什么三月亏了钱？&quot;</p><p><code>report</code> 给出各个周期（period），<code>period</code> 完整打开其中之一 ， 当时持有哪些持仓、每个名字的回报是多少、为了达到这个组合做了哪些交易 ， 而 <code>weights</code> 显示它最终决定的组合。</p><p>&gt; &quot;看着我干活。&quot;</p><p><code>open_console</code> 从同一个会话中提供控制台，因此智能体运行时你可以看到图被点亮。一个进程，一个存储，没有什么需要保持同步。</p><p>工具面的相关说明：<code>docs/agents.md</code>。</p><h2>工作原理</h2><p>所有内容都在一个 <code>qanat.yaml</code> 中声明：阶段（stage）、数据源（source）、步骤（step）、调度（schedule）、股票池（universe）。</p><p>没有什么藏在应用代码里。十三个命令作用于这个文件：</p><p>| 命令 | 作用 |<br>| --- | --- |<br>| <code>qanat init</code> | 脚手架（scaffold）一个项目 |<br>| <code>qanat check</code> | 把管道按阶段契约（stage contract）校验一遍 |<br>| <code>qanat plan</code> | 若应用这个文件，会发生什么变化。是配置（configuration），不是行级数值 |<br>| <code>qanat prune</code> | 删除不再有产物产生的表 |<br>| <code>qanat ls</code> | 列出 stage、table、job |<br>| <code>qanat run</code> | 把整张图跑一遍，或者跑一个 job |<br>| <code>qanat serve</code> | 调度器与控制台 |<br>| <code>qanat backtest</code> | 重放（replay）管道并对持仓定价 |<br>| <code>qanat backtests</code> | 列出本项目跑过的每一次回放 |<br>| <code>qanat report</code> | 一次回测，按周期展开 |<br>| <code>qanat compare</code> | 两次回测之间发生了什么变化 |<br>| <code>qanat alphas</code> | Qanat 自带的 alpha，以及如何接入一个 |<br>| <code>qanat mcp</code> | 把本项目通过 MCP（stdio）提供给智能体 |一个 step 是一个 <code>.sql</code> 文件，会被包裹成 <code>CREATE OR REPLACE TABLE</code>，或者一个 <code>.py</code> 文件，其中 <code>run(ctx)</code> 返回一个 DataFrame。</p><p><code>ctx.read()</code> 会拒绝任何该步骤没有在 <code>from:</code> 中声明的表，因此缺失依赖是一个错误，而不是一个过期数字。</p><p>状态在 job 成功时记录，而不是文件加载时。&quot;Changed&quot; 在 <code>qanat plan</code> 中指的是这个 job 与上一次成功时的状态不同，失败的运行从来不会成为后续 diff 的基线。</p><pre><code>sources ─→ raw ─→ normalized ─→ features ─→ weights ─→ pnl
+   │         │         │            │          │        │
+   │         │         │            │          │        └─ 每次再平衡赚到的
+   │         │         │            │          └─ 每个 alpha 一张表
+   │         │         │            └─ 一连串的步骤（不带预算）
+   │         │         └─ 类型化（typed）、去重的步骤链
+   │         └─ 永远不会被编辑
+   └─ sql / csv / rest</code></pre><h3>控制台</h3><p><code>qanat serve</code> 启动调度器和一个 Web 控制台。里面每一个方框都是一张表，每一支箭头都是生成它的步骤，按阶段从左到右排布。</p><p>你可以在控制台里配置整条管道 ， source、step、alpha、stage、保留策略（retention） ， 你修改的所有内容都会写回到磁盘上的 <code>qanat.yaml</code>。没有设置面板，也没有编辑模式。参见 <code>docs/console.md</code>。</p><h3>五个阶段，以其内容命名</h3><p>一条管道就是 表 ，（步骤）， 表 ， …… ， 表。表是你拥有的；步骤是它们之间那些有名字的工作。</p><p>- <strong>raw</strong> ， 原样落地，永不修改。任何 step 都不得写入其中。<br>- <strong>normalized</strong> ， 类型化（typed）、去重、统合到一套键（key set）上。<br>- <strong>features</strong> ， 一条链：一个 feature 步骤可以读另一个 feature 步骤。<br>- <strong>weights</strong> ， 一个 alpha 一张表。每个标的（symbol）一个目标权重，不带预算。写出这类表的步骤就是 alpha。它读入的内容就是它的血统（lineage）。<br>- <strong>pnl</strong> ， 可选，且在最后。每个 alpha 在每个再平衡周期赚到了什么。没有人手工写它：<code>qanat backtest</code> 在知道组合价值之后会写它。</p><p>任何 alpha 都不得读另一个 alpha 的 weights，因此任何一条边都不会被计算两次。</p><p><code>qanat check</code> 强制执行六条规则，并拒绝为破坏规则的项目提供服务。这些规则的详细说明和背后的道理写在 <code>docs/contract.md</code>。</p><h2>一个项目长什么样</h2><pre><code>project: equity
+store: ./data/qanat.duckdb
+
+universes:                     # 组合可以持有的标的
+  id: sp500
+  index: S&amp;P 500
+  symbols: ./universes/sp500.csv   # symbol,name,sector,from,to
+
+stages:                        # 这里的顺序就是管道中的顺序
+  { id: raw,        kind: raw }
+  { id: normalized, kind: features }
+  { id: features,   kind: features }
+  { id: weights,    kind: weights }
+  { id: pnl,        kind: pnl }  # 可选，最后一个；由 `qanat backtest` 写入
+
+sources:                       # 多个 source 可以喂给同一个 stage
+  id: prices
+  to: [raw.daily_prices]
+  connector: rest
+  schedule: &quot;*/5 * * * *&quot;
+  options:
+    url: https://api.example.com/v1/bars
+    headers: { Authorization: &quot;Bearer ${PRICE_API_KEY}&quot; }
+  records: data.items
+
+steps:                         # n:m ， `from` 和 `to` 都是列表
+  id: momentum
+  from: [normalized.prices]
+  to: [features.momentum]
+  script: steps/momentum.py
+  when: [normalized.prices]    # 或 `schedule:` 按时钟触发，或两者都不要
+  options: { lookback: 20 }
+
+  id: alpha_momentum            # 一个 alpha：写出 weights 表的步骤
+  from: [features.momentum, features.risk]
+  to: [weights.momentum]
+  script: steps/alpha_momentum.py
+  universe: sp500
+  rebalance: 20d                # 这个 alpha 希望被怎样运行；一次回测
+  decay:                       # 除非另行指定，否则使用这些默认
+
+retention:                     # 一个挂钟上的 source 会永远填充它的表。
+  raw.daily_prices: 7d          # 删除早于此的旧行；`24h`、`2w` 也支持
+  normalized.prices: 30d
+
+backtest:                      # 用来给组合定价的行情，以及成本
+  prices: normalized.prices    # Backtest 章节下面有其它键
+  fee_bps:
+  slippage_bps:</code></pre><p>保留策略（retention）每分钟运行一次。它会在表里查找 <code>ts</code>、<code>timestamp</code>、<code>time</code>、<code>date</code>、<code>as_of</code>、<code>datetime</code>、<code>created_at</code> 或 <code>updated_at</code> 中存在的那个日期字段。</p><p>一个 <code>.py</code> 步骤实现 <code>run(ctx)</code>：</p><pre><code>def run(ctx):
+    bars = ctx.read(&quot;normalized.prices&quot;)   # 仅限本步骤在 `from` 中声明的
+    held = ctx.universe()                  # 它可以持有的标的
+    ctx.log(&quot;scoring&quot;)
+    return df                              # 或 {&quot;table&quot;: df, ...} 用于 n:m</code></pre><p>每个术语只有一个含义、一个拼写。参见 <code>docs/words.md</code>。</p><h2>向后与向前</h2><p>同一张图可以两种方式运行。</p><p><strong>向后</strong> ， 对已经发生的一段时间跑一遍。<code>qanat backtest</code> 每个 as-of 日期重放一次管道并对持仓定价。跑一次，读数字，结束。参见 Backtest。</p><p><strong>向前</strong> ， 当新数据到达时，图持续跟进。有些数据源只会告诉你今天的数字，因此要拿到去年的，唯一办法就是曾经把它存下来。</p><p>一个 job（任务）是任意可运行的东西：一个 source 或一个 step。一个 job 以两种方式之一向前推进。</p><h3>按时钟。</h3><p>给这个 job 一条 cron 表达式：</p><pre><code>id: prices                    # 一个 source：每五分钟拉取一次
+schedule: &quot;*/5 * * * *&quot;
+
+id: momentum                  # 一个 step：数据落地后重算 feature
+schedule: &quot;*/15 * * * *&quot;      # cron 使用 UTC</code></pre><p>在这里设置，或在控制台里：点击一个 source 或 step，填写 <code>fetch again</code>。然后这个图就会按 <code>*/5 * * * *</code> 自动读取，而不是只在你请求时才读。一个仍在运行的 job 永远不会被启动两次。</p><h3>当它的输入发生变化时。</h3><p>时钟是对数据何时到达的一种猜测。这才是数据到达本身：</p><pre><code>id: momentum
+from: [normalized.prices]
+when: [normalized.prices]     # 当这张表拿到新行时运行</code></pre><p>每一个被唤醒的步骤又会去唤醒那些等待它自己那些表的步骤，因此一个 source 落地一行数据就能自己一直抵达图的末端。一个 step 可以同时设置 <code>schedule:</code> 和 <code>when:</code>，或者都不设 ， 都不设的话，它就在你请求时运行。它只能等待它所读的表。</p><p>数据源无论如何都按时钟运行。一个 source 等待的是 qanat 之外的东西，因此唯一的发现方式就是去问。</p><p><code>sh scripts/demo-run.sh</code> 会轮询一个模拟数据源两分钟，期间控制台会被填满。</p><p>参见 <code>examples/scheduled-ingest</code>。</p><h2>Backtest</h2><p>一次回测就是同一套运行循环，外加一个时钟和一份账单。</p><pre><code>qanat backtest --from 2026-01-05 --to 2026-06-01 --rebalance 10d --seed 7
+gross            +25.150%
+fees              -0.636%
+slippage          -1.272%
+net              +23.242%
+per period        +1.660%  over 14 periods
+hit rate           64.3%</code></pre><p><strong>时钟。</strong>每次跑之前，每张表都被一个视图（view）遮蔽，视图里只保留那一刻已经存在的行。一个步骤读的是过去，而不会意识到自己在被重放，因此一个忘了过滤的步骤也无法看到未来。</p><p><strong>账单。</strong>weights 表说明要持有什么。换手率（turnover）是为了达到这个组合而必须交易的量。手续费（fee）和滑点（slippage）按换手率收取，打印出来的是净值（net）。</p><p>在 <code>qanat.yaml</code> 中设置。任意一项都可以在命令行上为某一次运行覆盖：</p><pre><code>backtest:
+  prices: normalized.prices   # 每个标的每天的价格取自哪里
+  price_column: close
+  fee_bps:                     # 按换手率收取
+  slippage_bps:                # 估算值，同样按换手率收取
+  rebalance: 5d                # as-of 日期之间的间隔
+  purge: 0d                    # 在步骤可读取前，把行向后保留这么长时间
+  embargo: 0d                  # 在一次回报被计入前，在 as_of 之后等待这么长时间
+  decay:                       # 把最近 N 个组合进行加权混合；0 或 1 即关闭</code></pre><h3>Decay 通常会改变结论。</h3><p>一个 alpha 常常对方向判断正确，但判断频率错了。对每一次抖动都做出反应，是在为噪音付手续费。</p><p><code>--decay N</code> 持有最近 N 个组合的加权混合，最新的权重最大：</p><pre><code>              turnover      net
+--decay off      45.00    -5.05%
+--decay 4        25.32    -2.88%</code></pre><p>再平衡（rebalancing）从另一侧做着同样的事。同一个 alpha、同一个窗口，只有 <code>--rebalance</code> 变了：</p><pre><code>--rebalance 10d    turnover   10.8     net  +23.2%
+--rebalance 1d     turnover  128.5     net  -27.1%</code></pre><p>正因为这个差距，net 才是头条数字，gross 不是。把手续费一路调到把优势耗尽，是看出其中有多少成色最直接的办法。</p><h3>样本内与样本外是分开的。</h3><p><code>--split &lt;date&gt;</code> 把运行切成两段并分别报告。回看窗口、再平衡和 decay 都是某个能看见样本内那一半的人选定的，因此那个数字部分地是在衡量&quot;选择&quot;本身：</p><pre><code>in sample        -22.055%  19 periods,  -1.161% each
+out of sample     -2.843%  14 periods,  -0.203% each
+
+split at 2026-03-01 — out of sample is the line to believe</code></pre><h3>多个 alpha 可以被当作一本书来定价。</h3><p>这与任何一个 alpha 单独使用都是不同的策略：</p><pre><code>qanat backtest --alpha alpha_momentum,alpha_low_vol --allocation momentum=3,low_vol=1 \
+  --from … --to … --rebalance 5d</code></pre><p>每个 alpha 保留自己的 weights 表。这次运行持有它们的总和，做归一化使书的总规模保持为 1，结果落到一张由所有 alpha 共同喂入的 PnL 表中。</p><h3>相同的种子，相同的答案。</h3><p><code>--seed</code> 钉住一个步骤可能用到的每一个随机数生成器，并把项目、窗口和种子的摘要记下来。两次摘要相同的运行给出不同数字，意味着底层有东西变了。</p><p>更多内容见 <code>docs/backtest.md</code>：点时（point-in-time）股票池与幸存者偏差（survivorship bias）、净值如何复利、打开单个再平衡、运行中打分，以及一个 alpha 如何声明自己的再平衡和 decay。</p><h2>现成的 alpha</h2><p>Qanat 自带四个朴素的 alpha，因此第一次重放（replay）只离三条命令之遥：</p><pre><code>qanat alphas                              # 列出有哪些 alpha
+qanat alphas momentum --reads normalized.prices   # 接入一个；想接几个都行
+qanat run &amp;&amp; qanat backtest --from … --to …</code></pre><p>- <strong>momentum</strong> 按过去一段回报排序，持有排名靠前的名字。仅做多。<br>- <strong>reversal</strong> 同样的方法，但按日而不是按月，买入刚下跌的那些。<br>- <strong>low_vol</strong> 持有最&quot;安静&quot;的那些名字，按它们自身的波动率反比分配权重。<br>- <strong>neutral_momentum</strong> 去除市场平均后的 momentum。多空对等。</p><p>它们都是可以写在餐巾纸上的规则，这正是用意：第一天就有一个真实的东西可以重放。</p><p><code>qanat alphas &lt;name&gt;</code> 会把一份普通的 step 脚本写到 <code>steps/</code> 下。改它也好，扔了写自己的也好。</p><p>这里送出去的是工具。alpha 从来不是。</p><h2>连接器</h2><p>| connector | 说明 |<br>| --- | --- |<br>| rest | 返回 JSON 的 HTTP 端点。<code>${ENV_VAR}</code> 会在 <code>url</code>、<code>params</code> 和 <code>headers</code> 中展开，因此密钥永远不会写进文件 |<br>| sql | 任何 SQLAlchemy 能连上的数据库。<code>pip install &quot;qanat-fdtl[sql]&quot;</code> |<br>| csv | 本地路径或 URL |<br>| synthetic | 一个确定性的伪造市场，让一个新项目在还没有任何 API key 时就能跑绿 |一个 connector 就是一个函数 <code>fetch(source, root) -&gt; DataFrame</code>，在 <code>qanat/sources/__init__.py</code> 里注册。这就是整个插件面。</p><h2>状态</h2><p>Beta。端到端可用：阶段契约（stage contract）、运行器、DuckDB/Postgres 存储、控制台、每表保留策略、cron 调度、Docker、plan/prune、点时重放引擎及其净值优势（net-edge）报告，以及 MCP 服务器。</p><p>附带四个示例：</p><p>- <strong>examples/equity</strong> 合成的价格，无需网络、无需密钥即可跑通。</p><pre><code>  cd examples/equity &amp;&amp; qanat run &amp;&amp; qanat serve
+  </code></pre><p>- <strong>examples/fx-bundled</strong> 仓库里的真实数据：27 年的 ECB 汇率，126 KB，无需密钥、无需网络<br>- <strong>examples/fx-real</strong> 同一个项目，改为通过 HTTP 抓取同样的汇率，数据来自 api.frankfurter.dev<br>- <strong>examples/scheduled-ingest</strong> 一个挂在 cron 上的 source，一边通过 HTTP 抓取，你一边看着控制台尚未实现：实时回测（每个再平衡日期到达时对该周期进行打分）、回填（backfill）、增量窗口、对数据本身的 diff，以及实盘下单通道。Qanat 产出组合，不下订单。</p><p>Qanat 只跑一种管道：以一个组合收尾的 alpha。Airflow、Dagster 和 Prefect 处理的是任意 DAG、分布式执行和庞大的 connector 生态。当你需要那些时，再去找它们。</p><h3>这些数字的已知局限。</h3><p>这些是真实存在的，值得你在信任一个数字之前先知道：</p><p><strong>没有基准。</strong> 没有任何东西能把 alpha 优势（alpha edge）和 beta 区分开，因此一个仅做多的 alpha 在上涨市里看起来很好，而报告无法告诉你为什么。</p><p><strong>purge 和 embargo 是借来的词。</strong> 在这里它们分别表示&quot;在步骤可读取前把行向后保留&quot;和&quot;在一次回报被计入前等待一段时间&quot;。它们与交叉验证中的 purging/embargoing 相关，但并不相同（译注：统计学里原本的 purging/embargoing 主要指清除测试样本与训练样本之间因时间重叠导致的污染；这里借用其名但作用范围更宽泛）。</p><p>欢迎提 issue 和 pull request。参见 <code>CONTRIBUTING.md</code>。在 Discord 上提问。</p><p><strong>License</strong> MIT License. See <code>LICENSE</code>.</p><p><strong>Copyright (c) 2026 fidetolabs</strong></p></section><aside class="about"><h2>编辑导读</h2><p>Qanat是面向智能体的量化因子开发与回测工作流引擎，将alpha表达为有向无环图（DAG），每个步骤读写staged表。用户以SQL或Python定义节点，系统自动解析依赖、依序执行，并在控制台实时展示数据填充过程与盈亏结果。</p><p><strong>为什么读</strong>把量化alpha建模抽象为DAG并交给智能体编排，是工程思路上的较大创新，值得策略研究员关注。</p><p><strong>带着问题读</strong>Qanat的DAG执行是否支持增量更新与失败重试？多策略组合时如何保证数据一致性？</p></aside><aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="https://github.com/fidetolabs/qanat" rel="noopener noreferrer">fidetolabs/qanat ↗</a></p><p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="/daily/2026-09-10/11-ea7f8781/">返回本期 →</a></p></aside><nav class="postnav" aria-label="上下篇"><a class="prev" href="/daily/2026-09-10/10-d8d0e875/"><span class="dir">← 上一篇</span>france-mcp-servers：法国公共数据MCP服务器汇总</a><a class="next" href="/daily/2026-09-10/12-2b36e6db/"><span class="dir">下一篇 →</span>研究加速：OpenAI内部如何看待自动化AI研究员进展</a></nav></main><aside class="sidebar"><section class="sideblock"><h2>相关阅读</h2><ul><li><a href="/daily/2026-09-10/02-af17e9b2/">Agent2：面向编码与安全任务的自主智能体开源项目</a><span class="meta">2026-09-10 · GitHub</span></li><li><a href="/daily/2026-09-10/01-ad942675/">OpenAI据称用约一万个智能体八十八小时求解纳维-斯托克斯奇点问题</a><span class="meta">2026-09-10 · Latent Space</span></li><li><a href="/daily/2026-09-10/12-2b36e6db/">研究加速：OpenAI内部如何看待自动化AI研究员进展</a><span class="meta">2026-09-10 · OpenAI</span></li><li><a href="/daily/2026-09-10/10-d8d0e875/">france-mcp-servers：法国公共数据MCP服务器汇总</a><span class="meta">2026-09-10 · GitHub</span></li><li><a href="/daily/2026-09-10/09-395639da/">linkedin-agent-skill：11个Claude技能帮你运营LinkedIn</a><span class="meta">2026-09-10 · GitHub</span></li></ul><p class="more"><a href="/daily/tags.html">按标签浏览 →</a></p><p class="more"><a href="/daily/archive.html">全部往期 →</a></p></section></aside></div><footer><span>AI 日报 · 保持好奇，动手验证</span><a href="/daily/atom.xml">RSS 订阅 ↗</a></footer></div></body></html>

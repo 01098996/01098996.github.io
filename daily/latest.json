@@ -1,11 +1,19 @@
 {
   "date": "2026-09-10",
   "url": "https://z-xj.com/daily/2026-09-10/",
-  "count": 4,
+  "count": 12,
   "titles": [
     "OpenAI据称用约一万个智能体八十八小时求解纳维-斯托克斯奇点问题",
     "Agent2：面向编码与安全任务的自主智能体开源项目",
     "远程MCP服务器精选资源列表",
-    "crypto-rag：印尼语加密货币知识增强与市场数据助手"
+    "crypto-rag：印尼语加密货币知识增强与市场数据助手",
+    "Astra 编码体验：我们为何又在原地打转？",
+    "前沿模型AEO追踪：Astra如何挑选答案来源",
+    "GPT-6 Astra、循环Transformer与被隐藏的推理链",
+    "GPT-6 Astra：面向工作的下一代智能模型",
+    "linkedin-agent-skill：11个Claude技能帮你运营LinkedIn",
+    "france-mcp-servers：法国公共数据MCP服务器汇总",
+    "Qanat：以DAG为原语的智能体量化回测工作流引擎",
+    "研究加速：OpenAI内部如何看待自动化AI研究员进展"
   ]
 }
