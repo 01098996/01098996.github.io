@@ -1,7 +1,7 @@
 {
   "date": "2026-09-11",
   "url": "https://z-xj.com/daily/2026-09-11/",
-  "count": 9,
+  "count": 12,
   "titles": [
     "用 Gradio Workflow 重做 AUTOMATIC1111",
     "AI 新闻 9/8–9/9:Anthropic 网络事件复盘与 OpenAI 治理变动",
@@ -11,6 +11,9 @@
     "GPT-Live-1 上线 API:更自然的全双工语音对话",
     "用 GPT-6 Astra 与 Higgsfield MCP 批量生成品牌站",
     "hanshuang-codex:针对 GPT 6.0 / V4 Flash 的破甲实验",
-    "3dviz-pro-max:把创意转成 Three.js / Blender 场景的代理技能"
+    "3dviz-pro-max:把创意转成 Three.js / Blender 场景的代理技能",
+    "awesome-reasoning-generalization：LLM 推理泛化论文精选",
+    "Maskit：面向大模型的本地隐私脱敏网关",
+    "pcb-skill：从硬件创意到可制造 PCB 的 Agent 技能"
   ]
 }

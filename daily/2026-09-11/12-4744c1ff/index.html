@@ -1,0 +1,58 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>pcb-skill：从硬件创意到可制造 PCB 的 Agent 技能 · 2026-09-11 AI 日报 · 面向Google编程</title><meta name="description" content="pcb-skill 是面向 Claude Code 与 Codex 的 Agent 技能，将一个硬件创意推进到可制造 PCB：完成概念、原理图、器件选型、布线、验证，并停在预付款前的下单阶段。它通过 MCP 驱动 EasyEDA Pro 执行绘图与下单流程，把 PCB 设计链路串联为一条 Agent 可执行的流水线。"><meta property="og:title" content="pcb-skill：从硬件创意到可制造 PCB 的 Agent 技能 · 2026-09-11 AI 日报"><meta property="og:description" content="pcb-skill 是面向 Claude Code 与 Codex 的 Agent 技能，将一个硬件创意推进到可制造 PCB：完成概念、原理图、器件选型、布线、验证，并停在预付款前的下单阶段。它通过 MCP 驱动 EasyEDA Pro 执行绘图与下单流程，把 PCB 设计链路串联为一条 Agent 可执行的流水线。"><meta property="og:type" content="article"><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/daily/style.css"><link rel="alternate" type="application/atom+xml" title="AI 日报" href="/daily/atom.xml"></head><body><a class="skip" href="#main">跳到正文</a><div class="page wide"><header><a class="brand" href="/">面向Google编程<span>CHARLES ZHANG</span></a><nav aria-label="主导航"><a href="/">博客</a><a class="active" href="/daily/">AI 日报</a><a href="/daily/tags.html">标签</a><a href="/daily/archive.html">往期</a></nav></header><div class="layout"><main id="main"><section class="intro"><p class="eyebrow">AI DAILY / 2026-09-11</p><h1>pcb-skill：从硬件创意到可制造 PCB 的 Agent 技能</h1><p class="original">daishuge/pcb-skill</p><div class="meta"><span class="tag">Agent 开发</span><span>GitHub · 2026-09-08</span></div><div class="tags"><a class="tag-pill" href="/daily/tags.html#PCB">PCB</a><a class="tag-pill" href="/daily/tags.html#Agent%20skill">Agent skill</a><a class="tag-pill" href="/daily/tags.html#EasyEDA%20Pro">EasyEDA Pro</a><a class="tag-pill" href="/daily/tags.html#MCP">MCP</a><a class="tag-pill" href="/daily/tags.html#Claude%20Code">Claude Code</a></div></section><p class="muted">全文中文翻译 · AI 生成，仅供学习交流</p><section class="translation"><pre><code># PCB skill
+
+一个智能体技能，能把硬件想法一路带到可下单、可焊接、可点亮的电路板。覆盖概念、原理图、采购、布局、布线、验证，外加停在付款前页面的下单准备。
+
+它跑在 Claude Code（桌面版）或 Codex（桌面版）里，通过 MCP（Model Context Protocol，模型上下文协议）驱动 EasyEDA Pro，采购则在已经登录的浏览器里完成。
+
+这不是一篇 PCB 理论的教程。它是一组关卡，专门抓理论抓不到的问题。比如旋转了 180° 的连接器让显示屏永远插不进去，比如藏在模块下方的电容，比如只存在于绘图图层的禁布区，再比如一个检查器在悄悄测量上一个版本。每条规则都是在一块真实电路板上付过代价的。详见 docs/case-study.md。
+
+## 三条原则
+
+**性价比（cost-effectiveness）** 每个器件都从实时页面报价，或者老老实实标成估算。BOM（物料清单，Bill of Materials）会和你已有的库存做净额核对。
+
+**好装配（assemblable by hand）** 你就是装配工人，不采用底部端子封装（bottom-terminated package），每个焊盘都够得着，焊接顺序也不会把哪个接头封死。
+
+**免费 PCB** 从最初草图开始，就把原型设计控制在免费打样（free-prototype）的额度里，而不是等到最后。
+
+## 安装
+
+SKILL.md 会把 references/、scripts/ 和 setup/ 作为同级目录加载，三个都得落到技能目录里。本仓库把 scripts/ 和 setup/ 放在顶层，这样在仓库里浏览起来更方便。只复制 skills/pcb/ 的话，得到的技能会缺检查器和安装指南。</code></pre><p>bash<br>git clone https://github.com/daishuge/pcb-skill.git<br>cd pcb-skill<br>DEST=~/.claude/skills/pcb  # Codex: DEST=~/.codex/skills/pcb<br>mkdir -p &quot;$DEST&quot; &amp;&amp; cp -R skills/pcb/. scripts setup &quot;$DEST&quot;/<br># verify — a missing directory here fails later, in the middle of a design<br>ls &quot;$DEST&quot;/SKILL.md &quot;$DEST&quot;/references &quot;$DEST&quot;/scripts &quot;$DEST&quot;/setup &gt; /dev/null &amp;&amp; echo &quot;pcb installed&quot;</p><pre><code>然后照着 setup/README.md 走一遍。技能在启动前会检查下面这些。
+
+- EasyEDA Pro 加 MCP 桥接，详见 setup/easyeda-mcp.md
+- 装好智能体扩展的浏览器，并已经登录你的 PCB 厂商和器件供应商，详见 setup/browser-logins.md
+- 一个权限确认观察器，桌面每次浏览器动作都弹权限卡时才需要，详见 setup/auto-approve-macos.md 和 setup/auto-approve-windows.md
+
+购物车和支付始终保持人工操作，观察器从不去碰。
+
+## 工作流程
+
+| 阶段 | 产出 | 关卡 |
+|---|---|---|
+| 1 概念 | 已对齐的硬约束与软约束 | 凡是两种答案会导向不同板子的提问，都已经问过了 |
+| 2 原理图 + 采购 | 原理图、已报价的 BOM、暂存的购物车 | 网表（netlist）断言通过；每个价格都已 VERIFIED（已核实）或标注 ESTIMATE（估算） |
+| 3 布局 + 布线 | 已放置、已布线、已铺铜 | 布局能走通线，不是只满足合法性；DRC（Design Rule Check，设计规则检查）干净；对抗性审查通过 |
+| 4 制造 + 下单 | 已核实的 Gerber 文件，订单停留在付款前页面 | 文件包独立于生成它的工具进行了验证 |
+
+智能体从不提交订单，也从不付款。它只负责一路推进到付款前页面，把「点击付款」交给你。
+
+## 目录内容</code></pre><p>skills/pcb/SKILL.md          技能本身<br>skills/pcb/references/       按需加载：工作流程、审查协议、制造、采购、EDA-MCP 陷阱、机械/3D、点亮调试<br>scripts/placement/           基于真实焊盘的元件边界（courtyard）、过孔通道、模块净空<br>scripts/routing/             Specctra DSN/SES 自动布线链、四态看门狗、速率下限<br>scripts/verify/              Gerber 解析、净空扫描、孔径普查、网表断言、3D 干涉，刻意独立于 EDA<br>scripts/notify/              进度中继，让长时间运行不再沉默<br>setup/                       环境准备<br>docs/case-study.md           一块电路板、流程捕获到的缺陷、以及真实成本</p><pre><code>## 四条立功的规则
+
+**亮绿灯不等于板子做对了。**
+
+每个阶段都以一次性的只读对抗性审查收尾。它会重新推导各项数值，而不是直接读取。终止准则要在启动前就写好，否则审查会陷入死循环。
+
+**要测量，不要推断。**
+
+「这大概不支持」不是结论。如果某个断言会决定工作是否继续，就得证明它，并说清楚哪些数值是测量得到的、哪些是计算得到的。
+
+**先验证工具，再看结果。**
+
+参考项目上有三个检查器，曾静悄悄地量错了东西。
+
+用已知的非对称物体去校准每一个几何变换。
+
+等待条件必须能回答一个问题。如果此刻程序崩溃，过滤器会不会吐出一行？参考项目上的一次运行沉默了 10 小时 53 分，答案是不吐。
+
+## 许可证
+
+MIT，详见 LICENSE。</code></pre><p>友情链接linux.do</p><pre><code></code></pre></section><aside class="about"><h2>编辑导读</h2><p>pcb-skill 是面向 Claude Code 与 Codex 的 Agent 技能，将一个硬件创意推进到可制造 PCB：完成概念、原理图、器件选型、布线、验证，并停在预付款前的下单阶段。它通过 MCP 驱动 EasyEDA Pro 执行绘图与下单流程，把 PCB 设计链路串联为一条 Agent 可执行的流水线。</p><p><strong>为什么读</strong>把 PCB 设计的多个阶段封装为 Agent 技能，配合 EasyEDA Pro MCP 实现从创意到下单的端到端自动化。</p><p><strong>带着问题读</strong>在器件选型与布线阶段，Agent 如何处理库存、价格波动以及 DFM 约束？</p></aside><aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="https://github.com/daishuge/pcb-skill" rel="noopener noreferrer">daishuge/pcb-skill ↗</a></p><p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="/daily/2026-09-11/12-4744c1ff/">返回本期 →</a></p></aside><nav class="postnav" aria-label="上下篇"><a class="prev" href="/daily/2026-09-11/11-3d6c1446/"><span class="dir">← 上一篇</span>Maskit：面向大模型的本地隐私脱敏网关</a><span></span></nav></main><aside class="sidebar"><section class="sideblock"><h2>相关阅读</h2><ul><li><a href="/daily/2026-09-11/05-0f4979d2/">OpenAI Agents API:托管型 Codex 会话与沙箱能力</a><span class="meta">2026-09-11 · Hacker News</span></li><li><a href="/daily/2026-09-11/02-cec5853d/">AI 新闻 9/8–9/9:Anthropic 网络事件复盘与 OpenAI 治理变动</a><span class="meta">2026-09-11 · Latent Space</span></li><li><a href="/daily/2026-09-08/07-4e4ae9cd/">OpenAI 训练中的代理被发现借公共维基互通消息</a><span class="meta">2026-09-08 · Simon Willison</span></li><li><a href="/daily/2026-09-11/09-fa640ee4/">3dviz-pro-max:把创意转成 Three.js / Blender 场景的代理技能</a><span class="meta">2026-09-11 · GitHub</span></li><li><a href="/daily/2026-09-11/04-5c26bb61/">Da7-Tech/SureForge:面向复杂工作的代理技能规范</a><span class="meta">2026-09-11 · GitHub</span></li></ul><p class="more"><a href="/daily/tags.html">按标签浏览 →</a></p><p class="more"><a href="/daily/archive.html">全部往期 →</a></p></section></aside></div><footer><span>AI 日报 · 保持好奇，动手验证</span><a href="/daily/atom.xml">RSS 订阅 ↗</a></footer></div></body></html>
