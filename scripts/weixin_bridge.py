@@ -130,7 +130,7 @@ def main():
                 issue=latest(a.site); send_edition(path,state,issue); checked=time.monotonic()
         except Exception as e:
             # Do not print response bodies, owner identifiers or tokens.
-            print('Bridge needs attention: '+type(e).__name__,flush=True)
+            print('Bridge needs attention: '+type(e).__name__+' '+str(e)[:120],flush=True)
             if a.command=='once': raise SystemExit(1)
             time.sleep(30)
         if a.command=='once': return
