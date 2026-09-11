@@ -1,0 +1,115 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>OpenAI Agents API:托管型 Codex 会话与沙箱能力 · 2026-09-11 AI 日报 · 面向Google编程</title><meta name="description" content="OpenAI 文档介绍托管会话模式,服务端负责运行代理并管理沙箱,支持执行命令、应用技能、通过工具或 MCP 接入外部数据、引导过程、摘要上下文、拆分子任务给子代理,以及断点续传。开发者通过 SDK 在创建会话时配置这些能力。"><meta property="og:title" content="OpenAI Agents API:托管型 Codex 会话与沙箱能力 · 2026-09-11 AI 日报"><meta property="og:description" content="OpenAI 文档介绍托管会话模式,服务端负责运行代理并管理沙箱,支持执行命令、应用技能、通过工具或 MCP 接入外部数据、引导过程、摘要上下文、拆分子任务给子代理,以及断点续传。开发者通过 SDK 在创建会话时配置这些能力。"><meta property="og:type" content="article"><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/daily/style.css"><link rel="alternate" type="application/atom+xml" title="AI 日报" href="/daily/atom.xml"></head><body><a class="skip" href="#main">跳到正文</a><div class="page wide"><header><a class="brand" href="/">面向Google编程<span>CHARLES ZHANG</span></a><nav aria-label="主导航"><a href="/">博客</a><a class="active" href="/daily/">AI 日报</a><a href="/daily/tags.html">标签</a><a href="/daily/archive.html">往期</a></nav></header><div class="layout"><main id="main"><section class="intro"><p class="eyebrow">AI DAILY / 2026-09-11</p><h1>OpenAI Agents API:托管型 Codex 会话与沙箱能力</h1><p class="original">OpenAI Agents API</p><div class="meta"><span class="tag">Agent 开发</span><span>Hacker News · 2026-09-10</span></div><div class="tags"><a class="tag-pill" href="/daily/tags.html#OpenAI">OpenAI</a><a class="tag-pill" href="/daily/tags.html#Agents%20API">Agents API</a><a class="tag-pill" href="/daily/tags.html#Codex">Codex</a><a class="tag-pill" href="/daily/tags.html#%E6%B2%99%E7%AE%B1">沙箱</a><a class="tag-pill" href="/daily/tags.html#MCP">MCP</a></div></section><p class="muted">全文中文翻译 · AI 生成，仅供学习交流</p><section class="translation"><h2>OpenAI Agents API</h2><p>在使用 OpenAI 托管（hosted）的会话（session）时，你的应用负责发送输入（input）并接收事件（events），而 OpenAI 负责运行 agent、配置并管理其沙箱（sandbox）。关于配置方式和限制，请参阅环境选项。</p><figure><img src="img/1.webp" loading="lazy" alt="原文配图"></figure><h3>托管运行框架提供的能力</h3><p>托管的 Codex 运行框架（harness）支持：</p><p>- 在沙箱中运行命令和代码。<br>- 应用相关的技能（skills）和指令（instructions）。<br>- 通过工具（tools）或 MCP 接入外部数据。<br>- 在 agent 工作的过程中对其进行引导（steering）。<br>- 总结先前的工作以管理其上下文窗口（context window）。<br>- 将工作拆分为子任务并委派给子 agent（subagent）。<br>- 从中断处恢复一个会话。</p><p>关于 API 密钥权限和 SDK 设置，请查看快速入门的前置条件。下面的示例展示如何在创建会话时配置这些能力。</p><h4>配置托管运行框架的能力</h4><p><strong>Python</strong></p><pre><code>import OpenAI from &quot;openai&quot;;
+const client = new OpenAI();
+const session = await client.beta.agents.sessions.create({agent: {model: &quot;gpt-6-astra&quot;, instructions:&quot;Use the OpenAI documentation MCP and web search to answer technical questions accurately. Delegate independent research tasks to subagents when useful.&quot;, tools: [{ type: &quot;programmatic_tool_calling&quot; },{type: &quot;mcp&quot;, server_label: &quot;openai_docs&quot;, transport: {type: &quot;http&quot;, server_url: &quot;https://developers.openai.com/mcp&quot;,},},{ type: &quot;web_search&quot; },], multi_agent: { enabled: true, max_concurrent_subagents: 4 },}, environment: {type: &quot;self_hosted&quot;, workspace_directory: &quot;/workspace&quot;, capability_directories: [&quot;/workspace/capabilities/skills&quot;],}, input: [{role: &quot;user&quot;, content: [{type: &quot;input_text&quot;, text: &quot;Research how to connect an MCP server to an OpenAI agent, check for recent updates, and summarize the recommended setup.&quot;,},],},],});
+console.log(session.id);
+from openai import OpenAI
+client=OpenAI()
+session=client.beta.agents.sessions.create(agent={&quot;model&quot;
+
+:&quot;gpt-6-astra&quot;
+
+,&quot;instructions&quot;
+
+:&quot;Use the OpenAI documentation MCP and web search to answer technical questions accurately. Delegate independent research tasks to subagents when useful.&quot;
+
+,&quot;tools&quot;
+
+: [{&quot;type&quot;
+
+:&quot;programmatic_tool_calling&quot;
+
+},{&quot;type&quot;
+
+:&quot;mcp&quot;
+
+,&quot;server_label&quot;
+
+:&quot;openai_docs&quot;
+
+,&quot;transport&quot;
+
+: {&quot;type&quot;
+
+:&quot;http&quot;
+
+,&quot;server_url&quot;
+
+:&quot;https://developers.openai.com/mcp&quot;
+
+,},},{&quot;type&quot;
+
+:&quot;web_search&quot;
+
+},],&quot;multi_agent&quot;
+
+: {&quot;enabled&quot;
+
+: True,&quot;max_concurrent_subagents&quot;
+
+:},}, environment={&quot;type&quot;
+
+:&quot;self_hosted&quot;
+
+,&quot;workspace_directory&quot;
+
+:&quot;/workspace&quot;
+
+,&quot;capability_directories&quot;
+
+: [&quot;/workspace/capabilities/skills&quot;
+
+],}, input=[{&quot;role&quot;
+
+:&quot;user&quot;
+
+,&quot;content&quot;
+
+: [{&quot;type&quot;
+
+:&quot;input_text&quot;
+
+,&quot;text&quot;
+
+:&quot;Research how to connect an MCP server to an OpenAI agent, check for recent updates, and summarize the recommended setup.&quot;
+
+,}],}],)
+print (session.id)
+import (&quot;context&quot;
+
+&quot;fmt&quot;
+
+&quot;github.com/openai/openai-go/v3&quot;
+
+)
+ctx := context.Background()
+client := openai.NewClient()
+session, err := client.Beta.Agents.Sessions.New(ctx, openai.BetaAgentSessionNewParams{Agent: openai.BetaAgentSessionNewParamsAgent{Model: openai.String(&quot;gpt-6-astra&quot;), Instructions: openai.String(&quot;Use the OpenAI documentation MCP and web search to answer technical questions accurately. Delegate independent research tasks to subagents when useful.&quot;), Tools: []openai.AgentToolParamUnion{openai.AgentToolParamUnion{OfParamProgrammaticToolCalling: &amp;openai.AgentToolParamProgrammaticToolCalling{}}, openai.AgentToolParamUnion{OfParamMcp: &amp;openai.AgentToolParamMcp{ServerLabel: &quot;openai_docs&quot;, Transport: openai.McpTransportParamUnion{OfParamHTTP: &amp;openai.McpTransportParamHTTP{ServerURL: &quot;https://developers.openai.com/mcp&quot;}}}}, openai.AgentToolParamUnion{OfParamWebSearch: &amp;openai.AgentToolParamWebSearch{}}}, MultiAgent: openai.MultiAgentConfigParam{Enabled: true, MaxConcurrentSubagents: openai.Int(4)}}, Environment: openai.EnvironmentParamUnion{OfParamSelfHosted: &amp;openai.EnvironmentParamSelfHosted{WorkspaceDirectory: &quot;/workspace&quot;, CapabilityDirectories: []string{&quot;/workspace/capabilities/skills&quot;}}}, Input: openai.BetaAgentSessionNewParamsInputUnion{OfArrayOfInputMessages: []openai.AgentSessionInputMessageParam{openai.AgentSessionInputMessageParam{Content: []openai.InputContentParamUnion{openai.InputContentParamUnion{OfParamInputText: &amp;openai.InputContentParamInputText{Text: &quot;Research how to connect an MCP server to an OpenAI agent, check for recent updates, and summarize the recommended setup.&quot;}}}}}}})
+if err != nil {panic(err)}
+fmt.Println(session.ID)
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
+import com.openai.models.beta.agents.AgentToolParam;
+import com.openai.models.beta.agents.EnvironmentParam;
+import com.openai.models.beta.agents.McpTransportParam;
+import com.openai.models.beta.agents.MultiAgentConfigParam;
+import com.openai.models.beta.agents.sessions.SessionCreateParams;
+import java.util.List;
+OpenAIClient client = OpenAIOkHttpClient.fromEnv();
+var session =client.beta().agents().sessions().create(SessionCreateParams.builder().agent(SessionCreateParams.Agent.builder().model(&quot;gpt-6-astra&quot;).instructions(&quot;Use the OpenAI documentation MCP and web search to answer&quot;
+
++ &quot; technical questions accurately. Delegate independent&quot;
+
++ &quot; research tasks to subagents when useful.&quot;).addTool(AgentToolParam.ProgrammaticToolCalling.builder().build()).addTool(AgentToolParam.Mcp.builder().serverLabel(&quot;openai_docs&quot;).transport(McpTransportParam.Http.builder().serverUrl(&quot;https://developers.openai.com/mcp&quot;).build()).build()).addTool(AgentToolParam.WebSearch.builder().build()).multiAgent(MultiAgentConfigParam.builder().enabled(true).maxConcurrentSubagents(4L).build()).build()).environment(EnvironmentParam.SelfHosted.builder().workspaceDirectory(&quot;/workspace&quot;).capabilityDirectories(List.of(&quot;/workspace/capabilities/skills&quot;)).build()).input(&quot;Research how to connect an MCP server to an OpenAI agent, check for recent&quot;
+
++ &quot; updates, and summarize the recommended setup.&quot;).build());
+System.out.println(session.id());
+require &quot;openai&quot;
+
+client = OpenAI::Client.new
+session = client.beta.agents.sessions.create(agent: {model: &quot;gpt-6-astra&quot;, instructions: &quot;Use the OpenAI documentation MCP and web search to answer technical questions accurately. Delegate independent research tasks to subagents when useful.&quot;, tools: [{type: &quot;programmatic_tool_calling&quot;},{type: &quot;mcp&quot;, server_label: &quot;openai_docs&quot;, transport: {type: &quot;http&quot;, server_url: &quot;https://developers.openai.com/mcp&quot;}},{type: &quot;web_search&quot;}], multi_agent: {enabled: true, max_concurrent_subagents: 4}}, environment: {type: &quot;self_hosted&quot;, workspace_directory: &quot;/workspace&quot;, capability_directories: [&quot;/workspace/capabilities/skills&quot;]}, input: [{role: &quot;user&quot;, content: [{type: &quot;input_text&quot;, text: &quot;Research how to connect an MCP server to an OpenAI agent, check for recent updates, and summarize the recommended setup.&quot;}]}])
+puts session.id
+curl -sS -X POST &quot;https://api.openai.com/v1/agents/sessions&quot; \
+-H &quot;OpenAI-Beta: agents=v1&quot; \
+-H &quot;Authorization: Bearer $OPENAI_API_KEY&quot; \
+-H &quot;Content-Type: application/json&quot; \
+-d &#x27;{&quot;agent&quot;: {&quot;model&quot;: &quot;gpt-6-astra&quot;,&quot;instructions&quot;: &quot;Use the OpenAI documentation MCP and web search to answer technical questions accurately. Delegate independent research tasks to subagents when useful.&quot;,</code></pre></section><aside class="about"><h2>编辑导读</h2><p>OpenAI 文档介绍托管会话模式,服务端负责运行代理并管理沙箱,支持执行命令、应用技能、通过工具或 MCP 接入外部数据、引导过程、摘要上下文、拆分子任务给子代理,以及断点续传。开发者通过 SDK 在创建会话时配置这些能力。</p><p><strong>为什么读</strong>清晰列出托管 Harness 提供的八项能力与边界,适合评估从自托管向托管模式迁移的可行性。</p><p><strong>带着问题读</strong>托管沙箱在长时间任务中的状态持久化、跨会话复用与计费粒度是否有更细的 SLA 说明?</p></aside><aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="https://developers.openai.com/api/docs/guides/agents-api/overview" rel="noopener noreferrer">OpenAI Agents API ↗</a></p><p>Discussion：<a href="https://news.ycombinator.com/item?id=49649213" rel="noopener noreferrer">Hacker News 讨论区 ↗</a></p><p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="/daily/2026-09-11/05-0f4979d2/">返回本期 →</a></p></aside><nav class="postnav" aria-label="上下篇"><a class="prev" href="/daily/2026-09-11/04-5c26bb61/"><span class="dir">← 上一篇</span>Da7-Tech/SureForge:面向复杂工作的代理技能规范</a><a class="next" href="/daily/2026-09-11/06-03142165/"><span class="dir">下一篇 →</span>GPT-Live-1 上线 API:更自然的全双工语音对话</a></nav></main><aside class="sidebar"><section class="sideblock"><h2>相关阅读</h2><ul><li><a href="/daily/2026-09-10/02-af17e9b2/">Agent2：面向编码与安全任务的自主智能体开源项目</a><span class="meta">2026-09-10 · GitHub</span></li><li><a href="/daily/2026-09-09/04-9a7632de/">okf-agent-memory：为AI编程代理提供Git原生持久记忆</a><span class="meta">2026-09-09 · GitHub</span></li><li><a href="/daily/2026-09-07/03-f01b512d/">给编程代理一个你拥有的持久记忆</a><span class="meta">2026-09-07 · Hugging Face</span></li><li><a href="/daily/2026-09-10/10-d8d0e875/">france-mcp-servers：法国公共数据MCP服务器汇总</a><span class="meta">2026-09-10 · GitHub</span></li><li><a href="/daily/2026-09-10/03-af9511c2/">远程MCP服务器精选资源列表</a><span class="meta">2026-09-10 · GitHub</span></li></ul><p class="more"><a href="/daily/tags.html">按标签浏览 →</a></p><p class="more"><a href="/daily/archive.html">全部往期 →</a></p></section></aside></div><footer><span>AI 日报 · 保持好奇，动手验证</span><a href="/daily/atom.xml">RSS 订阅 ↗</a></footer></div></body></html>
