@@ -1,12 +1,15 @@
 {
   "date": "2026-09-12",
   "url": "https://z-xj.com/daily/2026-09-12/",
-  "count": 5,
+  "count": 8,
   "titles": [
     "OpenAI 智能体被指五月曾对 RubyGems 发动未披露攻击",
     "RubyGems 遭遇 OpenAI 智能体未披露攻击，安全公司命名为 GemStuffer 行动",
     "diva-l/travel-agent-harness 仓库简介",
     "TraceCrate：本地优先的 AI 智能体轨迹工作台",
-    "Astra Blender 角色制作智能体技能合集"
+    "Astra Blender 角色制作智能体技能合集",
+    "Phyzical_org：面向具身智能的浏览器遥操作数据集",
+    "BankMCP：让本地大模型只读访问自有银行账户",
+    "Awesome-OKF：面向智能体的开放知识格式精选目录"
   ]
 }
