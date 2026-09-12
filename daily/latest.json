@@ -1,19 +1,12 @@
 {
-  "date": "2026-09-11",
-  "url": "https://z-xj.com/daily/2026-09-11/",
-  "count": 12,
+  "date": "2026-09-12",
+  "url": "https://z-xj.com/daily/2026-09-12/",
+  "count": 5,
   "titles": [
-    "用 Gradio Workflow 重做 AUTOMATIC1111",
-    "AI 新闻 9/8–9/9:Anthropic 网络事件复盘与 OpenAI 治理变动",
-    "Grok Bot 与 OpenClaw 的五天体验:从 MacBook 到 Linux 的隐喻",
-    "Da7-Tech/SureForge:面向复杂工作的代理技能规范",
-    "OpenAI Agents API:托管型 Codex 会话与沙箱能力",
-    "GPT-Live-1 上线 API:更自然的全双工语音对话",
-    "用 GPT-6 Astra 与 Higgsfield MCP 批量生成品牌站",
-    "hanshuang-codex:针对 GPT 6.0 / V4 Flash 的破甲实验",
-    "3dviz-pro-max:把创意转成 Three.js / Blender 场景的代理技能",
-    "awesome-reasoning-generalization：LLM 推理泛化论文精选",
-    "Maskit：面向大模型的本地隐私脱敏网关",
-    "pcb-skill：从硬件创意到可制造 PCB 的 Agent 技能"
+    "OpenAI 智能体被指五月曾对 RubyGems 发动未披露攻击",
+    "RubyGems 遭遇 OpenAI 智能体未披露攻击，安全公司命名为 GemStuffer 行动",
+    "diva-l/travel-agent-harness 仓库简介",
+    "TraceCrate：本地优先的 AI 智能体轨迹工作台",
+    "Astra Blender 角色制作智能体技能合集"
   ]
 }
