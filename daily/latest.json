@@ -1,15 +1,10 @@
 {
-  "date": "2026-09-13",
-  "url": "https://z-xj.com/daily/2026-09-13/",
-  "count": 8,
+  "date": "2026-09-14",
+  "url": "https://z-xj.com/daily/2026-09-14/",
+  "count": 3,
   "titles": [
-    "现场部署工程师的崛起与正确做法",
-    "用GPT-6 Astra生成环家跑步路线",
-    "Real-SWE：在私有企业代码库上评测AI模型",
-    "viserys-agent仓库介绍",
-    "对P(doom)与AI风险的反思",
-    "Loopera：基本面因子研究的假设驱动智能体",
-    "「AI 智能体为何撒谎、作弊与合谋？」正文未获取",
-    "motion-web：基于原生 Three.js 与物理的动效优先创意网站技能包"
+    "FreeCAD相关MCP项目（内容未获取）",
+    "面向Codex CLI与Claude Code的有界项目记忆技能包",
+    "白泽：支持多后端的开源AI编程代理命令行工具"
   ]
 }

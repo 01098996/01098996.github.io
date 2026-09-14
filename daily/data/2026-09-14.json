@@ -1,0 +1,84 @@
+{
+  "date": "2026-09-14",
+  "generated_at": "2026-09-14T14:04:34.598682+08:00",
+  "articles": [
+    {
+      "title": "HowCCC/freecad-mcp",
+      "url": "https://github.com/HowCCC/freecad-mcp",
+      "source": "GitHub",
+      "published": "2026-09-10T12:27:38Z",
+      "excerpt": "Connect AI assistants to FreeCAD through the Model Context Protocol (MCP) for modeling, assembly, machining workflows and surface editing. Geometry, assembly solving and toolpath generation use FreeCAD's native APIs. Features Module Capabilities Core modeling · 152 tools Documents and objects, PartDesign, Draft, spreadsheets, import/export, views and screenshots, macros, Python execution and model checks. Assembly · 67 tools 13 joint types, native solving and diagnostics, rigid/flexible and nested instances, motion simulation, BOM/CSV, exploded views and ASMT export. CAM/Path · 69 tools 17 operation families, 10 dressup types, multiple tools, stock and workpiece setup, model replacement, path statistics, voxel stock removal, LinuxCNC postprocessing and setup reports. Surface · 54 tools BSpline/Bezier geometry, control points and weights, native surface features, trimming and projection, ",
+      "category": "Agent 开发",
+      "score": 2.13,
+      "evidence_kind": "article",
+      "title_zh": "FreeCAD相关MCP项目（内容未获取）",
+      "summary": "输入仅提供仓库标识、Star数量与主要编程语言信息，未包含项目功能描述、使用场景或实现细节等内容，无法进行实质性导读。",
+      "why": "仓库名称暗示与FreeCAD及MCP协议相关，是潜在值得关注的方向。",
+      "question": "该项目具体提供了哪些MCP工具以与FreeCAD进行交互？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "FreeCAD",
+        "MCP",
+        "Python"
+      ],
+      "translation": "# HowCCC/freecad-mcp\n\n通过模型上下文协议 (Model Context Protocol, MCP) 把 AI 助手接入 FreeCAD，覆盖建模、装配、机加工工作流与曲面编辑。几何运算、装配求解与刀路生成均使用 FreeCAD 的原生 API（应用程序编程接口）。\n\n## 功能与模块能力\n\n**核心建模** · 152 个工具\n文档与对象、零件设计 (PartDesign)、草图 (Draft)、电子表格、导入/导出、视图与截图、宏、Python 执行与模型检查。\n\n**装配** · 67 个工具\n13 种关节类型、原生求解与诊断、刚性/柔性实例与嵌套实例、运动仿真、物料清单 (BOM) / CSV（逗号分隔值文件）、爆炸图与 ASMT 导出。\n\n**CAM（计算机辅助制造）/ Path（路径）** · 69 个工具\n17 个加工操作族、10 种修边类型、多刀具、坯料与工件设置、模型替换、路径统计、体素 (voxel) 坯料去除、LinuxCNC 后处理与设置报告。\n\n**曲面** · 54 个工具\nB 样条 (BSpline) / 贝塞尔 (Bezier) 几何、控制点与权重、原生曲面特征、裁剪与投影、曲率与采样连续性、保留裁剪的 NURBS（非均匀有理 B 样条）编辑，以及将编辑后的面缝合回实体。\n\n### MCP 集成\n\nstdio / HTTP 传输；socket、XML-RPC 与嵌入式 FreeCAD 适配器；发现资源与建模提示。\n\n共 342 个工具。本清单并不意味着完整的工作台覆盖。请参阅覆盖报告以及详细功能与许可指南（中文）。\n\n## 快速上手\n\n需要 Python ≥ 3.11、FreeCAD 与一个在 FreeCAD 内运行的兼容桥接器。请单独安装并启动 Robust MCP Bridge 工作台，使用 socket 端口。FreeCAD 与桥接器工作台需分别安装。\n\n在项目目录下安装并检查连接：\n\n```bash\npython3 -m pip install\n```\n\n```bash\nfreecad-nexus --mode socket --host 127.0.0.1 --port 9876 --check\n```\n\n将此配置添加到你的 MCP 客户端。如果客户端找不到可执行文件，请使用其绝对路径作为 `command`：\n\n```json\n{\"mcpServers\": {\"freecad-nexus\": {\"command\": \"freecad-nexus\", \"args\": [\"--mode\", \"socket\", \"--host\", \"127.0.0.1\", \"--port\", \"9876\"]}}}\n```\n\n对于 XML-RPC，使用 `--mode xmlrpc --port 9875`。现有的 `FREECAD_*` 环境变量仍然受支持；运行 `freecad-nexus --help` 查看可用选项。桥接器可以执行 Python，因此请将其连接到受信的本地 FreeCAD 会话。\n\n## 工业示例\n\n三个示例均通过 MCP stdio → socket 桥接器 → 原生 FreeCAD 生成，共 62 次成功调用，覆盖 28 个工具。脚本负责创建基础几何；专用 MCP 工具处理关节、运动、BOM、CAM 与 NURBS 编辑。每个 CAD 文件均经过重新保存、重新打开，并校验实体有效性与体积保持。\n\n### 旋转检测执行器\n\n一个简化的检测头由固定导轨框架与一个圆柱关节（沿平移与旋转方向驱动）组成。仿真验证 60 mm 行程与 90° 旋转，然后生成 BOM 与爆炸式维修视图。\n\n[[IMG1]]\n\nFreeCAD 模型　STEP　爆炸图　BOM\n\n### 铝制安装板\n\n一块 120 × 80 × 12 mm 的板材带两个凹坑与四个间隙孔。专用 CAM 工具配置毛坯余量、一把 Ø6 mm 立铣刀与一把 Ø6.6 mm 钻头，然后生成凹坑加工、钻孔与轮廓加工操作、路径统计、一个 LinuxCNC 程序与一份设置报告。图片显示该零件；原生刀路保存于 CAD 文件中的 `PlateJob/Operations` 之下。\n\n[[IMG2]]\n\nFreeCAD 模型　STEP　LinuxCNC 程序　设置报告\n\n### NURBS 传感器外壳\n\n一个空心的 120 × 80 mm 外壳保留了外缘、连接器端口与通风槽，四个内部控制点将其顶面抬起。编辑后的面片被缝合回一个有效实体，验证体积增加 28,800 mm³，中心高度为 30.75 mm。安装凸台与一块独立的底板共同构成本例；浅色等参线（译注：等参线即 isocurve，NURBS 曲面上 U/V 方向参数恒定的网格线，常用于直观显示曲面形状与光滑度）显示弯曲的顶部。\n\n[[IMG3]]\n\nFreeCAD 模型　STEP　测量结果\n\n### 重新生成示例\n\n选择一个空的输出目录：\n\n```bash\npython3 examples/run_industrial_cases.py \\\n  --freecad-bin /Applications/FreeCAD.app/Contents/MacOS/FreeCAD \\\n  --bridge-source ../freecad-addon-robust-mcp-server/freecad/RobustMCPBridge \\\n  --output /tmp/freecad-nexus-examples\n```\n\n请参阅生成脚本、MCP 调用记录与扩展示例说明（中文）。这些示例演示了工程工作流；执行器支撑与干涉、加工夹具与机床参数仍需工程师审核。外壳的内部顶面仍保持平面，因此其壁厚会发生变化。",
+      "translation_kind": "full",
+      "translation_source": "article",
+      "images": [
+        "img/1.png",
+        "img/2.png",
+        "img/3.png"
+      ]
+    },
+    {
+      "title": "tudoumashu/ai-memory-skillpack",
+      "url": "https://github.com/tudoumashu/ai-memory-skillpack",
+      "source": "GitHub",
+      "published": "2026-09-08T05:07:25Z",
+      "excerpt": "that the next session can trust. This pack is that layer: skills, a constitution, an installer Codex can run unaided, and a verifier that fails closed. Clone, then tell Codex: Read INSTALL.md in this pack and follow it to install the memory system on this machine. No GUI. The installer is a program for the agent. Installs are reversible. No wiki? Only the project-memory skill is enabled. Why this belongs in the Codex ecosystem Codex is strongest when the repo already knows how it wants to be maintained. This pack is that contract, written so an agent can install, obey, and prove it. Codex maintainer job What this pack makes mechanical Review a PR without rereading the whole tree HOT snapshot + WARM rg, not a dump of docs/ai/Keep releases and runbooks true Bounded docs/ai/with replace-guards, not append-only notes Survive a second session on the same repo Handoff is one page, replaced in ",
+      "category": "上下文与记忆",
+      "score": 2,
+      "evidence_kind": "article",
+      "title_zh": "面向Codex CLI与Claude Code的有界项目记忆技能包",
+      "summary": "该项目为Codex CLI与Claude Code提供有界范围的项目记忆技能，旨在让智能编程代理在终端编码会话中持续保留关键项目信息。通过结构化的技能机制约束记忆边界，避免上下文无限膨胀，并支持跨会话复用项目知识。",
+      "why": "在长任务与多会话场景下，记忆管理是编程代理稳定性的关键瓶颈之一。",
+      "question": "其有界记忆机制如何决定信息保留与淘汰的具体策略？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "Codex CLI",
+        "Claude Code",
+        "agent-memory",
+        "技能加载",
+        "项目记忆"
+      ],
+      "translation": "# tudoumashu/ai-memory-skillpack\n\n下一会话（session）可以信任的内容。本工具包就是这一层，里面有技能、一份章程、Codex 能自己跑起来的安装程序，还有一个默认拒绝（fail-closed）的校验器。\n\n克隆后告诉 Codex，让它阅读本工具包中的 `INSTALL.md`，按其指示在本机装好记忆系统。\n\n没有 GUI。安装程序是给智能体（agent）跑的。安装可逆。没有 wiki？那就只启用 project-memory 技能。\n\n## 它为何属于 Codex 生态\n\n当仓库已经知道自己该如何被维护时，Codex 才最强。本工具包就是这份契约，写成智能体能安装、遵守并自证的形式。\n\n| Codex 维护者工作 | 本工具包使之自动化的工作 |\n|---|---|\n| 不重读整棵树就能审 PR | HOT 快照（snapshot）+ WARM rg（ripgrep），不是把 `docs/ai/` 全部倒出来 |\n| 保持发布说明与运行手册准确 | 对 `docs/ai/` 做有界控制，配合 replace-guards（替换保护），而不是只追加的笔记 |\n| 在同一仓库的二次会话中存活 | 交接只用一页，就地替换，git 即账本 |\n| 不让密钥流入「记忆」 | 章程 + 清洗器（sanitizer）关卡，写入方被禁止存密钥 |\n| 之后升级记忆系统 | 基于回执（receipt）的哈希比对，你的修改被保留，旧工具包归档而非销毁 |\n\n它是一流的 Codex 基础设施。`AGENTS.md` 段落、Codex 技能、智能体可执行的 `INSTALL.md`，还有作为验收标准的 `VERIFY.md`，整体形态跟一套严肃的维护者工具链无异，不是那种粘贴一次就丢的提示词包。\n\n## 它消除的失败模式\n\n智能体要么在不同会话间遗忘项目，要么靠往交接笔记和变更日志里追加内容来「记住」。这些文件没有上限。下一会话在开始任何真正工作之前，会先吃掉几万 token，有时甚至几十万，全在消化昨天的残渣。\n\n那不是记忆，是带着 git 历史的上下文污染。\n\n| 朴素的智能体笔记 | 本系统 |\n|---|---|\n| 只追加的交接，无上限 | 一页快照，就地替换 |\n| 平行的变更日志文件 | Git 提交即账本 |\n| 把 `docs/ai/` 全部塞进上下文 | 热 / 温 / 冷（HOT / WARM / COLD）分层，多数文件不会被读取 |\n| 升级时静默覆盖 | 基于回执的哈希比对，你的修改得以保留 |\n| 「装上了，大概吧」 | `VERIFY.md`，用退出码（exit code）做断言，不靠感觉 |\n\n## 你将得到\n\n**一份章程，不是感觉。**\n\n`SYSTEM.md` 就是规范，里面有分层、字节预算、来源署名（attribution）、replace-guards（替换保护），还有「禁止写入密钥」。技能不能凌驾其上。\n\n**智能体原生（agent-native）的安装程序。**\n\n`INSTALL.md` 是给 Codex 跑的，步骤包括适配路径、合并全局规则、启用仓库、写入机器回执、回滚。\n\n**校验器，不是清单。**\n\n`VERIFY.md` 是带真实退出码的断言。工具包字节由 `SHA256SUMS` 锁定。\n\n**一份技能源，两个 harness。**\n\nCodex 持有源文件，第二个 harness 拿到的是符号链接（symlink）。不分叉副本。\n\n**默认拒绝的升级。**\n\n全新安装 / 升级 / 迁移是不同的契约。旧工具包先被封存。\n\n**密钥卫生即边界。**\n\n可选的 coach 路径会在学习记录抵达中央 wiki 之前先做清洗。回归测试套件的存在，是因为这套系统曾被视为一道安全关卡。",
+      "translation_kind": "full",
+      "translation_source": "article",
+      "images": []
+    },
+    {
+      "title": "Xu123-Bob/Baize",
+      "url": "https://github.com/Xu123-Bob/Baize",
+      "source": "GitHub",
+      "published": "2026-09-12T05:17:38Z",
+      "excerpt": "白泽 Baize通晓万物，陪你直觉编程。 白泽 —— 中国古代神话中通晓万物的瑞兽，如今化身为 Vibe Coding 助手。 一个开源的 AI Coding Agent CLI，支持多后端（DeepSeek / OpenAI 兼容 / Ollama 本地），具备工具调用、技能加载、子代理委派、上下文压缩、安全沙箱等完整能力。在终端即可与 AI 结对编程。 ✨ 特性多后端支持：DeepSeek、任意 OpenAI 兼容接口（Groq / 智谱 / 通义 / Moonshot / OpenAI）、本地 Ollama，一键切换。 零配置启动：首次运行自动生成配置文件，用户只需填一次密钥。 完整工具链：bash 执行、文件读写编辑、glob/grep 搜索、网页搜索抓取、后台任务、任务与待办管理。 技能系统（Skills）：按需加载领域知识（SKILL.md），让 AI 在特定场景下更专业。 子代理（Subagents）：把复杂任务委派给独立上下文的子代理，避免污染主会话。 钩子（Hooks）：Python 或 Shell 钩子，支持工具调用前后拦截、审计日志、自动格式化、测试门控。 MCP 协议：通过 Model Context Protocol 接入外部工具服务器（GitHub、Filesystem 等）。 上下文压缩：两级压缩（工具结果截断 + LLM 摘要），支持超长对话。 安全沙箱：命令白名单、路径逃逸检测、危险命令拦截、敏感文件保护、脚本注入拦截。 黑金主题 CLI：中文宽度自适应，代码高亮、Diff 着色、思考折叠。 📦 安装前置要求Python 3.10+（需要 tomllib，3.11+ 内置；3.10 需安装 tomli） pip从源码安装下载方式两个1.pip install https://github.com/Xu123-Bob/Baize.git下载完成后win+R 输入cmd，打开CLI界面，输入baize，即可运行2、<>Code --> Download ZIP (1)解压后进入本文件目录： bash -->win+R 输入cmd cd 解压",
+      "category": "AI 编程实践",
+      "score": 0.98,
+      "evidence_kind": "article",
+      "title_zh": "白泽：支持多后端的开源AI编程代理命令行工具",
+      "summary": "白泽是一款开源编程代理命令行工具，命名取自通晓万物之瑞兽。支持DeepSeek、OpenAI兼容接口与Ollama本地模型多后端切换，提供工具调用、技能加载、子代理委派、上下文压缩与安全沙箱等能力，可在终端直接进行结对编程。",
+      "why": "覆盖多模型后端、子代理委派与沙箱隔离的中文开源编程工具值得对比评测。",
+      "question": "其子代理委派与沙箱隔离在实际编码任务中的稳定性与效果如何？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "Vibe Coding",
+        "DeepSeek",
+        "Ollama",
+        "子代理委派",
+        "上下文压缩"
+      ],
+      "translation_kind": "original"
+    }
+  ],
+  "errors": []
+}
