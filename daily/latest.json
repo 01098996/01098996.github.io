@@ -1,10 +1,11 @@
 {
-  "date": "2026-09-14",
-  "url": "https://z-xj.com/daily/2026-09-14/",
-  "count": 3,
+  "date": "2026-09-15",
+  "url": "https://z-xj.com/daily/2026-09-15/",
+  "count": 4,
   "titles": [
-    "FreeCAD相关MCP项目（内容未获取）",
-    "面向Codex CLI与Claude Code的有界项目记忆技能包",
-    "白泽：支持多后端的开源AI编程代理命令行工具"
+    "OpenArch：现代大模型架构的简洁 PyTorch 实现合集",
+    "Richard Socher 谈「AI for AI Research」：让 AI 自动改进 AI",
+    "AgentVerse-OS：面向开发者与 AI Agent 的个人云操作系统",
+    "turkish-native：让 AI 文案写出地道土耳其语的 Agent 技能"
   ]
 }
