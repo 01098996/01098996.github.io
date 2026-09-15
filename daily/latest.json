@@ -1,11 +1,18 @@
 {
   "date": "2026-09-15",
   "url": "https://z-xj.com/daily/2026-09-15/",
-  "count": 4,
+  "count": 11,
   "titles": [
     "OpenArch：现代大模型架构的简洁 PyTorch 实现合集",
     "Richard Socher 谈「AI for AI Research」：让 AI 自动改进 AI",
     "AgentVerse-OS：面向开发者与 AI Agent 的个人云操作系统",
-    "turkish-native：让 AI 文案写出地道土耳其语的 Agent 技能"
+    "turkish-native：让 AI 文案写出地道土耳其语的 Agent 技能",
+    "AEF-1 第三方评估标准出炉，Anthropic、OpenAI、xAI 联合签署",
+    "解读 Pangram：AI 文本检测器到底可不可靠？",
+    "大模型全栈中文学习路线：从 Prompt 到部署的生产实践指南",
+    "OpenEval：面向 Agent 评估的类型化 Prompt 与 Judge SDK",
+    "Pion：让 AI Agent 真实运营公司的自治平台",
+    "Atria Dawn Preview：267 星的 LLM Agent 预览项目",
+    "瑞典 MCP 服务器精选：打通本国数据、法律与公共服务"
   ]
 }

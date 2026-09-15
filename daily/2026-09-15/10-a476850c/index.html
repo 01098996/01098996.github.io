@@ -1,0 +1,101 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>Atria Dawn Preview：267 星的 LLM Agent 预览项目 · 2026-09-15 AI 日报 · 面向Google编程</title><meta name="description" content="项目仅在仓库描述中标注 llm-agent 类型标签，star 数 267。除类型标签外未给出模型架构、训练数据、性能基准或典型用例等具体技术细节，实质内容暂未获取，建议直接查看源码与 README。"><meta property="og:title" content="Atria Dawn Preview：267 星的 LLM Agent 预览项目 · 2026-09-15 AI 日报"><meta property="og:description" content="项目仅在仓库描述中标注 llm-agent 类型标签，star 数 267。除类型标签外未给出模型架构、训练数据、性能基准或典型用例等具体技术细节，实质内容暂未获取，建议直接查看源码与 README。"><meta property="og:type" content="article"><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/daily/style.css"><link rel="alternate" type="application/atom+xml" title="AI 日报" href="/daily/atom.xml"></head><body><a class="skip" href="#main">跳到正文</a><div class="page wide"><header><a class="brand" href="/">面向Google编程<span>CHARLES ZHANG</span></a><nav aria-label="主导航"><a href="/">博客</a><a class="active" href="/daily/">AI 日报</a><a href="/daily/tags.html">标签</a><a href="/daily/archive.html">往期</a></nav></header><div class="layout"><main id="main"><section class="intro"><p class="eyebrow">AI DAILY / 2026-09-15</p><h1>Atria Dawn Preview：267 星的 LLM Agent 预览项目</h1><p class="original">atria-asi/Atria-Dawn-Preview</p><div class="meta"><span class="tag">Agent 开发</span><span>GitHub · 2026-09-12</span></div><div class="tags"><a class="tag-pill" href="/daily/tags.html#LLM%20Agent">LLM Agent</a><a class="tag-pill" href="/daily/tags.html#Atria">Atria</a><a class="tag-pill" href="/daily/tags.html#%E6%A8%A1%E5%9E%8B%E9%A2%84%E8%A7%88">模型预览</a></div></section><p class="muted">全文中文翻译 · AI 生成，仅供学习交流</p><section class="translation"><p>atria-asi/Atria-Dawn-Preview基础模型（foundation model），面向需要持续环境理解、工具使用（tool use）和多步骤任务完成的研究与工程场景。</p><p>这个模型的目标是把开放式问题推向可执行、可验证、可复现的结果。它把任务目标和环境反馈串起来，覆盖了从问题分析、方案设计、调用工具、代码实现、执行实验，到分析结果、失败恢复的完整闭环。</p><p>Atria Dawn Preview 在四个维度上发力做智能体（agentic）任务，尤其关注真实生产力场景的端到端交付，比如科研自动化和日常办公。</p><p>| 维度 | 内容 |<br>| --- | --- |<br>| 🔍 Discovery（发现） | 检索和整理证据、做深度研究，并把研究问题转成可执行的实验方案。 |<br>| 🛠️ Creation（创造） | 构建软件、交互式应用、游戏、数据可视化，以及机器学习系统。 |<br>| 📦 Delivery（交付） | 把文档、数据和设计需求变成报告、演示稿和其他结构化交付物。 |<br>| 🛡️ Cybersecurity（网络安全） | 分析安全问题、验证漏洞、应用修复，并在授权环境里重新验证。 |</p><h3>📥 模型下载</h3><p>| 模型 | 描述 | 上下文 | Hugging Face | ModelScope |<br>| --- | --- | --- | --- | --- |<br>| Atria-Dawn-Preview | Instruct 模型 | 256K | 🤗 Model 🔗 Model |  |<br>| Atria-Dawn-Preview-FP8 | FP8 量化（quantized）Instruct 模型 | 256K | 🤗 Model 🔗 Model |  |</p><h3>📊 评测结果</h3><p>我们在搜索、代码、工具调用、生产力和安全基准上，对 Atria Dawn Preview 做了一次全面评测。</p><p>| 类别 | 基准 | Atria Dawn Preview | DeepSeek V4 Pro 0813 | KIMI K3 | Qwen 3.8 Max | GLM 5.3 | GPT 5.6 sol | Claude Opus 5 |<br>| --- | --- | --- | --- | --- | --- | --- | --- | --- |<br>| 发现 | DeepSearchQA | 96.0 | – | 95.9 | – | 94.7 | 93.2 | – |<br>|  | BrowseComp | 92.5 | 83.4 | 91.2 | – | – | 92.2 | 90.8 |<br>|  | WideSearch | 81.9 | – | 79.6 | 81.9 | 82.7 | 83.3 | – |<br>|  | DeepResearch Bench II | 51.1 | 46.6 | 51.3 | 49.2 | 52.7 | 50.7 | 54.1 |<br>| 创造 | MLE-bench Lite | 86.2 | 86.8 | 85.8 | 81.3 | 80.8 | 88.9 | 88.0 |<br>|  | SWE-bench Pro | 59.6 | 58.3 | 61.6 | 65.1 | 60.3 | 61.4 | 74.7 |<br>|  | Terminal-Bench 2.1 | 78.3 | 78.7 | – | 89.3 | 85.4 | 85.1 | 90.2 |<br>| 工具使用 | BFCL v4 | 77.0 | 71.4 | 69.1 | – | 74.1 | – | – |<br>|  | AutomationBench | 53.8 | 41.7 | 45.9 | 49.7 | 49.2 | 45.7 | 49.4 |<br>|  | SkillsBench | 66.4 | 65.0 | 51.9 | 66.7 | 63.3 | 62.5 | 63.7 |<br>|  | τ³-Bench Banking | 41.2 | 44.3 | 37.1 | 55.2 | 40.2 | 46.9 | 48.7 |<br>| 交付 | Workspace-Bench | 65.0 | 55.7 | 60.6 | 63.9 | 63.9 | 56.0 | 65.8 |<br>|  | Workspace-Bench-Lite | 68.2 | 58.1 | 65.8 | 67.4 | 67.7 | 60.5 | 70.1 |<br>|  | GDPval JobBench | 50.3 | 54.1 | 54.3 | 52.7 | 58.2 | 45.4 | 68.0 |<br>| 网络安全 | CyberGym | 86.5 | 83.3 | 78.7 | 73.8 | 84.5 | 83.6 | – |加粗表示每行最佳分数。</p><p>– 表示该结果暂不可用。</p><h3>🚀 部署与在线访问</h3><p>Atria Dawn Preview 同时支持本地部署和托管访问。</p><h4>在线访问</h4><p>请使用与所在区域对应的服务端点。</p><p>| 区域 | 访问 | 教程 |<br>| --- | --- | --- |<br>| 🌐 国际 | API 控制台 | 文档 |<br>| 🇨🇳 中国 | API 控制台 | 文档 |</p><h4>本地部署</h4><p>| 框架 | 最低版本 | 指南 |<br>| --- | --- | --- |<br>| SGLang | v0.5.13.post1+ | Cookbook |<br>| vLLM | v0.23.0+ | Recipes |</p><h4>Codex</h4><p>往 <code>~/.codex/config.toml</code> 里加一个自定义 provider。Codex 用的是 Responses API。</p><pre><code>model = &quot;Atria-Dawn-Preview&quot;
+model_provider = &quot;atria&quot;
+
+[model_providers.atria]
+name = &quot;Atria&quot;
+base_url = &quot;https://api.atria-asi.ai/v1&quot;
+env_key = &quot;ATRIA_API_KEY&quot;
+wire_api = &quot;responses&quot;</code></pre><h5>只允许文本输入</h5><p>Atria-Dawn-Preview 只接受文本输入。默认情况下 Codex 会假设每个模型都是多模态（multimodal）的，会把来自 <code>-i/--image</code> 或 TUI 粘贴的图片一并塞过去，而服务端点会回一个 <code>400 Atria-Dawn-Preview is not a multimodal model</code> 来拒绝。要在客户端（client side）把图片输入剥掉，就得显式声明这个模型支持的模态（modality）。</p><p><strong>步骤 1，创建模型目录文件</strong>把下面这段保存为 <code>~/.codex/atria-catalog.json</code>：</p><pre><code>{
+  &quot;models&quot;: [
+    {
+      &quot;slug&quot;: &quot;Atria-Dawn-Preview&quot;,
+      &quot;display_name&quot;: &quot;Atria-Dawn-Preview&quot;,
+      &quot;base_instructions&quot;: &quot;You are a coding agent running in the Codex CLI. You collaborate with the user in a shared workspace to accomplish their software engineering goals.\n\nYou can only receive text input. Images, screenshots, PDFs, and other binary attachments are not available to you. If the user refers to an attachment you cannot see, say so plainly and ask them to paste the relevant text instead.&quot;,
+      &quot;supported_reasoning_levels&quot;: [
+        {&quot;effort&quot;: &quot;low&quot;, &quot;description&quot;: &quot;Fast responses with lighter reasoning&quot;},
+        {&quot;effort&quot;: &quot;medium&quot;, &quot;description&quot;: &quot;Balances speed and reasoning depth&quot;},
+        {&quot;effort&quot;: &quot;high&quot;, &quot;description&quot;: &quot;Greater reasoning depth for complex problems&quot;}
+      ],
+      &quot;shell_type&quot;: &quot;unified_exec&quot;,
+      &quot;visibility&quot;: &quot;list&quot;,
+      &quot;supported_in_api&quot;: true,
+      &quot;priority&quot;: 0,
+      &quot;support_verbosity&quot;: false,
+      &quot;truncation_policy&quot;: {&quot;mode&quot;: &quot;tokens&quot;, &quot;limit&quot;: 0},
+      &quot;experimental_supported_tools&quot;: [],
+      &quot;context_window&quot;: 0,
+      &quot;max_context_window&quot;: 0,
+      &quot;input_modalities&quot;: [&quot;text&quot;]
+    }
+  ]
+}</code></pre><p><code>&quot;input_modalities&quot;: [&quot;text&quot;]</code> 就是关掉多模态输入的那把开关。</p><p><code>context_window</code> 和 <code>max_context_window</code> 要填模型的真实上限，Codex 靠这两个值预算 prompt，并据此判断什么时候该自动压缩（auto-compact）。如果不填，会回退到一个保守的默认值，相当于白白浪费可用的上下文。</p><p>其余字段都是解析器（parser）要求的，任何一项缺失都会报 <code>missing field &lt;name&gt;</code>，Codex 就起不来了。</p><p><strong>步骤 2，把配置指向这个文件</strong></p><pre><code>model = &quot;Atria-Dawn-Preview&quot;
+model_provider = &quot;atria&quot;
+model_catalog_json = &quot;~/.codex/atria-catalog.json&quot;
+
+[features]
+view_image = false
+
+[model_providers.atria]
+name = &quot;Atria&quot;
+base_url = &quot;https://api.atria-asi.ai/v1&quot;
+env_key = &quot;ATRIA_API_KEY&quot;
+wire_api = &quot;responses&quot;</code></pre><p><code>features.view_image = false</code> 这一行是可选的，作用是把图片查看工具去掉，这样模型就不会去调那个会被拒的接口。</p><p>重要，<code>model_catalog_json</code> 是替换，不是合并。任何没在你文件里列出的模型都会回退到默认元数据，而默认元数据是按多模态假设的，并会记一条警告 <code>warning: Model metadata for &lt;slug&gt; not found</code>。如果你用 <code>-m</code> 或者改 <code>model</code> 来切换模型，记得把新模型也加进同一个文件，否则「只允许文本」这条限制对它不生效。</p><p>需要 Codex CLI 0.154.0 或更高版本。</p><h4>Claude Code</h4><pre><code>#!/usr/bin/env python3
+&quot;&quot;&quot;
+PreToolUse hook: block the Read tool from reading PDF and image files.
+&quot;&quot;&quot;
+
+import json
+import sys
+
+IMAGE_EXTENSIONS = (
+    &quot;.apng&quot;, &quot;.avif&quot;, &quot;.bmp&quot;, &quot;.gif&quot;, &quot;.heic&quot;, &quot;.heif&quot;,
+    &quot;.ico&quot;, &quot;.jfif&quot;, &quot;.jpeg&quot;, &quot;.jpg&quot;, &quot;.jxl&quot;, &quot;.png&quot;,
+    &quot;.svg&quot;, &quot;.tif&quot;, &quot;.tiff&quot;, &quot;.webp&quot;,
+)
+
+
+def main():
+    hook_input = json.loads(sys.stdin.read())
+    file_path = hook_input.get(&quot;tool_input&quot;, {}).get(&quot;file_path&quot;, &quot;&quot;)
+
+    if file_path.lower().endswith(&quot;.pdf&quot;):
+        reason = &quot;Reading PDF files with the Read tool is not allowed.&quot;
+    elif file_path.lower().endswith(IMAGE_EXTENSIONS):
+        reason = &quot;Reading image files with the Read tool is not allowed.&quot;
+    else:
+        sys.exit(0)
+
+    output = {
+        &quot;hookSpecificOutput&quot;: {
+            &quot;hookEventName&quot;: &quot;PreToolUse&quot;,
+            &quot;permissionDecision&quot;: &quot;deny&quot;,
+            &quot;permissionDecisionReason&quot;: reason,
+        }
+    }
+    print(json.dumps(output, ensure_ascii=False))
+    sys.exit(0)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()</code></pre><p>把上面这段脚本保存为 <code>${Target_dir}/block_pdf_image_read.py</code>，路径一定要用绝对路径。</p><p>然后把它加到 <code>~/claude_dir/settings.json</code> 里。</p><p>这样就能在 PreToolUse 阶段拦截多模态输入（比如图片和 PDF）。</p><pre><code>{
+  &quot;hooks&quot;: {
+    &quot;PreToolUse&quot;: [
+      {
+        &quot;matcher&quot;: &quot;Read&quot;,
+        &quot;hooks&quot;: [
+          {
+            &quot;type&quot;: &quot;command&quot;,
+            &quot;command&quot;: &quot;python3 ${Target_dir}/block_pdf_image_read.py&quot;,
+            &quot;timeout&quot;: 5
+          }
+        ]
+      },
+      {
+        &quot;matcher&quot;: &quot;&quot;,
+        &quot;hooks&quot;: []
+      }
+    ]
+  }
+}</code></pre><h3>📄 许可证</h3><p>本仓库里的代码和模型权重按 MIT 许可证（MIT License）发布。</p><h3>📮 联系方式</h3><p>欢迎提问、提建议、聊合作：</p><p>- 🐛 <strong>问题反馈与功能请求</strong>，在 GitHub 上提 issue<br>- 💬 <strong>社区</strong>，加入 Discord<br>- 📱 <strong>微信</strong>，扫下方任一二维码进 Atria 社区群<br>- 🐦 <strong>动态更新</strong>，在 X 上关注 @AtriaASI（译注：即原 Twitter）</p><h3>引用</h3><pre><code>@misc{guo2026atriadawndawnagentic,
+  title={Atria Dawn: The Dawn of Agentic Superintelligence},
+  author={Honglin Guo and Tao Gui and Yicheng Chen and Guanting Dong and Qiming Ge and Yuyang Hu and Zixian Huang and Jiajie Jin and Alexander Lam and Yining Li and Jiahang Lin and Yanjiang Liu and Xinyu Lu and Haijun Lv and Junlin Shang and Qisheng Su and Guoqiang Wang and Rui Wang and Zhecan Wang and Hao Xiang and Xinchen Xie and Shuhao Xing and Xiaoyu Xing and Wanghan Xu and Xinyu Yang and Yajie Yang and Chengfeng Zhao and Haoran Zhao and Ruojun Zhou and Yunhua Zhou and Yicheng Zou and Kun Cai and Qiye Cai and Xinmeng Che and Haodong Chen and Jiabei Chen and Jiahao Chen and Jiayi Chen and Yujia Chen and Lizhi Cui and Youheng Dai and Xin Deng and Yi Dong and Shihan Dou and Chenya Gu and Xu Guo and Ding Han and Feiyang Hao and Haotan He and Jie Hou and Binze Hu and Zijian Hu and Junhao Huang and Huicheng Jiang and Jiazhen Jiang and Shufan Jiang and Jiahao Kuang and Bowen Lai and Bo Li and Jiaqiang Li and Peng Li and Qilong Li and Zhuoqun Li and Jiaxiang Liu and Shuainan Liu and Tong Liu and Yi Liu and Zhonghang Lu and Jianwen Luo and Yanyi Luo and Huijie Lv and Ningsheng Ma and Zerun Ma and Houcheng Min and Chengjun Pan and Qiyuan Peng and Xiaoxuan Peng and Jianmin Qian and Jiantao Qiu and Wanying Ren and Huayu Sha and Jifei Shan and Zixin Shang and Bing Shao and Zhuohui Sheng and Jiayang Shi and Yang Shu and Aierpanjiang Simayi and Sirui Song and Yuxiao Song and Zhe Sun and Zhichao Sun and Wenzhe Tan and Wenhui Tian and Zhongbo Tian and Hanchen Wang and Pengbo Wang and Rui Wang and Yiding Wang and Yuhui Wang and Zhiheng Xi and Caijun Xu and Chao Xu and Yongfeng Xu and Xiaolei Yang and Zhixiong Yang and Qian Yao and Shihong Yi and Yuankai Ying and Jia Yu and Dingbo Yuan and Hao Yuan and Junjie Yuan and Bo Zhang and Caixian Zhang and Qiuyinzhe Zhang and Jiyuan Zhao and Penghao Zhao and Ying Zhao and Pujun Zheng and Xiaoxue Zhong and Xiaohao Zhou and Xinyu Zhou and Dongsheng Zhu and Guanru Zhu and Yulun Zhu and Yaojie Lu and Tao Ji and Hongyu Lin and Yutao Zhu and Pengfei Cao and Guoxiu He and Xianpei Han and Ben He and Zhicheng Dou and Kang Liu and Qi Zhang and Le Sun and Jun Zhao and Ji-Rong Wen and Xuanjing Huang and Yu-Gang Jiang and Bowen Zhou},</code></pre><figure><img src="img/1.png" loading="lazy" alt="原文配图"></figure></section><aside class="about"><h2>编辑导读</h2><p>项目仅在仓库描述中标注 llm-agent 类型标签，star 数 267。除类型标签外未给出模型架构、训练数据、性能基准或典型用例等具体技术细节，实质内容暂未获取，建议直接查看源码与 README。</p><p><strong>为什么读</strong>单凭仓库标签与 star 数无法判断其差异点，需要查阅实际源码才能评估。</p><p><strong>带着问题读</strong>该项目相比既有开源 Agent 框架的核心增量是什么？</p></aside><aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="https://github.com/atria-asi/Atria-Dawn-Preview" rel="noopener noreferrer">atria-asi/Atria-Dawn-Preview ↗</a></p><p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="/daily/2026-09-15/10-a476850c/">返回本期 →</a></p></aside><nav class="postnav" aria-label="上下篇"><a class="prev" href="/daily/2026-09-15/09-a50bc738/"><span class="dir">← 上一篇</span>Pion：让 AI Agent 真实运营公司的自治平台</a><a class="next" href="/daily/2026-09-15/11-9fbbcad8/"><span class="dir">下一篇 →</span>瑞典 MCP 服务器精选：打通本国数据、法律与公共服务</a></nav></main><aside class="sidebar"><section class="sideblock"><h2>相关阅读</h2><ul><li><a href="/daily/2026-09-14/01-9e648827/">FreeCAD相关MCP项目（内容未获取）</a><span class="meta">2026-09-14 · GitHub</span></li><li><a href="/daily/2026-09-13/04-f105a018/">viserys-agent仓库介绍</a><span class="meta">2026-09-13 · GitHub</span></li><li><a href="/daily/2026-09-12/03-21ce7143/">diva-l/travel-agent-harness 仓库简介</a><span class="meta">2026-09-12 · GitHub</span></li><li><a href="/daily/2026-09-15/08-e9622868/">OpenEval：面向 Agent 评估的类型化 Prompt 与 Judge SDK</a><span class="meta">2026-09-15 · GitHub</span></li><li><a href="/daily/2026-09-13/06-8f6b0be3/">Loopera：基本面因子研究的假设驱动智能体</a><span class="meta">2026-09-13 · GitHub</span></li></ul><p class="more"><a href="/daily/tags.html">按标签浏览 →</a></p><p class="more"><a href="/daily/archive.html">全部往期 →</a></p></section></aside></div><footer><span>AI 日报 · 保持好奇，动手验证</span><a href="/daily/atom.xml">RSS 订阅 ↗</a></footer></div></body></html>
