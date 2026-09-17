@@ -1,0 +1,144 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>IvyClaw：面向软件工程的多智能体 AI Agent 系统 · 2026-09-17 AI 日报 · 面向Google编程</title><meta name="description" content="该项目自我定位为生产级多智能体 AI Agent 系统，聚焦真实软件研发任务，技术栈基于 DeepAgents 与 LangGraph 构建。摘要仅含项目简介与标签元数据，架构分层、调度机制、性能对比与部署文档等内容均未获取。"><meta property="og:title" content="IvyClaw：面向软件工程的多智能体 AI Agent 系统 · 2026-09-17 AI 日报"><meta property="og:description" content="该项目自我定位为生产级多智能体 AI Agent 系统，聚焦真实软件研发任务，技术栈基于 DeepAgents 与 LangGraph 构建。摘要仅含项目简介与标签元数据，架构分层、调度机制、性能对比与部署文档等内容均未获取。"><meta property="og:type" content="article"><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/daily/style.css"><link rel="alternate" type="application/atom+xml" title="AI 日报" href="/daily/atom.xml"></head><body><a class="skip" href="#main">跳到正文</a><div class="page wide"><header><a class="brand" href="/">面向Google编程<span>CHARLES ZHANG</span></a><nav aria-label="主导航"><a href="/">博客</a><a class="active" href="/daily/">AI 日报</a><a href="/daily/tags.html">标签</a><a href="/daily/archive.html">往期</a></nav></header><div class="layout"><main id="main"><section class="intro"><p class="eyebrow">AI DAILY / 2026-09-17</p><h1>IvyClaw：面向软件工程的多智能体 AI Agent 系统</h1><p class="original">ivyfan-toowell/IvyClaw</p><div class="meta"><span class="tag">Agent 开发</span><span>GitHub · 2026-09-13</span></div><div class="tags"><a class="tag-pill" href="/daily/tags.html#multi-agent">multi-agent</a><a class="tag-pill" href="/daily/tags.html#llm-agent">llm-agent</a><a class="tag-pill" href="/daily/tags.html#deepagents">deepagents</a><a class="tag-pill" href="/daily/tags.html#langgraph">langgraph</a><a class="tag-pill" href="/daily/tags.html#software-engineering">software-engineering</a></div></section><p class="muted">全文中文翻译 · AI 生成，仅供学习交流</p><section class="translation"><h2>ivyfan-toowell/IvyClaw</h2><h3>🦞 IvyClaw 面向软件研发任务的多智能体 AI Agent 工程系统</h3><p>IvyClaw 是一个基于 DeepAgents / LangGraph 构建的软件研发智能体系统。</p><p>项目围绕 AI Agent 的工程化落地，实现了多智能体协作、工具调用、代码沙箱、状态持久化、异步任务、Human-in-the-Loop、多渠道接入、网关鉴权、可观测与生产部署等能力。</p><p>它的目标不只是让大模型&quot;能够对话&quot;，而是让 Agent 真正具备：</p><p>任务规划 → 资料检索 → 代码实现 → 自动测试 → 代码审查 → 安全执行 → 持续运行的完整软件研发能力。</p><h3>🧰 Tech Stack</h3><p>- Python<br>- DeepAgents<br>- LangGraph<br>- FastAPI<br>- PostgreSQL<br>- Redis<br>- ARQ<br>- Docker<br>- Prometheus<br>- Grafana</p><h3>✨ Highlights</h3><p>- 🤖 多智能体协作：Planner / Researcher / Coder / Tester / Reviewer 分工完成研发任务<br>- 🧠 多模型路由：根据 Agent 角色和任务复杂度选择不同模型档位<br>- 🛠️ 真实工具调用：支持 Git、pytest、Web Search、MCP 等工具<br>- 📦 安全沙箱执行：通过 Docker / Daytona 隔离运行 Agent 生成的代码<br>- 💾 状态持久化：PostgreSQL + LangGraph Checkpointer / Store 保存任务上下文<br>- ⚡ 长任务异步化：Redis + ARQ Worker 处理耗时 Agent 任务<br>- 👤 Human-in-the-Loop：高风险工具调用支持人工审批与恢复执行<br>- 🌐 多渠道接入：CLI、Web API、飞书 WebSocket、Webhook 等统一接入<br>- 🔐 网关与多租户：API Key、Tenant、限流、幂等、审计等基础治理能力<br>- 📊 可观测与评估：LangSmith、Prometheus、Grafana、自动化测试与 Agent Evaluation</p><h3>🏗️ Architecture</h3><p>下图展示了 IvyClaw 从用户接入、网关治理、多智能体编排、工具调用、沙箱执行、状态持久化、异步任务到可观测与部署的整体架构。</p><figure><img src="img/1.png" loading="lazy" alt="原文配图"></figure><pre><code>flowchart TD
+    U[User / Client] --&gt; G[API Gateway]
+    G --&gt; C[Channel / FastAPI]
+    C --&gt; D[Dispatcher]
+    D --&gt; P[Planner]
+    P --&gt; Q{Need Research?}
+    Q --&gt;|Yes| R[Researcher]
+    Q --&gt;|No| CO[Coder]
+    R --&gt; CO
+    CO --&gt; T[Tester]
+    T --&gt; RV[Reviewer]
+    RV --&gt; O[Final Response]
+    D &lt;--&gt; PG[(PostgreSQL)]
+    D &lt;--&gt; RD[(Redis)]
+    CO --&gt; SB[Docker / Daytona Sandbox]
+    RD --&gt; W[ARQ Worker]
+    W --&gt; D
+    D --&gt; OBS[LangSmith / Prometheus / Grafana]</code></pre><h4>Agent Workflow</h4><pre><code>User Request
+↓
+Gateway
+↓
+Dispatcher
+↓
+Planner
+↓
+Researcher（按需）
+↓
+Coder
+↓
+Tester
+↓
+Reviewer
+↓
+Final Response</code></pre><h3>🚀 What IvyClaw Solves</h3><p>传统 LLM 应用通常只完成一次模型调用，而 IvyClaw 将研发任务拆解为一个可以持续执行的 Agent Workflow：</p><pre><code>理解需求
+↓
+任务规划
+↓
+信息检索
+↓
+代码实现
+↓
+沙箱执行
+↓
+自动测试
+↓
+代码审查
+↓
+结果返回</code></pre><p>同时通过持久化、异步任务、HITL、限流、监控和容错机制，使整个 Agent 系统具备进一步走向生产环境的基础能力。</p><h3>⚡ Quick Start</h3><h4>克隆项目</h4><pre><code>git clone https://github.com/ivyfan-toowell/IvyClaw.git
+cd IvyClaw</code></pre><h4>配置环境变量</h4><p>复制示例配置：</p><pre><code>cp .env.example .env</code></pre><p>Windows PowerShell：</p><pre><code>Copy-Item .env.example .env</code></pre><p>然后根据自己的环境填写：</p><pre><code>IVC_API_KEY=your_api_key_here
+IVC_POSTGRES_URL=postgresql://user:password@localhost:5432/ivyclaw
+IVC_DATABASE_URL=postgresql://user:password@localhost:5432/ivyclaw
+IVC_REDIS_URL=redis://localhost:6379/0</code></pre><p>不要将真实 .env 上传至 GitHub。</p><h4>安装依赖</h4><p>项目使用 uv 管理 Python 环境：</p><pre><code>uv sync</code></pre><h4>启动 API</h4><pre><code>uv run uvicorn api.app:app --reload --port 8000</code></pre><p>启动后访问本地 8000 端口的 /docs 路径，可查看 FastAPI Swagger API 文档。</p><h4>启动 ARQ Worker</h4><pre><code>uv run arq tasks.worker.WorkerSettings</code></pre><h4>启动飞书长连接</h4><pre><code>uv run python -m channels.feishu_ws</code></pre><h4>Docker 部署</h4><pre><code>docker compose -f docker-compose.prod.yml up -d --build</code></pre><h3>🧠 Agent Core Capabilities</h3><h4>Multi-Agent &amp; Model Routing</h4><p>IvyClaw 根据不同 Agent 的职责和任务复杂度进行模型路由：</p><p>| Agent | 主要职责 | 模型档位 |<br>| --- | --- | --- |<br>| Main Agent / Planner | 任务理解、规划与决策 | Strong |<br>| Researcher | 信息检索与资料整理 | Cheap |<br>| Coder | 代码实现与修改 | Strong |<br>| Tester | 测试执行与问题定位 | Standard |<br>| Reviewer | 最终代码审查 | Strong |模型由统一的 LLM Router 管理，使 Agent 与具体模型供应商解耦，并支持 OpenAI Compatible API。</p><h4>Tool Calling</h4><p>不同 Agent 按职责获得最小工具集，可调用真实的软件工程工具：</p><p>- Git：查看和操作代码版本<br>- pytest：执行自动化测试<br>- Python / Shell：运行开发命令<br>- Web Search：Tavily / Exa 信息检索<br>- MCP：接入外部工具与服务<br>- File Tools：读取和修改工作区文件<br>- Sandbox：隔离执行 Agent 生成的代码这种最小工具授权方式可以减少不必要的工具调用和误操作风险。</p><h4>Skills</h4><p>项目通过 skills/ 为 Agent 提供可复用的软件工程流程：</p><pre><code>skills/
+├── fastapi-endpoint/
+├── requirements-clarification/
+├── systematic-debugging/
+├── test-driven-development/
+├── unit-test/
+└── verification-before-completion/</code></pre><p>Skills 用于沉淀需求澄清、调试、测试驱动开发和任务完成前验证等工程规范。</p><h3>⚙️ Agent Runtime &amp; Execution</h3><h4>Sandbox Execution</h4><p>IvyClaw 为 Agent 提供隔离的代码执行环境，支持：</p><p>- Docker Sandbox<br>- Daytona Sandbox<br>- Python / pytest / Git 命令执行<br>- 独立工作目录<br>- 沙箱复用与生命周期管理<br>- CPU / Memory / PID 等资源限制<br>- Sandbox Pool 并发管理生产环境默认使用 Docker Sandbox，并预留 gVisor / Kata 等更强隔离运行时的扩展能力。</p><h4>Persistence</h4><p>项目使用 PostgreSQL 与 Redis 作为 Agent 运行基础设施：</p><p>- PostgreSQL：保存 Checkpointer / Store、会话状态及持久化数据<br>- Redis：缓存、限流、任务队列及运行时状态LangGraph Checkpointer / Store 用于保存 Agent 执行上下文，使任务能够跨请求持续运行。</p><h4>Async Jobs</h4><p>耗时较长的 Agent 任务通过 Redis + ARQ 异步执行：</p><pre><code>Client
+↓
+FastAPI
+↓
+Create Job
+↓
+Redis Queue
+↓
+ARQ Worker
+↓
+Agent Runtime
+↓
+Persist Result
+↓
+Query Job Status</code></pre><p>支持 Job ID、任务状态查询、后台 Worker、幂等提交与结果获取。</p><h4>Human-in-the-Loop</h4><p>对于删除、破坏性修改等高风险操作，IvyClaw 支持人工审批：</p><pre><code>Agent requests risky action
+↓
+Interrupt
+↓
+Human Approval
+↓       ↓
+Approve   Reject
+↓
+Command(resume)
+↓
+Agent continues</code></pre><p>通过 HITL 将高风险工具调用从全自动执行转为可人工控制的执行流程。</p><h3>🌐 Service Access &amp; Gateway</h3><h4>Multi-Channel Access</h4><p>IvyClaw 将不同入口统一抽象为 InboundMessage，使多个渠道可以复用同一套 Agent 处理逻辑。</p><p>当前支持：</p><p>- CLI<br>- Web API<br>- Feishu WebSocket<br>- Feishu Webhook<br>- Generic Webhook整体流程：</p><pre><code>CLI / Web / Feishu / Webhook
+↓
+Channel Adapter
+↓
+InboundMessage
+↓
+handle_message()
+↓
+IvyClaw Agent</code></pre><h4>API Gateway &amp; Multi-Tenant</h4><p>项目实现了基础的服务治理能力：</p><p>- API Key 鉴权<br>- Tenant 识别与隔离<br>- Rate Limit<br>- Idempotency<br>- Request Context<br>- Audit Log请求在进入 Agent Runtime 之前，会先经过网关层完成身份识别和基础治理。</p><pre><code>Client
+↓
+API Key
+↓
+Gateway
+↓
+Tenant Context
+↓
+Rate Limit / Idempotency / Audit
+↓
+Agent Service</code></pre><p>当前仓库中的 Key / Tenant 仅作为演示配置，生产环境应接入数据库或专门的身份认证系统。</p><h4>Resilience</h4><p>IvyClaw 在基础设施层实现了多种稳定性机制：</p><p>- Retry<br>- Timeout<br>- Fallback<br>- Idempotency<br>- Concurrency Control<br>- Rate Limit<br>- PostgreSQL Connection Pool<br>- Redis Connection Pool<br>- Sandbox Pool这些机制用于提高 Agent 服务在高并发、外部模型异常或基础设施抖动情况下的稳定性。</p><h3>📊 Production, Observability &amp; Evaluation</h3><h4>Observability</h4><p>IvyClaw 集成多种可观测能力，用于追踪 Agent 从请求进入到任务完成的完整运行过程。</p><p>主要组件包括：</p><p>- LangSmith：Agent / LLM 调用链追踪<br>- Prometheus：服务指标采集<br>- Grafana：监控指标可视化<br>- Structured Logging：结构化运行日志<br>- Audit Log：关键请求与操作审计重点关注的运行指标包括：</p><p>- Request Latency<br>- Error Rate<br>- Concurrency<br>- LLM Calls<br>- Token / Cost<br>- Worker Status<br>- Sandbox Status</p><h4>Evaluation &amp; Testing</h4><p>项目包含测试、Agent Evaluation 与压测能力：</p><pre><code>tests/
+eval/
+loadtest/</code></pre><p>主要包括：</p><p>- pytest 自动化测试<br>- Agent Runtime 测试<br>- Code Cases Execution<br>- Scorer<br>- LLM Judge<br>- Baseline Evaluation<br>- Reviewer Flow Test<br>- Locust Load Test通过：</p><pre><code>开发
+↓
+自动化测试
+↓
+Agent Evaluation
+↓
+压力测试
+↓
+指标观测
+↓
+问题优化</code></pre><p>形成从开发到生产验证的工程闭环。</p><h4>Production Deployment</h4><p>IvyClaw 支持 Docker 化部署，生产环境主要服务包括：</p><p>- Web / FastAPI<br>- ARQ Worker<br>- Feishu Service<br>- PostgreSQL<br>- Redis<br>- Prometheus<br>- Grafana整体部署关系：</p><pre><code>flowchart TD
+    U[Client] --&gt; API[FastAPI Service]
+    API --&gt; PG[(PostgreSQL)]
+    API --&gt; RD[(Redis)]
+    RD --&gt; W[ARQ Worker]
+    W --&gt; AG[Agent Runtime]
+    API --&gt; AG
+    AG --&gt; SB[Docker Sandbox]
+    API --&gt; PM[Prometheus]
+    W --&gt; PM
+    PM --&gt; GF[Grafana]</code></pre><p>生产环境可通过：</p><pre><code>docker compose -f docker-compose.prod.yml up -d --build</code></pre><p>启动完整服务栈。</p><h3>📁 Project Structure</h3><pre><code>IvyClaw/
+├── agent/          # 主 Agent 与任务调度
+├── api/            # FastAPI API
+├── channels/       # CLI / Feishu / Webhook 等接入渠道
+├── gateway/        # API 鉴权、Tenant、限流
+├── infra/          # PostgreSQL、Redis、LLM Router 等基础设施
+├── middleware/     # 请求上下文、并发、审计、成本统计
+├── obs/            # Metrics 与可观测性
+├── profiles/       # 模型与 Agent Profile
+├── sandbox/        # Docker / Daytona 沙箱
+├── skills/         # Agent Skills
+├── subagents/      # Planner / Researcher / Coder / Tester / Reviewer
+├── tasks/          # ARQ 异步任务
+├── tools/          # Git / pytest / Search / MCP 等工具
+├── eval/           # Agent Evaluation
+├── loadtest/       # Locust 压测
+├── tests/          # 自动化测试
+├── scripts/        # 开发、测试与演示脚本
+├── web/            # Web UI
+├── Dockerfile
+├── docker-compose.prod.yml
+├── pyproject.toml
+└── .env.example</code></pre><h3>🔒 Security</h3><p>敏感配置统一通过本地 .env 管理，仓库中只保留 .env.example 作为配置模板。</p><p>不应提交到 GitHub 的内容包括：</p><p>- LLM API Key<br>- LangSmith API Key<br>- Feishu App Secret<br>- PostgreSQL Password<br>- 真实 Gateway API Key<br>- 其他 Token / Secret.env、虚拟环境、IDE 配置及运行时临时文件均通过 .gitignore 排除。</p><h3>🗺️ Roadmap</h3><p>IvyClaw 仍在持续迭代，后续计划包括：</p><p>- 优化 Multi-Agent 调度策略<br>- 引入 RAG / Knowledge Base<br>- 完善 Tenant 与权限管理<br>- 建立 CI/CD Pipeline<br>- 完善 Agent Evaluation 数据集<br>- 加强 Production Security<br>- 优化 Web UI<br>- 增加更多 MCP / External Tools</p><h3>📌 Project Status</h3><p>当前已实现：</p><p>- Multi-Agent Workflow<br>- Role-based Model Routing<br>- Tool Calling<br>- Docker / Daytona Sandbox<br>- PostgreSQL / Redis Persistence<br>- ARQ Async Jobs<br>- Human-in-the-Loop<br>- Multi-Channel Access<br>- API Gateway &amp; Multi-Tenant Demo<br>- Rate Limit / Idempotency / Audit<br>- LangSmith / Prometheus / Grafana<br>- Agent Evaluation<br>- Load Testing<br>- Docker Production Deployment</p><h3>📌 Note</h3><p>IvyClaw 目前主要用于 AI Agent 工程化实践、学习与研究。</p><p>项目仍在持续完善中，部分能力为工程原型或演示实现，生产环境使用时仍需进一步完善身份认证、权限控制、安全隔离和基础设施配置。</p></section><aside class="about"><h2>编辑导读</h2><p>该项目自我定位为生产级多智能体 AI Agent 系统，聚焦真实软件研发任务，技术栈基于 DeepAgents 与 LangGraph 构建。摘要仅含项目简介与标签元数据，架构分层、调度机制、性能对比与部署文档等内容均未获取。</p><p><strong>为什么读</strong>它把 DeepAgents 与 LangGraph 结合用于软件工程多智能体场景，是当前多智能体工程化的开源实践案例之一。</p><p><strong>带着问题读</strong>与 LangGraph 官方模板相比，其在任务规划与代码评审上的差异化设计及生产环境性能数据需查阅源码核实。</p></aside><aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="https://github.com/ivyfan-toowell/IvyClaw" rel="noopener noreferrer">ivyfan-toowell/IvyClaw ↗</a></p><p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="/daily/2026-09-17/03-4b9c6c88/">返回本期 →</a></p></aside><nav class="postnav" aria-label="上下篇"><a class="prev" href="/daily/2026-09-17/02-0ce055c7/"><span class="dir">← 上一篇</span>Agent Isles：可探索的岛屿世界 AI 编程学习项目</a><span></span></nav></main><aside class="sidebar"><section class="sideblock"><h2>相关阅读</h2><ul><li><a href="/daily/2026-09-17/02-0ce055c7/">Agent Isles：可探索的岛屿世界 AI 编程学习项目</a><span class="meta">2026-09-17 · GitHub</span></li><li><a href="/daily/2026-09-17/01-6d0c43a4/">为超级智能承保：投资可被起诉的智能体</a><span class="meta">2026-09-17 · Latent Space</span></li><li><a href="/daily/2026-09-16/08-5c7470ae/">RSIAgent：免训练多智能体框架，通过广度优先探索实现递归自我改进</a><span class="meta">2026-09-16 · GitHub</span></li><li><a href="/daily/2026-09-16/07-329a4726/">agenticSTAR：从单目视频进行智能体式形状追踪与三维重建</a><span class="meta">2026-09-16 · GitHub</span></li><li><a href="/daily/2026-09-16/04-5236dbdf/">智能体一次通过任务，下一次还会成功吗？</a><span class="meta">2026-09-16 · Hugging Face</span></li></ul><p class="more"><a href="/daily/tags.html">按标签浏览 →</a></p><p class="more"><a href="/daily/archive.html">全部往期 →</a></p></section></aside></div><footer><span>AI 日报 · 保持好奇，动手验证</span><a href="/daily/atom.xml">RSS 订阅 ↗</a></footer></div></body></html>

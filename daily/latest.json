@@ -1,15 +1,10 @@
 {
-  "date": "2026-09-16",
-  "url": "https://z-xj.com/daily/2026-09-16/",
-  "count": 8,
+  "date": "2026-09-17",
+  "url": "https://z-xj.com/daily/2026-09-17/",
+  "count": 3,
   "titles": [
-    "Claude Code 使用技巧合集（内容未获取）",
-    "AI 智能体 LangGraph 项目（内容未获取）",
-    "游戏中学到的技能能否迁移到现实工作？",
-    "智能体一次通过任务，下一次还会成功吗？",
-    "机器人操作智能体资源汇总",
-    "AINews 头条：Jev 分类路由小模型与 Periodic Labs 发布材料科学模型 Neon",
-    "agenticSTAR：从单目视频进行智能体式形状追踪与三维重建",
-    "RSIAgent：免训练多智能体框架，通过广度优先探索实现递归自我改进"
+    "为超级智能承保：投资可被起诉的智能体",
+    "Agent Isles：可探索的岛屿世界 AI 编程学习项目",
+    "IvyClaw：面向软件工程的多智能体 AI Agent 系统"
   ]
 }
