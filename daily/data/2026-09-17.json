@@ -1,6 +1,6 @@
 {
   "date": "2026-09-17",
-  "generated_at": "2026-09-17T14:00:51.884978+08:00",
+  "generated_at": "2026-09-17T22:51:30.233319+08:00",
   "articles": [
     {
       "title": "Underwriting Superintelligence: Backing Agents you can Sue — Rune Kvist, AIUC",
@@ -86,6 +86,85 @@
       "images": [
         "img/1.png"
       ]
+    },
+    {
+      "title": "[AINews] Reality Checks on AI News (Yegge shuts down Gas Town, Databricks’ +60% Astra cost)",
+      "url": "https://www.latent.space/p/ainews-reality-checks-on-ai-news",
+      "source": "Latent Space",
+      "published": "2026-09-17T07:28:25+00:00",
+      "excerpt": ", I mentioned not finding these ultra vibed orchestrators useful b/c reliability (w.r.t. completing tasks). Turns out the author of the most famous one had the same issue. [[IMG1]] 9:59 AM · Sep 15, 2026 87.6K Views 35 Replies 51 Reposts 832 Likes Similarly, while Astra is often reportedly cheaper than Sol in terms of Cost per Task by many benchmarks (due to token efficiency), it is not universally cheaper everywhere, as Databricks is now reporting +60% overall spend when their AI Engineers switch to Astra. Patrick Wendell@pwendell Today we rolled out Astra to every engineer at Databricks (N=~3500). Some notes that may be helpful to others: 1. Astra unambiguously out performs our previous highest-end models (Opus 5, Sol 5.6) on highly complex tasks, especially those related to high level system design or… 7:02 PM · Sep 16, 2026 548K Views 82 Replies 118 Reposts 1.87K Likes AI News for 9/",
+      "category": "Agent 开发",
+      "score": 6.85,
+      "evidence_kind": "article",
+      "title_zh": "AI周报：现实校准与多则头条",
+      "summary": "本期聚焦AI行业现实校准：Steve Yegge关停Gas Town并坦言高额订阅仅换来一个项目；Databricks采用Astra后整体开销上升约60%。另涵盖OpenAI模型失准披露框架、Xiaomi MiMo-V2.6 RL实时仪表盘、美国联邦公报疑似使用蒸馏Qwen、DeepMind Institute成立，以及Cline免费接入的Union Alpha模型争议。",
+      "why": "能一次性看清本周AI圈从模型治理、企业成本到开源模型渗透的真实进展与争议。",
+      "question": "Databricks全员切换至Astra后，是否在所有任务类型上都比前代更划算，还是仅在长链路编码任务上占优？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "OpenAI",
+        "Astra",
+        "Gas Town",
+        "MiMo-V2.6",
+        "Qwen"
+      ],
+      "translation_kind": "failed",
+      "images": []
+    },
+    {
+      "title": "4-bit Rotational Quantization",
+      "url": "https://weaviate.io/blog/4-bit-rotational-quantization",
+      "source": "Weaviate",
+      "published": "2026-09-17T00:00:00+00:00",
+      "excerpt": "(or RQ) with 8-bit and 1-bit sizes. These quantization techniques allow for fast vector search, while reducing memory usage, and at better recall than comparable alternatives such as scalar and binary quantization. Weaviate 1.39 extends RQ with 4-bit support, alongside a stack of quantization improvements in general. Rotations, distance kernels, encoding and the memory path have all been improved with net effect: 8-bit RQ is now significantly faster in 1.39 and 4-bit RQ provides similar recall with a 45%heap reduction. This post documents the story of that work, and along the way answers two questions people often ask: How does RQ hold up as datasets scale? And how does RQ compare to TurboQuant? Improvements​Rotational quantization is based on Extended-RaBitQ with a structured fast rotation and simplified per-vector interval fitting to speed up encoding. Fast encoding performance (conver",
+      "category": "上下文与记忆",
+      "score": 5.69,
+      "evidence_kind": "article",
+      "title_zh": "Weaviate 1.39推出4位旋转量化",
+      "summary": "Weaviate 1.39将旋转量化扩展至4位，并通过SIMD加速Walsh-Hadamard变换与编码内核，使RQ8编码最高提速约3.8倍，4位方案在768/1024维cosine距离计算上降至16至23ns。文章对比了与TurboQuant的取舍，并新增基于字节点积指令的距离核。",
+      "why": "想在不牺牲召回的前提下压缩向量库内存与查询延迟，这是难得的工程实测细节。",
+      "question": "文中宣称4位RQ在堆内存减少45%的同时召回接近8位，这一结论在不同向量分布与索引规模下是否依然成立？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "Weaviate",
+        "Rotational Quantization",
+        "FWHT",
+        "SIMD",
+        "TurboQuant"
+      ],
+      "translation": "# 4-bit Rotational Quantization\n\n（或 RQ），并提供 8-bit 和 1-bit 两种位宽。这些量化技术能够在降低内存占用的同时实现快速向量搜索，并且相比标量量化和二值量化等替代方案具有更好的召回率。\n\nWeaviate 1.39 扩展了 RQ，新增对 4-bit 的支持，并附带一整套量化改进。旋转、距离核（distance kernel）、编码以及内存路径都得到了改进，综合效果如下：1.39 中的 8-bit RQ 显著更快，4-bit RQ 在召回率相当的情况下将堆内存（heap）占用减少了 45%。\n\n本文记录了这些工作的来龙去脉，并在此过程中回答两个常见问题：RQ 在数据集规模扩大时的表现如何？RQ 与 TurboQuant 相比又如何？\n\n## 改进\n\n旋转量化基于 Extended-RaBitQ，并采用结构化的快速旋转以及简化的逐向量区间拟合（interval fitting），以加快编码速度。快速编码性能（即将原始向量转换为量化表示的过程）是优秀量化算法的重要组成部分，因为它会显著影响导入性能。\n\n这些方法的第一步是将原始向量乘以一个随机旋转矩阵（random rotation matrix）。这看起来可能违反直觉，但随机旋转矩阵能让向量具备更好的性质，尤其是把各个维度的值分散到整个量化区间（quantization interval）的长度上。\n\n为了加速随机旋转，我们使用快速沃尔什-哈达玛变换（Fast Walsh-Hadamard Transforms，FWHT）来旋转原始向量。在 1.39 中，我们为 FWHT 新增了 SIMD 支持，并在与 Go 参考实现位完全一致（bit-identical）的前提下获得了以下加速：\n\n```\nTransform          CPU                                 1.38 (Go)   1.39 (SIMD)   Speedup\nFWHT64             Intel Xeon 8581C (amd64/AVX)        81.3 ns     26.5 ns       3.1×\nFWHT256            Intel Xeon 8581C (amd64/AVX)        515 ns      84.5 ns       6.1×\nFWHT64             Apple M1 (arm64/NEON)               67.4 ns     21.6 ns       3.1×\nFWHT256            Apple M1 (arm64/NEON)               428 ns      96.2 ns       4.5×\n```\n\n再加上对 SIMD 编码核（encode kernel）的一些其他增强，整个 RQ 系列的编码性能得到了以下总体提升：\n\n```\nQuantizer            CPU                                 1.38        1.39        Speedup\nRQ8                  Intel Xeon 8581C (amd64/AVX)        27.3 µs     7.11 µs     3.8×\nRQ1                  Intel Xeon 8581C (amd64/AVX)        15.2 µs     6.84 µs     2.2×\nRQ4 (uncentered)     Intel Xeon 8581C (amd64/AVX)        —           6.36 µs     new in 1.39\nRQ4 (centered)       Intel Xeon 8581C (amd64/AVX)        —           8.08 µs     new in 1.39\nRQ8                  Apple M1 (arm64/NEON)               14.7 µs     6.18 µs     2.4×\nRQ1                  Apple M1 (arm64/NEON)               13.0 µs     6.18 µs     2.1×\nRQ4 (uncentered)     Apple M1 (arm64/NEON)               —           5.65 µs     new in 1.39\nRQ4 (centered)       Apple M1 (arm64/NEON)               —           7.00 µs     new in 1.39\n```\n\n## 距离核\n\n距离核通过使用 SIMD 半字节（nibble，即半个字节）函数适配到了 4-bit。我们还在可能的情况下切换到了 UDOT（arm64）和 VPDPBUSD（amd64）字节点积（byte dot）函数，这也提升了 8-bit 量化的性能。注意 8-bit 和 4-bit 的距离函数很相似，但对内存带宽的影响则大不相同，这一点将在下一节解释。\n\n单次 query→code 距离计算（余弦），1.38 vs 1.39：\n\n```\nKernel               CPU                                   1.38       1.39       Speedup\nRQ8                  Intel Xeon 8581C (amd64/AVX2)         34.3 ns    16.6 ns    2.1×\nRQ8                  Intel Xeon 8581C (amd64/AVX2)         42.8 ns    19.8 ns    2.2×\nRQ4 (uncentered)     Intel Xeon 8581C (amd64/AVX2)         —          16.0 ns    new in 1.39\nRQ4 (uncentered)     Intel Xeon 8581C (amd64/AVX2)         —          17.7 ns    new in 1.39\nRQ4 (centered)       Intel Xeon 8581C (amd64/AVX2)         —          21.9 ns    new in 1.39\nRQ4 (centered)       Intel Xeon 8581C (amd64/AVX2)         —          23.4 ns    new in 1.39\nRQ8                  Apple M1 (arm64/NEON)                 24.9 ns    17.0 ns    1.5×\nRQ8                  Apple M1 (arm64/NEON)                 31.1 ns    20.0 ns    1.6×\nRQ4 (uncentered)     Apple M1 (arm64/NEON)                 —          17.8 ns    new in 1.39\nRQ4 (uncentered)     Apple M1 (arm64/NEON)                 —          21.0 ns    new in 1.39\nRQ4 (centered)       Apple M1 (arm64/NEON)                 —          24.5 ns    new in 1.39\nRQ4 (centered)       Apple M1 (arm64/NEON)                 —          27.0 ns    new in 1.39\n```\n\n## 预取与内存访问\n\n要把距离核做到 30ns 以下，还需要向量能被 CPU 缓存有效缓存。由于图 ANN 索引（graph ANN index，例如 HNSW）的 DRAM 访问是分散的，内存带宽往往是性能的主要瓶颈，而不是距离计算本身。\n\n为了在 1.39 中改进这一点，我们为 AMD64 和 ARM64 架构都加入了高效的预取（prefetching）机制（并修复了一个存在多年的 AMD64 预取 bug）。预取通过向处理器提示接下来将使用哪些向量来提升性能。在 HNSW 扩展并计算邻居距离的过程中，我们现在会在一批向量距离计算之前进行预取或提示。\n\n在一个 1M 向量索引上（d=1536，约 800 MB 的压缩码，远超 CPU 缓存容量），仅移除预取提示的 A/B 对比显示，预取提示贡献了 7–11% 的查询吞吐量（随 ef 增大而增长）以及 12% 的导入速度提升。\n\n## 中心化与离群值\n\n在整条流水线达到硬件速度上限之后，我们开始寻找 4-bit 的召回率提升空间。其中一个未解决的事项是中心化（centering），我们知道它能提升许多嵌入数据集的召回率。中心化利用了许多嵌入具有非零均值向量（mean vector）这一事实。我们在向量子集上计算这个均值 μ，然后在压缩时把 x − μ 针对一个拟合的均值进行编码，查询时用相同的均值进行中心化，最后再把交叉项（cross-term）补回。\n\n在许多数据集上，中心化带来了显著的召回率提升，多个数据集的 recall@10 提高了 +0.1 到 +6.1 个百分点，因为嵌入往往呈现出各向异性（anisotropic），尤其是 late-interaction 模型（译注：late-interaction 模型指 ColBERT 类在表示层之后才进行交互的检索模型）。然而一些嵌入模型会通过正则化去除这种均值，因此我们通过 centering=true 标志位将这一功能设置为可选启用（opt-in）。\n\n此外，在量化一个向量时，最极端的旋转坐标会给该向量的每个维度都带来量化噪声。通过精确存储（不量化）幅值最大的两个坐标，我们在中心化的基础上又额外获得了 +0.2 到 +1.7 个百分点的召回率提升；并且通过精心打包元数据字节，我们发现可以将其存放在我们已有的 16 字节标准元数据头（metadata header）中。\n\n## 结果\n\n### 召回率\n\n下表展示了每种量化方法可达到的 recall@10。该表展示的是排除 ANN 索引的暴力召回率，以单独隔离量化本身的影响。\n\n```\nDataset                                   RQ4 recall@10 / rescored@20   RQ4c recall@10 / rescored@20   RQ8 recall@10 / rescored@20\ndbpedia-ada002-1536-1M (cosine)           93.5 / 100.0                  96.8 / 100.0                   99.0 / 100.0\nsphere-dpr-768-1M (dot)                   90.9 / 99.4                   96.3 / 100.0                   98.2 / 100.0\nsift-128-1M (l2)                          81.4 / 97.2                   87.5 / 99.3                    96.7 / 99.9\nglove-100-1.2M (cosine)                   87.0 / 99.2                   89.9 / 99.8                    98.5 / 100.0\ndbpedia-cohere-v2-4096-500k (dot)         98.1 / 100.0                  98.5 / 100.0                   99.9 / 100.0\nmsmarco-arctic-embed-m-768-1M (cosine)     94.7 / 100.0                  95.8 / 100.0                   99.3 / 100.0\nnfcorpus-mlateon-mv-128 (maxsim)          72.0 / 88.6                   94.1 / 99.9                    93.4 / 99.9\nscifact-mlateon-mv-128 (maxsim)           77.7 / 94.0                   94.5 / 100.0                   94.9 / 100.0\n```\n\n接下来更重要的是，我们在 Weaviate 中使用 HNSW 索引展示了召回率与查询性能的关系：\n\n[[IMG2]]\n\n[[IMG3]]\n\n可以非常明显地看到相同 8-bit 量化器在 1.38 到 1.39 之间的性能跃升。此外，4-bit 的性能-召回率曲线在占用显著更少内存的同时超越了 8-bit。\n\n下面是在 1536 维向量数据集上的堆内存影响。注意你并不会看到内存占用减半（只有 45%），因为 HNSW 图的元数据（主要是打包的连接信息）同样占用内存。作为参考，未量化存储该数据集需要 5.7 GiB 加上图元数据。\n\n[[IMG4]]\n\n由于编码和距离函数更快，导入时间也有所改善。在同一数据集上，RQ8 从 1.38 到 1.39 的导入时间下降了 16%，RQ4 和 RQ4c 则分别比 1.38 基线少 37% 和 32%。\n\n### 在规模扩大时是否仍然有效？\n\n我们做的一个有趣的实验是：对 Meta 的 Sphere 语料库（DPR，768 维，点积）的随机采样子集进行规模扩展，然后使用每点 1,000 个查询对精确真值（ground truth）进行暴力 recall@10 测试，规模从 1M 到 250M 向量。\n\n```\nQuantizer    Recall 1M    Recall 10M    Recall 100M    Recall 250M\nrq8          97.15        97.09         97.09          96.90\nrq4c         94.00        93.51         93.82          93.53\nrq4          84.58        83.41         84.63          85.02\n```\n\n这里最大的结论是，在 1M 到 250M 范围内，召回率基本保持平稳。即使使用独立的查询重新运行，结果仍处于相当紧凑的区间内。\n\n这张图也清楚地展示了重排序（rescoring，即用未量化向量对前 20 个向量距离进行重打分）带来的巨大召回率收益，以及 RQ4 centered 为何能更准确地处理均值偏斜（skewed mean）的数据集。\n\n该结果的一个注意点：尽管量化器在该范围内能实现几乎与规模无关的召回率，但 ANN 索引确实存在随规模退化（degrade）的参数。处理这种情况的一种标准方式是合理地对数据集进行分片（sharding）（无论如何，在扩展到大型数据集时通常都建议进行分片）。\n\n### RQ4 的均值需要多少向量？\n\nRQ4 centered 通过一个默认上限为 10,000 个向量的样本来拟合均值 μ。启用异步索引（async indexing）时会自动完成此操作。我们可以在数据集前 N 个向量上拟合均值，然后测量它与全语料均值之间的距离，从而评估区间所覆盖的分布范围：在默认的 10k 时，拟合均值与再多 100 倍数据所确定的均值相比，落在大约 1% 的语料半径以内。在整个语料上拟合则没有带来可衡量的收益（跨七个数据集的最大差异为 0.20 个百分点，其中两个数据集反而是 10k 拟合更好）。因此对于 RQ4，默认的训练上限为 10,000，这样可以让内存节省更早开始生效。\n\n### 与 TurboQuant 的比较\n\n关于 RQ，我们经常被问到一个问题：它与 TurboQuant 比较如何？TurboQuant 是另一种量化技术，同样使用随机旋转，但在旋转后使用 Lloyd-Max 码本（codebook）而非均匀网格来量化向量。\n\n为进行下面的比较，我们运行了自己的实现与一个流行的开源 TurboQuant 实现之间的召回率基准测试。如果你想了解更多比较 RaBitQ 和 TurboQuant 的细节，我们还推荐 Revisiting RaBitQ and TurboQuant: A Symmetric Comparison of Methods, Theory, and Experiments 一文，该文更深入地比较了这两种算法。\n\n```\nDataset                                   RQ8    RQ4    RQ4c   4-bit TurboQuant (paper)   4-bit TurboQuant (renorm)   4-bit TurboQuant (centered+renorm)\ndbpedia-ada002-1536-1M (cosine)           99.0   93.5   96.8   87.4                       94.5                        96.4\nsphere-dpr-768-1M (dot)                   98.2   90.9   96.3   76.6                       91.6                        95.8\nsift-128-1M (l2)                          96.7   81.4   87.5   80.4                       81.0                        85.3\nglove-100-1.2M (cosine)                   98.5   87.0   89.9   79.0                       85.4                        86.9\ndbpedia-cohere-v2-4096-500k (dot)         99.9   98.1   98.5   97.4                       98.2                        98.2\nmsmarco-arctic-embed-m-768-1M (cosine)     99.3   94.7   95.8   91.5                       95.1                        95.9\nnfcorpus-mlateon-mv-128 (maxsim)          93.4   72.0   94.1   26.8                       76.2                        93.2\nscifact-mlateon-mv-128 (maxsim)           94.9   77.7   94.5   36.7                       81.1                        94.1\n```\n\n其中 TurboQuant (paper) 是论文中标准的 TurboQuant MSE 变体，(renorm) 增加了重归一化（renormalization），这已被发现对改进基础 TurboQuant 很重要，而 (centered+renorm) 还增加了均值中心化，以便与 centered RQ4 进行公平比较。\n\n忠于论文实现的 TurboQuant 在每个数据集上都输了（并且在像 mLateOn 这样高度各向异性的多向量模型上表现尤其糟糕）。加入中心化和重归一化后，差距有所缩小，但 RQ4c 在 8 个数据集中的 7 个上获胜。\n\n最后，你可能已经注意到大多数公开实现中并没有\"8-bit\" TurboQuant。这是因为在 2-bit 或 4-bit 上有效的 SIMD 码本技巧在 8-bit 上不再奏效（性能会大幅下降）。RQ 在这方面适应性更强，可在全范围内使用。\n\n## 使用 4-bit RQ\n\n4-bit RQ 在 Weaviate 1.39 中作为现有 RQ 量化器上的一个 bits 设置发布。\n\n```json\n\"vectorIndexConfig\": {\n    \"rq\": {\n        \"enabled\": true,\n        \"centering\": true,\n        \"bits\": 4\n    }\n}\n```\n\n在 Python 客户端中：\n\n```python\nfrom weaviate.classes.config import Configure, Property, DataType\n\nclient.collections.create(\n    name=\"Recipes\",\n    vector_config=Configure.Vectors.text2vec_openai(\n        quantizer=Configure.VectorIndex.Quantizer.rq(\n            bits=4,\n            centering=True,\n        ),\n    ),\n    properties=[\n        Property(name=\"title\", data_type=DataType.TEXT),\n    ],\n)\n```\n\n## 总结\n\n我们很高兴地宣布对 Rotational Quantization 进行的整套性能改进，以及新增的 4-bit 位宽。旋转量化为快速编码和距离计算进行了调优，实现了具有竞争力的召回率，并显著节省了内存。尽管我们在 Weaviate Cloud 中仍保留 8-bit 作为默认值，但我们邀请你",
+      "translation_kind": "full",
+      "translation_source": "article",
+      "images": [
+        "img/1.png",
+        "img/2.png",
+        "img/3.png",
+        "img/4.png"
+      ]
+    },
+    {
+      "title": "fhshaik/typesafe-mario",
+      "url": "https://github.com/fhshaik/typesafe-mario",
+      "source": "GitHub",
+      "published": "2026-09-16T04:57:42Z",
+      "excerpt": "TypeSafe Mario An experimental controller that lets TypeSafe's Jev model directly choose NES controller inputs for the original Super Mario Bros. The model does not receive screenshots. The harness translates emulator telemetry and RAM into compact, object-centric JSON containing Mario's motion, jump trajectory, upcoming enemies, terrain, measured response delay, recent-control results, and episode progress. Jev chooses one of the legal controller actions, the emulator advances several frames, and the loop repeats. The raw local tile grid remains available in debug logs and the UI, but is not duplicated in the model input. Architecture NES emulator -> telemetry/RAM parser -> structured JSON -> Jev Choice -> controller input The initial action set is intentionally small: noop right right_jump right_run right_run_jump jump left Requirements Python 3.13 or newer A TypeSafe API key in TYPESA",
+      "category": "Agent 开发",
+      "score": 0.29,
+      "evidence_kind": "article",
+      "title_zh": "typesafe-mario：用结构化仿真器状态玩超级马里奥的智能体",
+      "summary": "仓库简介显示，这是一个基于TypeSafe/Jev框架的Python智能体，通过结构化仿真器状态游玩《超级马里奥兄弟》，仓库星标152。仅获取到项目说明，具体实现细节、性能基准与训练流程未在给定片段中披露。",
+      "why": "对结构化状态驱动的游戏智能体感兴趣的读者可前往仓库一探究竟。",
+      "question": "该智能体究竟使用了何种Jev工作流，其在多关卡上的泛化能力与人类水平对比如何？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "TypeSafe",
+        "Jev",
+        "Super Mario Bros",
+        "Emulator"
+      ],
+      "translation": "# TypeSafe Mario：一个实验性控制器，让 TypeSafe 的 Jev 模型为原版《Super Mario Bros.》直接选择 NES 手柄输入\n\n模型不会接收游戏截图。适配层（harness）把模拟器遥测（telemetry）和内存（RAM）翻译成紧凑的、以对象为中心的 JSON，里面有马里奥的动作、跳跃轨迹、前方敌人、地形、测得的响应延迟、最近的控制结果以及关卡进度。Jev 从合法的控制器动作里挑一个，模拟器推进若干帧，然后循环重复。原始的本地瓦片网格（tile grid）仍然可以在调试日志和界面里查看，但不会复制到模型输入中。\n\n架构\nNES 模拟器 -> 遥测/RAM 解析器 -> 结构化 JSON -> Jev Choice（选择）-> 控制器输入\n\n初始动作集刻意做得很小：\nnoop\nright\nright_jump\nright_run\nright_run_jump\njump\nleft\n\n环境要求\nPython 3.13 或更新版本\n在环境变量 TYPESAFE_API_KEY 中配置的 TypeSafe API key\n《Super Mario Bros.》的合法本地安装\n\n本仓库不包含任何任天堂 ROM 或其他受版权保护的游戏数据。你需要自行确保模拟器和游戏文件的来源合法、使用合规。\n\n安装\n```powershell\npy -3.13 -m venv .venv\n.venv\\Scripts\\python -m pip install -e \".[mario,dev]\"\n$env:TYPESAFE_API_KEY=\"your-key\"\n```\n\n在不启动游戏也不调用 API 的情况下，检视将发送给 TypeSafe 的确切 JSON 和文本：\n```powershell\n.venv\\Scripts\\typesafe mario state demo\n```\n\n在 World 1-1 中运行，让 Jev 每八个模拟器步做一次决策。默认显示是一个可录制的单窗口，里面有实时游戏画面和模型遥测：\n```powershell\n.venv\\Scripts\\typesafe mario play --env SuperMarioBros-v0 --frames-per-decision 8\n```\n\n仪表盘会展示所选动作、Choice 的完整概率分布、置信度、Jev 延迟、跳跃概率、危险分数、奖励以及解析后的游戏状态。按 R 键或点击 Restart 重开一局，死亡或通关后仪表盘依然保持打开。按 Esc 或 Q 退出。用 `--display game` 只显示模拟器窗口，用 `--display none` 则进入无界面基准测试。\n\n每次决策都会写入 `artifacts/run-<timestamp>.jsonl`。这些记录包含延迟、动作概率、置信度、规范的模型状态、原始调试状态以及游戏结果，可以为实时叠加层或渲染后的社交短片提供数据。\n\n解析器会生成什么\nTypeSafe 直接接受 JSON，所以不必把遥测拍平成自然语言。\n\n面向模型的对象按语义对观测分组：\nplayer：位置、速度、是否着地、跳跃阶段、强化状态\ntrajectory：滞空时间、起跳后已飞过的距离，以及是否已锁定缺口跨越\nhazard：最多三个敌人、其投影位置、接触时机、起跳截止时间\nterrain：障碍/缺口几何形状、观测可靠性、上一次着地点的地形预览\nreaction_timing：动作持续时间，以及测得的从观测到动作的延迟\nrecent_control：所选动作、持续时间、已取得的推进、观察到的结果\nepisode：生命数、计时器、进度、停滞次数、死亡、通关\n\n对人类来说，更完整的调试快照仍能渲染成紧凑文本：\n```\nGoal: Reach the flag in World 1-1 without dying.\nMario: x=172 y=79, moving right, airborne=False, status=small\nProgress: 172 (best 172), time=387, lives=2\nNearby enemies: goomba 42px ahead\nLocal grid (# solid, . empty, E enemy, M Mario):\n...........\n...........\n...........\n..M..E.....\n###########\n```\n\n结构化对象是规范的，文本视图只用于调试和界面。\n\nTypeSafe 判定\n每次请求会基于同一状态给出三个相互独立的判定。Choice 选出下一个控制器宏动作；Noul 估计此刻前跳是否有用；Score 度量即时危险程度，用于实时可视化。\n\n精确的时间计算留在代码里。比如，解析器会把测得的响应耗时、敌人动作、动作节奏以及跳起越障时间组合成一个带类型的 `jump_must_start_this_decision`（本轮决策必须起跳）事实。Jev 解读这些事实，控制器选择权依然在它手里，没有脚本式的恢复动作覆盖。\n\n开发\n```powershell\n.venv\\Scripts\\ruff format --check src tests\n.venv\\Scripts\\ruff check src tests\n.venv\\Scripts\\python -m pytest -q\n```",
+      "translation_kind": "full",
+      "translation_source": "article"
     }
   ],
   "errors": [

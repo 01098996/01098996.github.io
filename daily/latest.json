@@ -1,10 +1,13 @@
 {
   "date": "2026-09-17",
   "url": "https://z-xj.com/daily/2026-09-17/",
-  "count": 3,
+  "count": 6,
   "titles": [
     "为超级智能承保：投资可被起诉的智能体",
     "Agent Isles：可探索的岛屿世界 AI 编程学习项目",
-    "IvyClaw：面向软件工程的多智能体 AI Agent 系统"
+    "IvyClaw：面向软件工程的多智能体 AI Agent 系统",
+    "AI周报：现实校准与多则头条",
+    "Weaviate 1.39推出4位旋转量化",
+    "typesafe-mario：用结构化仿真器状态玩超级马里奥的智能体"
   ]
 }
