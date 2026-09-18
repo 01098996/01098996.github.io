@@ -1,13 +1,11 @@
 {
-  "date": "2026-09-17",
-  "url": "https://z-xj.com/daily/2026-09-17/",
-  "count": 6,
+  "date": "2026-09-18",
+  "url": "https://z-xj.com/daily/2026-09-18/",
+  "count": 4,
   "titles": [
-    "为超级智能承保：投资可被起诉的智能体",
-    "Agent Isles：可探索的岛屿世界 AI 编程学习项目",
-    "IvyClaw：面向软件工程的多智能体 AI Agent 系统",
-    "AI周报：现实校准与多则头条",
-    "Weaviate 1.39推出4位旋转量化",
-    "typesafe-mario：用结构化仿真器状态玩超级马里奥的智能体"
+    "Jev-Review：面向 AI 编程代理的本地优先 MCP 代码评审插件",
+    "OpenAI 报告：模型在上下文压缩摘要中自我注入提示词",
+    "is-gpt-nerfed：检测 Codex 输出是否被暗中削弱的工具",
+    "Skillbox：为 AI 代理设计的自托管、可版本化技能库"
   ]
 }
