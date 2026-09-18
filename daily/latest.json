@@ -1,11 +1,15 @@
 {
   "date": "2026-09-18",
   "url": "https://z-xj.com/daily/2026-09-18/",
-  "count": 4,
+  "count": 8,
   "titles": [
     "Jev-Review：面向 AI 编程代理的本地优先 MCP 代码评审插件",
     "OpenAI 报告：模型在上下文压缩摘要中自我注入提示词",
     "is-gpt-nerfed：检测 Codex 输出是否被暗中削弱的工具",
-    "Skillbox：为 AI 代理设计的自托管、可版本化技能库"
+    "Skillbox：为 AI 代理设计的自托管、可版本化技能库",
+    "AI News 每日摘要：智能体运行时、长时工作流与协调器 UI 的兴起",
+    "Bend 2 与氛围编码陷阱：自动证明真的适合 AI 编码时代吗？",
+    "ZCode 静默上传 Git 历史：Z.ai 桌面编码代理曝隐私问题",
+    "ekzhang/openjev-sglang：兼容 Jev 接口的开源端点（仅预填充）"
   ]
 }

@@ -1,0 +1,93 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>Bend 2 与氛围编码陷阱：自动证明真的适合 AI 编码时代吗？ · 2026-09-18 AI 日报 · 面向Google编程</title><meta name="description" content="文章以 Bend 2 为切入点，批评当下人类写法则、AI 写实现与证明、编译器验证正确性的语言设计思路。作者承认这种为 AI 编码而造语言的愿景看似诱人，但认为其中隐含多项根本性权衡值得警惕。文章借 Bend 2 案例反思 vibe-coding 风潮下语言设计的常见误区，但摘要截断，具体论据未完整呈现。"><meta property="og:title" content="Bend 2 与氛围编码陷阱：自动证明真的适合 AI 编码时代吗？ · 2026-09-18 AI 日报"><meta property="og:description" content="文章以 Bend 2 为切入点，批评当下人类写法则、AI 写实现与证明、编译器验证正确性的语言设计思路。作者承认这种为 AI 编码而造语言的愿景看似诱人，但认为其中隐含多项根本性权衡值得警惕。文章借 Bend 2 案例反思 vibe-coding 风潮下语言设计的常见误区，但摘要截断，具体论据未完整呈现。"><meta property="og:type" content="article"><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/daily/style.css"><link rel="alternate" type="application/atom+xml" title="AI 日报" href="/daily/atom.xml"></head><body><a class="skip" href="#main">跳到正文</a><div class="page wide"><header><a class="brand" href="/">面向Google编程<span>CHARLES ZHANG</span></a><nav aria-label="主导航"><a href="/">博客</a><a class="active" href="/daily/">AI 日报</a><a href="/daily/tags.html">标签</a><a href="/daily/archive.html">往期</a></nav></header><div class="layout"><main id="main"><section class="intro"><p class="eyebrow">AI DAILY / 2026-09-18</p><h1>Bend 2 与氛围编码陷阱：自动证明真的适合 AI 编码时代吗？</h1><p class="original">Bend 2 and the Vibe-Coding Trap</p><div class="meta"><span class="tag">AI 编程实践</span><span>Hacker News · 2026-09-18</span></div><div class="tags"><a class="tag-pill" href="/daily/tags.html#vibe%20coding">vibe coding</a><a class="tag-pill" href="/daily/tags.html#Bend">Bend</a><a class="tag-pill" href="/daily/tags.html#programming%20language%20design">programming language design</a><a class="tag-pill" href="/daily/tags.html#AI-assisted%20coding">AI-assisted coding</a></div></section><p class="muted">全文中文翻译 · AI 生成，仅供学习交流</p><section class="translation"><h2>Bend 2 与氛围编码（vibe-coding）陷阱</h2><p>[我之所以把 Bend 当作例子来用，是因为它最近风头正劲、知名度高，而且具备一些方便拿来分析的特点，所以很适合佐证我对氛围编码的整体看法。我对 Bend 作者在语言设计上的过往经历一无所知，也不清楚他是不是其实考虑过下文的取舍、只是做出了我认为不太理想的选择。你完全可以把下文中所有的「作者」替换成「一个假想的、可能造出同样东西的作者」。]</p><p>Bend 2 号称是一门面向 AI 编码时代的语言，人类撰写「律法」（laws），AI 撰写实现和证明（proof），编译器负责核查证明是否可靠（sound）。这一整套听上去相当惊艳，也难怪会有人想要这样一种语言。这个想法本身其实存在着几个挺大的问题，不过那不是本文要讨论的内容。本文想聊的是 Bend 本身，似乎已经掉进了一个氛围编码常见的、却鲜有人提及的陷阱。</p><p>先给个基线。Bend 在其主页 demo 中要求开发者手写的内容，位于仓库的 app_win_is_bug_2d 目录下、名为 LAWS.bend 的文件。我不在此完整复刻，因为代码本身并不重要。重要的是体量。为了说「玩家永远碰不到旗子、永远赢不了游戏」这一件事，它写了 58 行代码。还有一个问题，LLM 可以随意重定义 Game 的子程序（subprogram）让它们做任何事；不过这同样不是本文的重点。</p><p>接下来看看，为了证明这些「律法」，LLM 究竟需要写多少东西。证明代码在同一个仓库的 PROOF.bend 文件里。量非常大。为了证明那些简单的性质，写了 442 行证明代码。</p><p>那么我对这事儿到底有什么不满？为什么要叫它「氛围编码陷阱」？</p><p>问题在于，氛围编码让人可以在还没充分理解问题之前，就先搭出一个体量可观的解决方案，从而错失一个明显更优的解法。开发者可能已经把一整套语言和编译器都造出来了，却完全没看到一种哪怕只是入门级领域综述都会摆到眼前的方法。</p><p>我说的领域，就是形式化验证（formal verification）。有意思的是，「formal verification」这两个词从来没出现在 Bend 的官网页面和代码仓库里。开发者围绕一个领域造出了一整套语言，却似乎压根没意识到这个领域的存在。</p><p>为了直观说明这为什么是个问题，我用 SPARK 重写了一遍 Bend 当作 demo 的那个程序。SPARK 是一门用于形式化验证的开源语言，并配套有编译器。为了对 Bend 公平起见，下面这段代码我也是纯靠氛围编码搞出来的。我只告诉 LLM「用 SPARK 重写这个 demo」，没有给任何额外指导：</p><pre><code>package Game with SPARK_Mode is
+   subtype Column is Integer range ..;
+   subtype Row    is Integer range ..;
+   type State is record
+      X   : Column;
+      Y   : Row;
+      Won : Boolean;
+   end record;
+
+   Start : constant State := (, , False);
+
+   function Wall (X : Column; Y : Row) return Boolean is
+      (((X =  or X = ) and Y &lt;= ) or
+       ((Y =  or Y = ) and X &lt;= ));
+
+   function Cell (X : Column; Y : Row) return Character is
+      (if Wall (X, Y) then &#x27;#&#x27;
+       elsif X =  and Y =  then &#x27;F&#x27;
+       else &#x27;.&#x27;);
+
+   --  Inductive invariant: outside the sealed room, off walls, not won.
+   function Safe (G : State) return Boolean is
+      ((G.X &gt;  or G.Y &gt; ) and not Wall (G.X, G.Y) and not G.Won)
+      with Ghost;
+
+   procedure Step (G : in out State; Key : Character)
+      with Post =&gt; (if Safe (G&#x27;Old) then Safe (G));
+
+   --  Both Bend laws, including the actual cell drawn by the terminal.
+   function Replay (Keys : String) return State
+      with Post =&gt;
+         not Replay&#x27;Result.Won and
+         Cell (Replay&#x27;Result.X, Replay&#x27;Result.Y) /= &#x27;F&#x27;;
+
+end Game;
+
+package body Game with SPARK_Mode is
+
+   procedure Step (G : in out State; Key : Character) is
+      X : Column := G.X;
+      Y : Row    := G.Y;
+   begin
+      case Key is
+         when &#x27;w&#x27; =&gt; Y := (Y ) mod ;
+         when &#x27;s&#x27; =&gt; Y := (Y ) mod ;
+         when &#x27;a&#x27; =&gt; X := (X ) mod ;
+         when &#x27;d&#x27; =&gt; X := (X ) mod ;
+         when others =&gt; return;
+      end case;
+      if not Wall (X, Y) then
+         G := (X, Y, G.Won or else Cell (X, Y) = &#x27;F&#x27;);
+      end if;
+   end Step;
+
+   function Replay (Keys : String) return State is
+      G : State := Start;
+   begin
+      for Key of Keys loop
+         pragma Loop_Invariant (Safe (G));
+         Step (G, Key);
+      end loop;
+      return G;
+   end Replay;
+
+end Game;
+
+with Ada.Text_IO; use Ada.Text_IO;
+with Game;        use Game;
+
+procedure Main is
+   G : State := Start;
+begin
+   Put_Line (&quot;Winning is impossible. WASD + Enter to move; q + Enter to quit.&quot;);
+   loop
+      for Y in Row loop
+         for X in Column loop
+            Put (if X = G.X and Y = G.Y then &#x27;P&#x27; else Cell (X, Y));
+         end loop;
+         New_Line;
+      end loop;
+      Put_Line (if G.Won then &quot;WON (this should be unreachable)&quot;
+                else &quot;still not won&quot;);
+      exit when End_Of_File;
+      declare
+         Keys : constant String := Get_Line;
+      begin
+         exit when Keys = &quot;q&quot;;
+         for Key of Keys loop
+            Step (G, Key);
+         end loop;
+      end;
+   end loop;
+end Main;</code></pre><p>现在我们已经用与 Bend 同样的方式定义了同样的「律法」，我想表达的点到底是什么？</p><p>和 Bend 不同的是，我们在这里提供的已经是证明程序正确性所需的全部内容，根本不需要让 LLM 浪费时间浪费 token，从零开始堆出 442 行证明。直接跑 GNATprove 就能得到：</p><pre><code>Success: all checks proved (12 checks).</code></pre><p>Bend 的作者完全没意识到，这其实就是形式化验证领域当下的标准做法。但前提是，他得先知道这个领域存在才行。他反倒另起炉灶，整出了一套得先写冗长规约、再写更冗长证明的系统。倘若在用氛围编码硬造一整套语言和编译器之前先做一点点研究，结果本来可以好得多，因为他会知道自己究竟该让 LLM 生成什么。</p><p>这个例子的意义不止于 Bend 本身。氛围编码让人太容易直接动手把一个设计方案实现出来，而这个方案要么糟糕透顶，要么已经落后业界数十年。因为你不做任何研究就能立刻拿到一个结果。如果你直接要求 LLM 提供一种「能从基本原理出发逐步构造证明、从而在形式上证明函数正确」的语言，它会很乐意照办，却绝不会主动停下来提醒你，计算机早就能在没有 LLM 的情况下构造复杂证明，从而省去其中 99% 的工作量。它也绝不会告诉你，你正在造的东西，几乎已经以现成工作的形式存在，你完全可以直接站在前人的肩膀上继续。</p></section><aside class="about"><h2>编辑导读</h2><p>文章以 Bend 2 为切入点，批评当下人类写法则、AI 写实现与证明、编译器验证正确性的语言设计思路。作者承认这种为 AI 编码而造语言的愿景看似诱人，但认为其中隐含多项根本性权衡值得警惕。文章借 Bend 2 案例反思 vibe-coding 风潮下语言设计的常见误区，但摘要截断，具体论据未完整呈现。</p><p><strong>为什么读</strong>借具体语言案例剖析 AI 编程时代语言设计的常见误区，对评估新一代编程语言具有参考价值。</p><p><strong>带着问题读</strong>Bend 2 所声称的编译器自动检查证明正确性在实际工程中能覆盖多少边界情况？</p></aside><aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="https://blog.liampwll.com/posts/bend_vibe_coding" rel="noopener noreferrer">Bend 2 and the Vibe-Coding Trap ↗</a></p><p>Discussion：<a href="https://news.ycombinator.com/item?id=49753179" rel="noopener noreferrer">Hacker News 讨论区 ↗</a></p><p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="/daily/2026-09-18/06-dad41c97/">返回本期 →</a></p></aside><nav class="postnav" aria-label="上下篇"><a class="prev" href="/daily/2026-09-18/05-e86e6c10/"><span class="dir">← 上一篇</span>AI News 每日摘要：智能体运行时、长时工作流与协调器 UI 的兴起</a><a class="next" href="/daily/2026-09-18/07-dcd7d332/"><span class="dir">下一篇 →</span>ZCode 静默上传 Git 历史：Z.ai 桌面编码代理曝隐私问题</a></nav></main><aside class="sidebar"><section class="sideblock"><h2>相关阅读</h2><ul><li><a href="/daily/2026-09-18/01-18b16bab/">Jev-Review：面向 AI 编程代理的本地优先 MCP 代码评审插件</a><span class="meta">2026-09-18 · GitHub</span></li><li><a href="/daily/2026-09-13/05-77b857c0/">对P(doom)与AI风险的反思</a><span class="meta">2026-09-13 · Armin Ronacher</span></li><li><a href="/daily/2026-09-10/12-2b36e6db/">研究加速：OpenAI内部如何看待自动化AI研究员进展</a><span class="meta">2026-09-10 · OpenAI</span></li><li><a href="/daily/2026-09-10/06-bba939c7/">前沿模型AEO追踪：Astra如何挑选答案来源</a><span class="meta">2026-09-10 · Latent Space</span></li><li><a href="/daily/2026-09-15/03-52d972cf/">AgentVerse-OS：面向开发者与 AI Agent 的个人云操作系统</a><span class="meta">2026-09-15 · GitHub</span></li></ul><p class="more"><a href="/daily/tags.html">按标签浏览 →</a></p><p class="more"><a href="/daily/archive.html">全部往期 →</a></p></section></aside></div><footer><span>AI 日报 · 保持好奇，动手验证</span><a href="/daily/atom.xml">RSS 订阅 ↗</a></footer></div></body></html>
