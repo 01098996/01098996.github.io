@@ -1,6 +1,6 @@
 {
   "date": "2026-09-19",
-  "generated_at": "2026-09-19T13:42:59.138391+08:00",
+  "generated_at": "2026-09-19T21:51:41.393770+08:00",
   "articles": [
     {
       "title": "Claude Code now reads AGENTS.md if there is no Claude.md",
@@ -81,6 +81,142 @@
         "img/3.png",
         "img/4.png"
       ]
+    },
+    {
+      "title": "[AINews] Here are 6 Clones of Jev in 2 days",
+      "url": "https://www.latent.space/p/ainews-here-are-6-clones-of-jev-in",
+      "source": "Latent Space",
+      "published": "2026-09-19T05:48:28+00:00",
+      "excerpt": "-large encoder with two added transformer layers that score user-supplied options, PPO over sequence embeddings to output turn-by-turn conversion trajectories (probabilities from 0.0 to 1.0). salty that he did not get recognition; claims RLCD without justification confidence is entropy-based, not calibrated DiffusionGemmaJev: tackling this from a Diffusion model basis. Pretty close on benchmarks Bespoke Nimble: LoRA finetune of Qwen3.5-9B, using contrastive data curation. (close but sllightly lower on benchmarks) SemIf (fka OpenJev) (HF): 4B and 35B causal Qwen3.5 backbone with a tiny three-class NLI classifier on the last token. comparison vs Laya Jevlike: 40K byte embedding lightweight option-attention model. Each candidate becomes a query that reads from a shared context representation, then receives a score. Kev-0.5B: LoRA adapter + a small readout head on top of Qwen2.5-0.5B. Of cou",
+      "category": "Agent 开发",
+      "score": 7.83,
+      "evidence_kind": "article",
+      "title_zh": "Jev 发布两天内涌现的 6 个社区克隆",
+      "summary": "围绕 Jev 发布后两日内涌现的 6 个社区克隆，涵盖 ModernBERT 路线的 Laya、扩散路线的 DiffusionGemmaJev、Qwen3.5-9B LoRA 微调的 Bespoke Nimble、加 NLI 头的 SemIf、轻量选项注意力的 Jevlike，以及基于 Qwen2.5-0.5B 的 Kev-0.5B。讨论聚焦路由、引用选择、提级等判别式用例的成本与质量权衡。",
+      "why": "系统梳理 Jev 发布后社区在判别式模型方向的复现生态。",
+      "question": "这些克隆究竟是用合成数据真正提升了判别能力，还是只是 LoRA 包装？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "Jev",
+        "判别模型",
+        "ModernBERT",
+        "扩散模型",
+        "LoRA微调"
+      ],
+      "translation": "# [AINews] 两天内冒出的 6 个 Jev 克隆\n\n大型编码器加上两个新增的 transformer 层，用来给用户给定的选项打分；用 PPO（近端策略优化）跑在序列嵌入上，输出逐轮的转化轨迹（概率从 0.0 到 1.0）。\n\n对没能获得关注愤愤不平。声称 RLCD 的无理由置信度是基于熵的、没有校准。DiffusionGemmaJev：从扩散模型（Diffusion Model）的角度切入处理这个问题。\n\n基准上相当接近。Bespoke Nimble，在 Qwen3.5-9B 上做 LoRA（低秩适配）微调，用对比式数据筛选（contrastive data curation）。（基准成绩接近但略低）SemIf（前身 OpenJev）（HF），4B 和 35B 的因果 Qwen3.5 为主干，最后一个 token 上接一个小型三分类 NLI（自然语言推理）分类器。\n\n对比 Laya 的 Jevlike，40K 字节嵌入的轻量级选项-注意力模型。每个候选项变成一条 query，从共享的上下文表征里读取信息，然后拿一个分数。\n\nKev-0.5B，在 Qwen2.5-0.5B 之上加一个 LoRA 适配器和一个小型读出头（readout head）。\n\n当然，关于数据这一面讨论得还远远不够，而大家也承认数据是 100% 合成的。\n\nAI News for 9/17/2026-9/18/2026. We checked 12 subreddits, 544 Twitters and no further Discords.\n\nAINews 的网站可以搜索所有往期。提醒一下，AINews 现在是 Latent Space 下面的一个栏目。邮件订阅频率可以自己开关。\n\n# AI Twitter Recap\n\n## 决策模型、路由与「Jev」浪潮\n\n判别式模型（discriminative model）作为一种新的系统原语脱颖而出。\n\n最热闹的技术讨论围绕 Jev 展开，一个非生成式的决策模型，被定位成 LLM 的快速「System 1」补充（译注：卡尼曼双系统理论中的系统 1，指快速直觉式思考）。\n\n@ankrgyl 说它现在作为 eval 模型在 Braintrust 里可用，相较此前的方案打分成本约低 400 倍。@gabepereyra 强调的是校准概率（calibrated probability）的用例，比如路由、引用选择、升级处理、法律运营决策。\n\n更偏架构的看法来自 @hxiao。他认为 Jev 可以把工具调用、路由、MCP（Model Context Protocol）风格的决策，从小生成式 LM 手里拽回到判别式模型上。@signulll 更进一步，把这一类模型定位成近乎零边际成本、设备端可跑的判断层，拿来做通知、UI 适配、传感器驱动的决策。\n\n开源复现和生态克隆立刻涌现。\n\n@madiator 放出了 Bespoke Nimble，一份「open Jev」的配方，用 LoRA 微调 Qwen3.5-9B，搭配合成对比数据筛选和受限解码。在他们整理的 eval 上，基础 Qwen 从 66% 提到了 90%，Jev 是 93%，H100 上报告 100ms，能本地跑。\n\n尺寸更小那头，@jaredpalmer 放出了 Kev-0.5B，一个基于 Qwen2.5-0.5B 的迷你 Jev-like 模型，MacBook Pro 就能跑。\n\n反应大致按老资历来分。@MParakhin 提到 ChatGPT 之后入行的用户像看到了新大陆，而 GPT 之前就做 ML 的人对这波热度更困惑。@abacaj 提的那个问题是点到位的。很多 demo 强调的是速度而不是质量，这个品类至今还没有标准基准。\n\n第一批像样的集成落地在浏览器和 computer-use 工作流里。\n\n@levie 演示了 Jev 把 Box 的事故报告分类到升级路径。@ndrezn 展示了用 LangChain + Jev 做浏览器使用，在维基百科游戏和「叠衣服」这种结构化工作流上表现很强。@cline 上线了一个插件，让 Jev 在 Cline 里获得浏览器能力。\n\n@hwchase17 直接说浏览器使用是他目前见过最好的 Jev 应用。\n\n总结一下，这看起来更像一个工作流控制面的故事，而不是聊天机器人的故事。\n\n## Agent 工具、编码 harness 与 Claude Code 标准\n\nAGENTS.md 作为一个跨工具约定真正获得了势头。\n\n这里最高信号的产品更新是 @trq212 宣布的。Claude Code v2.1.277 现在在没有 CLAUDE.md 时会检查 AGENTS.md，配置层也加了开关。这相当于默认承认 AGENTS.md 是一个正在成型的标准，而不是某个工具的私有约定。\n\n@simonw 立刻指出了实际好处。少写一堆一个格式指向另一个格式的 shim 文件。\n\nharness 设计正在成为编码 agent 性能和成本的一等变量。\n\n@pidotdev 拎出了 Harness Tax 那篇分析。一个简单的工具集（read、write、edit、bash）就能在基准性能上摸到 Pareto 前沿，同时砍掉不必要的开销。\n\n相关地，@_akhaliq 指向论文《An Empirical Study of Harness Design for Coding Agents》，强调基准结果越来越多地由 harness 结构、上下文配置、轮次预算、工具能力决定，而不光是基础模型。\n\n这跟 @dexhorthy 的「软件工厂」论点是一致的。团队仍然需要读代码，有意识地设计人和 agent 的接口。\n\n软件系统里的模型选择正在分化。\n\n几位从业者描述了一种「规划用前沿、执行用便宜」的分裂。@TheAhmadOsman 把他的栈总结成，规划用 GPT 5.6 Sol XHigh，实现用 GLM 5.3 Flash，其他任务用 DeepSeek V4.1 Flash。\n\n@kylebrussell 报告了一个内部知识库流水线，从 Opus 一路换到 Sonnet，再到 GLM 5.2，再到 GLM 5.3 Flash，开春以来砍掉了大约两个数量级的开销。\n\n与此同时，@theo 主张在真实编码里，像 Fable 和 Astra 这种更强模型的回报不只是代码质量，而是执行和迭代上更微妙的效率提升。\n\n## 基准、递归自我改进与数学能力\n\n关于 RSI 的讨论更精确地区分了什么才算「递归」。\n\n@TheTuringPost 给了一个有用的分类法。AI 改进代码或训练方法本身，如果外围的改进循环还固定着，并不算完整的递归。真正的门槛是 AI 不只能改模型内部，还能改搜索策略、经验生成、研究工具和改进流程本身。\n\n这个框架跟 @HuaxiuYaoML 的 RSI-Exam 更新很搭。GPT-6-astra 还是第一，0.5126。Fable 5.1 以 0.4813 首次进入第二，还没有模型摸到前沿校准的参考线。\n\n数学基准继续被前沿模型拿下，但解读上仍有细微差别。\n\n@EpochAIResearch 报告说又一道 FrontierMath 的开放问题在与 GPT-6 Astra 的交互会话中被解出。\n\n另外，@SAIRfoundation 启动了 Open Math Model，主打开放模型和数学工具，由研究社区共同塑造。\n\n针对「可验证性解释了数学强」这个说法，@steve47285 转述了一个论点。预训练数据、而不仅仅是可验证的奖励结构，才是 LLM 数学和编码能力这么强的根本原因。\n\n@sarahcat21 那条元层面的观点值得记住。我们不光需要更好的基准，还需要更好的基准维护和审计工具。\n\ncomputer-use 基准离饱和还远得很。\n\n@ValsAI 发布了 CUA-Bench，跨 6 款游戏（其中 3 款私有）测试实时的键鼠操作，作为「对人容易、对模型难」的代理任务。\n\n@ValsAI 后续的数字说明这事儿真的难。所有前沿模型都在 20% 以下。\n\n与此同时，@trycua 开源了 CUA-S1-FORMS，这是「System One」小型 computer-use 模型家族的第一款。\n\n方向值得一说。实时动作循环、视频驱动的适配、持续学习，不只是纯文本的规划。\n\n## 基础设施、训练系统与模型架构\n\n长上下文与大规模训练基础设施仍然是活跃的优化战场。\n\n@Azaliamirh 放出了 Turbo-dLLM，一个用于大规模训练扩散 LLM 的开源库，报告在 8 张 H100 上 512K 上下文提速 2.48 倍、1M 上下文提速 7.59 倍，用的是 Context-Sharded Block Parallelism。\n\n这跟从业者对百万 token 区段的关注是吻合的。@andrew_n_carr 指出 DeepSeek V4.1 Flash 在上下文扩展到 1M token 后质量显著提升，认为 agent 是吃上下文的。\n\n架构分类的争论还在。\n\n@ahatamiz1 认为这个领域把 SSM 这个标签用得太滥，任何线性模型都被叫 SSM。他提议用 linear RNN 作为总称，SSM 作为一个子家族，把 Mamba2 和 GDN 一族区分开，理由是 GDN 表现得更像是对一个局部回归损失做梯度步，而不是一个离散化的 ODE。\n\n对于追踪 transformer 之外序列模型方案的工程师来说，这种术语清理有用，不只是咬文嚼字。\n\n端侧/本地的神经程序执行也有值得关注的进展。\n\n@yuntiandeng 描述了 ProgramAsWeights。开发者用英语描述一个 AI 函数，一次编译后，就能在 CPU 上、Wi-Fi 关掉的情况下本地跑一个小神经网络程序。代码和模型都开源了。\n\n这跟 Jev 那个话题挨得挺近。都指向更小、更专门、可本地跑的推理产物，而不是越来越大、什么都能聊的通用模型。\n\n## 机器人、视觉、音频与生成式媒体\n\n开放的机器人数据发布难得这么有内容。\n\n@adamrasb 宣布了 ABC 的完整版本，包括代码、24 个任务上的 400+ 小时仿真数据，以及 5,850 条带标签的策略评估片段。\n\n在一篇更详细的配套文章里，@redstone_hong 把 ABC-130K 描述成迄今最大的开源遥操作数据集。3,500 小时、130K+ 片段、195 个任务，在一套 $8K 的双手硬件上采集，硬件、训练代码、仿真和评测全部开源。\n\n基线科学包括 sim-to-real 相关性 r = 0.91（任务进度），以及离线指标、缩放律和条件化的研究。\n\nAstra 在评测和产品里频繁出现，尤其在视觉上。\n\n@skalskip92 报告 GPT-6 Astra 是 Roboflow 测试过的最强的视觉模型，覆盖检测、分割、框提示、计数、推理和视频。\n\n取舍仍然明显。「高算力」档把检测的 mAP@50 从 82.1% 提到 83.6%，但每张图的费用大约从 $0.050 翻到 $0.101，延迟从 11s 涨到 32s（详情）。Roboflow 也把 Astra 接进了 Auto Annotate。\n\n语音和唇形同步出了一批基准过硬的新东西。\n\n@ArtificialAnlys 报告 Grok Voice Transcribe 2.0 在语音结束后 0.49s 的流式最终转写上达到 2.7% WER，相比上一代的 3.9% 有改进，流式定价保持 $0.20/小时，非流式 $0.10/小时。\n\n视频这边，@fal 发布了 H3 Max Lip Sync，在自家评测里号称速度和双双第一，中位生成时间 11s。@isidentical 说这个模型是把扩散 RL 推进一个可验证的唇形同步任务里训出来的。\n\n## AI 安全、评估治理与安全\n\nAnthropic 把评估能力内嵌的策略变得更具体，也更引发争议。\n\n@AnthropicAI 宣布与 Accenture 合作，对前沿 AI 做独立评估，两家机构预计五年内投入至少 $1B 来建设能力。\n\n这呼应了更广的呼声，把第三方评估方嵌进去，给到员工级别的访问权限。\n\n反应从有保留到敌意不等。批评者质疑咨询公司是不是做模型红队和安全护栏评估的合适载体。@TransluceAI 强调，独立性和有意义的监督条件才是真正的问题。\n\n「流氓 agent」/Hugging Face 事件继续引发关于隔离的争论。\n\n@polynoamial 澄清说，他那条被群嘲的思想实验说的是所谓隔离 agent 之间的协作，不是通过热传感器偷权重。他认为 HF 事件给出的教训是，别把沙箱隔离当成唯一的防线。\n\n@martin_casado 给出了最强有力的「替对方说句公道话」。跨气隙的隐蔽信道不是新东西，吞吐量可以非常小，真正的要点是分层防御而不是耸人听闻。\n\n与此同时，@WSJ 和 @jeffjarvis 整体上反对「流氓 AI」的叙事，认为这些事件归根结底还是人在系统里配置出来的、做了人让它做的事。\n\n围绕安全法和运营问责的政策压力正在积聚。\n\n@TheRundownAI 报道，加州州长 Gavin Newsom 签署了一项行政令，召集一个专家组来建议更严的 AI 安全法律，包括可能",
+      "translation_kind": "full",
+      "translation_source": "article",
+      "images": []
+    },
+    {
+      "title": "GPT-6 Astra Solves a WWI German Radio Cipher",
+      "url": "https://www.prinzai.com/p/gpt-6-astra-solves-a-wwi-german-radio",
+      "source": "Hacker News",
+      "published": "2026-09-19T06:41:44+00:00",
+      "excerpt": "As you can see, ADFGVX is used both horizontally and vertically to give each “cell” in the table a value. For example, in this text, “AA” corresponds to the letter H, “AD” corresponds to the letter O, “DA” corresponds to the letter B, and so on. And so, the word “PRINZ” would be encoded as: FX GD DX FV VD Using an encryption word other than “HOUSE” would result in a completely different table. There is a list of known keys used by the Germans to encrypt these radio.messages, and hundreds of these messages have already been decoded, including by codebreaking expert George Lasry. Still, over a dozen have thus far eluded efforts to solve them, including (to my knowledge) this one, originally transmitted on November 27, 1918 (pg. 217): [[IMG2]] GPT-6 Astra solved this cipher, and believes that the original message was as follows: EIN ENGLISCHER KREUZER EINLIEG X SEWASTOPOL X S4STEN X EIN GES",
+      "discussion": "https://news.ycombinator.com/item?id=49763987",
+      "category": "上下文与记忆",
+      "score": 3.85,
+      "evidence_kind": "article",
+      "title_zh": "GPT-6 Astra 解开一战德军 ADFGVX 无线电密文",
+      "summary": "文章讲解 ADFGVX 双重加密原理，提到一战德军数百条此类无线电报文已被破译，但仍有十余条未解。1918 年 11 月 27 日的一条密文由 GPT-6 Astra 成功破译，展示了 LLM 在历史密码学与符号推理上的实际能力。",
+      "why": "用 LLM 解开真实历史遗留密码，是符号推理能力的一次有意思的检验。",
+      "question": "GPT-6 Astra 给出的解密结果是否经过密码学专家独立验证？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "GPT-6",
+        "ADFGVX",
+        "密码学",
+        "符号推理",
+        "一战密码"
+      ],
+      "translation": "# GPT-6 Astra 破解一战德国无线电密码\n\n正如你所见，ADFGVX 在表格中既横向使用又纵向使用，从而为表中的每个\"单元格\"赋予一个值。例如，在这段文本中，\"AA\" 对应字母 H，\"AD\" 对应字母 O，\"DA\" 对应字母 B，依此类推。因此，单词 \"PRINZ\" 将被编码为：FX GD DX FV VD。如果使用 \"HOUSE\" 以外的加密词，则会产生完全不同的表格。\n\n有一份已知的德军用于加密这些无线电信息的密钥列表，其中数百条信息已被成功破解，包括由密码破译专家 George Lasry 完成的工作。尽管如此，仍有十几条至今未能被破解，其中（据我所知）包括这条最初于 1918 年 11 月 27 日发送的信息（第 217 页）：[[IMG2]]\n\nGPT-6 Astra 破解了这则密码，并认为原始信息内容如下：\nEIN ENGLISCHER KREUZER EINLIEG X SEWASTOPOL X S4STEN X EIN GESCHWADER DER X ALLIIERTEN FOLGT 26STEN X\n即用英语表达：\nAN ENGLISH CRUISER ARRIVED AT SEVASTOPOL ON THE ?4TH AN ALLIED SQUADRON FOLLOWS ON THE 26TH\n\n模型使用了 \"TRUPPENVERSCHIEBUNG\"（译注：德语意为\"部队调动\"）作为加密词，如 J. Rives Childs 所著《The History and Principles of German Military Ciphers, 1914–1918》（《德国军事密码的历史与原理，1914–1918》）第 214–215 页所述。该加密词对应如下表格：[[IMG3]]\n\n在使用此表格之前，需要先把 \"TRUPPENVERSCHIEBUNG\" 这个词重新排列，使其中的字母按字母顺序排列（例如，T 是第 16 个字母，R 是第 13 个字母）。\n\n[[IMG4]]\n\n随后，相同的 \"TRUPPENVERSCHIEBUNG\" 被横向写出，加密信息中的字母写在它的下方，每行 19 个（由于共有 170 个字符，因此最终形成 8 行每行 19 个符号，外加 1 行 18 个符号）。这同时也意味着我们有 18 列每列 9 个符号，以及 1 列（\"G\" 列）8 个符号。由此出发，因为 T 是第 16 列，在它之前有 14 个 9 符号列，加上 1 个 8 符号的 G 列；9×14 + 1×8 = 134，所以 \"T\" 将对应信息中的下一个符号，即第 135 个符号 \"A\"。类似地，下一个字母 \"R\" 对应字母 \"V\"（因为 R 按字母顺序是第 13 个字母，所以在它之前有 11×9 + 1×8 = 107 个符号；信息中的第 108 个符号是 \"V\"）。\n\n在上表中，\"AV\" 对应 \"E\"，即 \"EIN\" 中的第一个字母。我们重复此过程，直到解码完整条信息。\n\n（厉害。）Astra 对此前这条信息为何未能被破解提出了一个假设：作为密钥的 \"TRUPPENVERSCHIEBUNG\" 是从 1918 年 12 月 9 日才开始使用的，而如上所述，这条信息发送得更早，于 1918 年 11 月 27 日发出。造成这一出入的原因尚不清楚。\n\nAstra 觉得有必要对自己的工作进行验证，结果发现，根据其原始航海日志，英国巡洋舰 HMS Canterbury 实际上确实于 1918 年 11 月 24 日抵达了塞瓦斯托波尔（Sevastopol）：……而一支盟军舰队确实在 11 月 26 日随后跟进（见第 11 行下方，记载了一支盟军舰队的抵达）：我此前并不知道这条具体的信息曾被破解过，因此在此分享，作为该模型能力的一个小例子（但我觉得相当酷的成果）。",
+      "translation_kind": "full",
+      "translation_source": "article",
+      "images": [
+        "img/1.jpg",
+        "img/2.jpg",
+        "img/3.jpg",
+        "img/4.jpg"
+      ]
+    },
+    {
+      "title": "itsmostafa/typesafe-mcp",
+      "url": "https://github.com/itsmostafa/typesafe-mcp",
+      "source": "GitHub",
+      "published": "2026-09-17T05:23:34Z",
+      "excerpt": "When an agent needs a yes/no call, a routing decision, or a severity rating, it usually asks an LLM, then parses prose and hopes the format holds. The answer has no probability attached, so the agent cannot tell a confident \"yes\" from a coin flip. Solution: evaluate exposes one tool, evaluate, that sends state plus typed questions to Jev and returns structured answers with probabilities. Nothing to parse and no prompt formatting to maintain. evaluate setup mcp wires it into Claude Desktop, Claude Code, and Codex in one step, and evaluate setup pi installs the equivalent extension for pi. Quickstart 1. Install (macOS and Linux, amd64 and arm64): curl -fsSL https://raw.githubusercontent.com/itsmostafa/typesafe-mcp/main/install.sh sh It installs to~/.local/bin. If that is not on your PATH, add it with export PATH=\"$HOME/.local/bin:$PATH\" . With Go, you can instead run go install github.com/",
+      "category": "Agent 开发",
+      "score": 3.82,
+      "evidence_kind": "article",
+      "title_zh": "typesafe-mcp：把 Typesafe AI 的 Jev 模型接入代理的 MCP 连接器",
+      "summary": "该项目是一个 Go 编写的 MCP 连接器，旨在把 Typesafe AI 的 Jev 判别模型作为工具直接暴露给 AI 代理，从而在工作流中接入低成本的判别判断。仅仓库描述可用，具体鉴权方式、调用接口与延迟表现有待核实。",
+      "why": "通过 MCP 把判别模型接入代理，是观察 Jev 生态落地的最直接样本。",
+      "question": "MCP 暴露的判别接口在代理调用中的延迟与置信度校准表现如何？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "MCP",
+        "Jev",
+        "Go",
+        "代理工具"
+      ],
+      "translation": "# itsmostafa/typesafe-mcp\n\n当 agent 需要做是非判断、路由决策或严重程度评级时，通常会让一个大语言模型（LLM）来回答，然后再去解析自然语言文本，寄希望于格式不会出错。答案并没有附带概率，agent 也无从分辨一个胸有成竹的\"是\"和一次抛硬币的结果。\n\n解决方案：`evaluate` 暴露了一个工具 `evaluate`，它把状态（state）和带类型的问题一起发给 Jev，并返回附带概率的结构化答案。无需解析，也不用维护 prompt 格式。\n\n`evaluate setup mcp` 一步就能把它接入 Claude Desktop、Claude Code 和 Codex；`evaluate setup pi` 则为 pi 安装等价的扩展。\n\n## 快速上手\n\n### 1. 安装\n\n（macOS 和 Linux，amd64 与 arm64）：\n\n```sh\ncurl -fsSL https://raw.githubusercontent.com/itsmostafa/typesafe-mcp/main/install.sh sh\n```\n\n默认安装到 `~/.local/bin`。如果该目录不在你的 `PATH` 中，可以执行 `export PATH=\"$HOME/.local/bin:$PATH\"` 添加。如果你已经装了 Go，也可以直接运行 `go install github.com/itsmostafa/typesafe-mcp/cmd/evaluate@latest`。运行 `evaluate update` 即可原地升级。\n\n### 2. 在你的 agent 中注册\n\n先在 TypeSafe 控制台申请一个 key，然后执行：\n\n```sh\nTYPESAFE_API_KEY=your-key evaluate setup mcp\n```\n\n已经在用 OpenRouter？也可以直接用 OpenRouter 的 key，`evaluate` 会通过 OpenRouter 的 Decisions 端点来路由，费用计入你的 OpenRouter 账户：\n\n```sh\nOPENROUTER_API_KEY=your-key evaluate setup mcp\n```\n\n如果两个 key 都设置了，以 `TYPESAFE_API_KEY` 为准。OpenRouter 的 Decisions 端点目前仍在 `/api/alpha/` 路径下，未来可能调整。\n\n用的是 pi？它没有 MCP 客户端，所以 evaluate 提供了一个 pi 扩展：\n\n```sh\nevaluate setup pi\n```\n\n这会写入 `~/.pi/agent/extensions/evaluate.ts`，把 evaluate 注册为 pi 的原生工具，并由它代为与 evaluate mcp 通信。在 pi 中运行或重新加载即可生效。与 MCP 客户端不同，文件里并没有写死任何内容：扩展会从 pi 运行时的 shell 中读取你的 key。\n\n### 3. 让你的 agent 回答一个判断题\n\n> \"Use evaluate to decide whether this ticket is urgent and which team should own it: Help! My payouts have been failing for 3 days.\"\n\nagent 会用以下参数调用 evaluate：\n\n```json\n{\n  \"state\": \"Help! My payouts have been failing for 3 days.\",\n  \"questions\": {\n    \"is_urgent\": {\n      \"type\": \"noul\",\n      \"instructions\": \"Does this convey urgency?\"\n    },\n    \"department\": {\n      \"type\": \"choice\",\n      \"instructions\": \"Which team should handle this?\",\n      \"criteria\": {\n        \"billing\": \"Payments, refunds\",\n        \"technical\": \"Bugs, outages\",\n        \"sales\": \"Pricing\"\n      }\n    }\n  }\n}\n```\n\n拿到的是原始的响应 JSON，每个答案都放在你指定的 id 下面。\n\n## 你能得到什么\n\n**一条命令搞定多客户端配置。** `evaluate setup mcp` 会在 Claude Code（用户作用域）和 Codex 的 CLI 在 PATH 中时自动注册它们，并在 Claude Desktop 已安装时注册它。shell 中所有 `TYPESAFE_*` 变量都会被一并带入，`OPENROUTER_API_KEY` 也不例外。重新运行即可更新。`evaluate setup pi` 用于安装 pi 扩展。\n\n**你的代码可以基于答案做分支判断。** 三种问题类型：`noul`（某条件成立的概率）、`choice`（从一个映射中选一个选项）、`score`（在有序等级中的位置）。\n\n**速率限制已为你处理。** 遇到 429 和 529 响应会按指数退避策略重试。其他 API 错误会作为工具错误返回给 agent，agent 可以读取并据此采取行动。\n\n**一次调用，多个问题。** 对同一状态批量提出相互独立的问题，它们会并行执行。\n\n**开箱即用，agent 就能写好问题。** 服务器会把使用指引（问题要聚焦、状态用 JSON、提供\"无匹配\"选项、给出证据而非结论）一并发给客户端，因此 agent 不需要额外提示也能写出更好的问题。\n\n**单一静态二进制。** 无运行时，无需 Node，无需 Python。`evaluate update` 会从经过校验和验证的发布版本原地升级。只读工具，请求超时 60 秒，响应大小上限 16 MiB。\n\n## 关于 TypeSafe\n\nTypeSafe 构建 System One 模型：像编程原语一样使用的小型 AI 智能单元。它们不生成文本，而是把自然语言和应用状态转成带类型的判断和概率，供代码组合使用。Jev 就是其中之一。",
+      "translation_kind": "full",
+      "translation_source": "article",
+      "images": []
+    },
+    {
+      "title": "coldteadotai/abide",
+      "url": "https://github.com/coldteadotai/abide",
+      "source": "GitHub",
+      "published": "2026-09-18T10:41:48Z",
+      "excerpt": "Measured by replaying 93 real Claude Code sessions (1,256 edits, 147 turns) in two repos against their own AGENTS.md, for 22 cents. Jev flagged 39 edits and 15 turns; an independent reviewer confirmed 10 and 11. The turn-level catches (single-use abstractions, oversized files, duplicated logic) held up 11 times in 15. Method, per-rule table and what was wrong: benchmarks/replay. npx @coldtea/abide login # pick a key type, paste it once npx @coldtea/abide init # hooks into every agent on this machine Then start claude, codex or opencode as usual. That is the whole setup. What it does Your AGENTS.md, CLAUDE.md and the rest of your project instructions are full of rules no linter can check. \"Never let a raw error reach a user.\" \"Don't create premature abstractions.\" Nothing can script those, so nothing enforces them. In 93 real sessions, the agent broke one on 1 turn in 13, from the first e",
+      "category": "AI 编程实践",
+      "score": 1.43,
+      "evidence_kind": "article",
+      "title_zh": "Abide：让编码代理遵循项目规则的 Claude Code 插件",
+      "summary": "Abide 是一个 TypeScript 写的 Claude Code 钩子/插件/技能集合，目标是把项目级编码规范注入代理流程，避免编码代理在生成代码时偏离团队约定。仅仓库描述可用，具体规则注册方式与执行时机有待核实。",
+      "why": "把项目规则工程化地注入代理流程，是减少编码代理跑偏的有效尝试。",
+      "question": "该插件在不同项目和不同 Claude Code 版本下能否保证规则一致执行？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "Claude Code",
+        "插件",
+        "TypeScript",
+        "编码代理",
+        "项目规范"
+      ],
+      "translation": "# coldteadotai/abide\n\n做法是在两个仓库里，把 93 段真实的 Claude Code 会话对着各自的 AGENTS.md 重放一遍。1,256 次编辑、147 轮，总共 22 美分。Jev 标记了 39 次编辑和 15 轮，一位独立评审者确认其中 10 次和 11 轮。轮级别的命中（一次性抽象、文件过大、逻辑重复）在 15 轮中站住了 11 次。方法、按规则的表格、哪里翻了车，都放在 benchmarks/replay。\n\n```bash\nnpx @coldtea/abide login    # 选择 key 类型，粘贴一次即可\nnpx @coldtea/abide init     # 接入本机的每一个 agent\n```\n\n之后正常启动 claude、codex 或 opencode 就完事。这就是全部安装步骤。\n\n## 它做什么\n\n你的 AGENTS.md、CLAUDE.md 以及项目里其它指令文件塞满了任何 linter（静态检查工具）都查不了的规则。「永远不要让原始错误直接呈现给用户。」「不要创建过早的抽象。」这些没法用脚本表达，自然也就无从强制。在 93 段真实会话里，agent 从第一次编辑起，平均每 13 轮就会踩中一条。\n\n```text\ndemo-abstraction.mp4\n```\n\nAbide 就是来强制这些规则的。每次编辑（或每轮）发生时，它会针对每条规则向 Jev（TypeSafe 的决策模型）问一个问题，并拿到一个概率。Jev 只看规则和 diff（差异），看不到对话，所以第 200 次编辑和第 1 次编辑的检查方式完全一样。踩中规则时，agent 会被点名是哪一条，并在同一轮里修好。\n\n[[IMG4]]\n\n一次调用对应一次编辑，约 300 毫秒，成本只要千分之几美分。\n\nlinter 能查的规则交给你的 linter 去查。\n\n没有内置规则。没有指令文件，也没有任何需要强制的东西。\n\n你的 key，你的数据。本工具不会跟我们的服务器通信。\n\n## 过去做不到\n\n过去用普通 LLM 逐条检查每次编辑或每一轮，经济上和延迟上都不划算。一次检查约 2,500 个 token。按常见模型价格算，每次编辑要一美分多、耗时几秒，而且返回的是自然语言文本，你还得二次解析，且没法完全信任。每天两百次编辑的做法根本无从谈起。\n\nJev 改写了这笔账。它是决策模型，回答带类型的问题时只返回一个校准后的概率，没有别的输出。没有自由文本，就没有凭空捏造的余地。它比普通 LLM 便宜最多 100 倍，响应约 300 毫秒。这两点合起来，让逐次检查、每条都查，变得划算。\n\n## 三分钟看到第一次命中\n\n去 typesafe.ai 申请一个 TypeSafe API key，或者直接用你已有的 Vercel AI Gateway key。\n\n跑 `npx @coldtea/abide login`，选好 key 的种类和存放位置，粘贴进去。它会写入 `~/.abide/.env`（适用于本机所有仓库），或写入本仓库的 `.env.local`，权限均为所有者独占。仓库根目录已有的 `.env` 文件也能直接用。\n\n在仓库里跑 `npx @coldtea/abide init`。\n\n启动你的 agent。它的第一轮会把你的规则编译成 `.abide/rubric.json`，并告诉你发现了什么。\n\n让 agent 做一件规则明令禁止的事。比如 AGENTS.md 写明「使用 Yup，绝不手写校验」，agent 一旦写出手写的守卫逻辑，下面这段立刻就会蹦出来\n\n```text\nAbide: This edit appears to break a rule from this repository's instructions.\n\n- Rule \"api-validation-uses-yup\" from ~/.codex/AGENTS.md line 65: \"When writing API endpoints, do NOT write input validations manually. Use Yup (with clear validation messages) + early return in the API handler\". (0.86)\n\nRepair apps/web/src/pages/api/logout.ts now, then continue with the task.\n```\n\nagent 在继续推进任务之前会把它修好。无需人工介入。\n\n## Agents\n\n| Agent | 安装 | 落地位置 |\n|---|---|---|\n| Claude Code | `npx @coldtea/abide init claude` | `~/.claude/settings.json` |\n| Codex | `npx @coldtea/abide init codex` | `~/.codex/hooks.json` |\n| OpenCode | `npx @coldtea/abide init opencode` | `~/.config/opencode/plugins/abide.js` |\n\n`init` 不带名字就会装进它找到的所有 agent。加上 `--project` 改为装到仓库内，团队成员拉取代码时一并获得。\n\n只有 Codex 需要多做一步，启动 codex 后输入 `/hooks`，接受 abide 的四个条目。Codex 对每个新 hook 只问一次。Codex 通过 `apply_patch` 编辑；abide 读取补丁并判定其中每个文件。\n\n只有 OpenCode 特殊，OpenCode 没有 hook 进程，所以 abide 以插件形式运行。检查方式和消息格式都一样。违反规则的编辑会在工具结果（tool result）末尾追加修复请求；若整轮结束时仍存在违规，则追加一条后续消息。\n\n## 看看你的代码库已经在哪些地方违规\n\n```bash\nabide audit src/\n```\n\n每个文件都按「刚写完」的标准被判定。你会得到一张按规则汇总的表格，和一份按文件汇总的清单。在一个真实 Next.js 应用的 33 个 API 路由上跑一遍，耗时 12 秒，成本约一美分。\n\n## 命令\n\n| 命令 | 作用 |\n|---|---|\n| `abide login` | 存储你的 TypeSafe 或 Vercel AI Gateway key，作用于你本人或本仓库 |\n| `abide init [agent]` | 安装 hooks（claude、codex、opencode，或所有已发现的 agent） |\n| `abide audit [paths]` | 判定已有文件，按规则与文件输出报告 |\n| `abide check [paths]` | 按 hooks 的方式检查未提交的变更 |\n| `abide report` | 报告你的规则，哪些被触发，哪些从未触发 |\n| `abide replay <agent>` | 对本仓库过往的三种 agent 会话进行判定 |\n| `abide compile` | 立即编译 rubric（评分细则），而不是等到下一次会话 |\n| `abide calibrate` | 用近期 git 历史为每条规则打分 |\n| `abide tune` | 重写那些从未触发的规则 |\n| `abide bench` | 在你的机器上实测延迟与开销 |\n| `abide uninstall [agent]` | 移除 hooks |\n\n`report`、`check`、`audit`、`bench`、`calibrate` 都支持 `--json`。\n\n## Rubric 属于你\n\n`abide/rubric.json` 是一个应当入库、人类可读的文件。每条判定都会点名所对应的规则，每条规则都会引用它来源的指令文件行号。判定错了，对应规则可以重写。\n\n每条规则在两个时机之一运行。edit 阶段，每次编辑之后跑一次；turn 阶段，整轮结束时针对完整 diff 一次性跑。「这次是不是做了超出要求的事」在 12 次编辑的第 1 次之后根本没有答案。\n\n每条规则可以附带一个 glob 模式作用域，让 API 路由和样式表被问不同的问题。\n\n判定结果分档。0.8 及以上，agent 被要求修复；0.5 到 0.8，你自己会看到一条提示，agent 看不到；0.5 以下，啥也不发生。\n\n措辞糟糕的规则在所有情况下都会拿到 0.4，永远不会触发。`calibrate` 会用你历史里的 20 个真实 hunk（差异片段）把它们挑出来关掉。`tune` 则让 agent 来重写它们。\n\n## 成本、隐私、安全\n\n变更行通过你的 key 发往 TypeSafe，每次调用都请求零数据留存（zero data retention），除此之外哪儿也不发。\n\nkey 的查找顺序，环境变量、仓库根目录的 `.env.local` 和 `.env`，再到 `~/.abide/.env`。绝不通过命令行参数传入，绝不写入日志。设置 `AI_GATEWAY_API_KEY` 取代 TypeSafe key 即可走 Vercel AI Gateway。\n\n本仓库 13 条规则下的一次检查消耗 1,000 至 1,600 个输入 token，成本 $0.00004 至 $0.00007，Jev 约 300 毫秒，含 Node 启动在内的整个 hook 流程约 1 秒。15 次编辑的一轮成本约为十分之一美分。测量于 2026-09-18，直连 TypeSafe。\n\n`abide bench` 会测量你自己的数字。\n\nhooks 不会破坏你的会话。每条路径都以退出码 0 退出，设有硬性截止时间，且只输出宿主期望的内容。\n\n没有 key 或无网络时，编辑照常通过、跳过检查，漏检事件记录在 `.abide/events.jsonl`，由 `report` 统计。\n\n## 它如何接入\n\n每个 agent 四个 hook。会话开始，对指令文件做哈希，若有变更则让 agent 重新编译。轮开始，用 git 快照工作树。每次编辑之后，对该 hunk 跑 edit 阶段规则。轮结束，将整轮 diff 与快照对比，跑 turn 阶段规则，并对 shell 命令写入的文件额外跑 edit 阶段规则。",
+      "translation_kind": "full",
+      "translation_source": "article",
+      "images": [
+        "img/1.png"
+      ]
+    },
+    {
+      "title": "RectangleStory/Superpowers_Multi_AI",
+      "url": "https://github.com/RectangleStory/Superpowers_Multi_AI",
+      "source": "GitHub",
+      "published": "2026-09-14T20:11:30Z",
+      "excerpt": "Stop \"vibe coding\" and shifting your AI into chaotic, hallucinating loops. Superpowers AI is a production-grade, modular, high-discipline framework designed to transform vanilla LLMs (Claude Code, Cursor, GitHub Copilot) into methodical, context-aware Senior Engineers. By injecting deterministic behavioral gates, this framework forces AIs to plan, isolate, and debug systematically before writing a single line of production code. Quick Start & Download Get the complete standalone production package, including the automated standalone GUI/CLI execution launcher and pre-configured core skill modules instantly. 📥 DOWNLOAD SUPERPOWERS.ZIP Setup Instructions Extract & Move: Superpowers.zip archive and extract its contents directly into the root directory of your active development project. Execute Launcher: Run the executable run_launcher.exe file inside your project environment. Select Profil",
+      "category": "Agent 开发",
+      "score": 0.63,
+      "evidence_kind": "article",
+      "title_zh": "Superpowers Multi-AI：面向多种编码代理的提示工程框架",
+      "summary": "这是面向 Cursor、Claude Code、Copilot 等编码代理的模块化提示工程框架，提供独立 Windows 启动器并强制结构化 SDLC、线性执行、上下文隔离与系统化调试。仅仓库自述可用，是否真能替代氛围编码仍待验证。",
+      "why": "把多代理编码流程从氛围编码推向工程化，方向值得参考。",
+      "question": "线性执行和上下文隔离在 Claude Code 中究竟如何真正落地？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "Claude Code",
+        "Cursor",
+        "Copilot",
+        "提示工程",
+        "SDLC"
+      ],
+      "translation": "# RectangleStory/Superpowers_Multi_AI\n\n别再「vibe coding」（译注：vibe coding 由 Andrej Karpathy 提出，指完全凭直觉和感觉、让 AI 直接生成代码而不深入思考的编程方式）了，也别再把 AI 拖进那种胡言乱语、死循环不断的混乱状态。\n\nSuperpowers AI 是一个生产级、模块化、纪律严明的框架（framework），目标只有一个，把原生的大语言模型（vanilla LLMs，比如 Claude Code、Cursor、GitHub Copilot）改造成有条理、懂上下文的资深工程师。它会注入确定性的行为关卡（deterministic behavioral gates），逼着 AI 在动手写生产代码之前先规划、隔离、再系统化地调试。\n\n## 快速上手与下载\n\n立即获取完整的独立生产包，里面有自动化的 GUI/CLI 启动器和预先配置好的核心技能模块（skill modules）。\n\n📥 下载 SUPERPOWERS.ZIP\n\n### 安装说明\n\n1. **解压并移动**，把 Superpowers.zip 解压到当前开发项目的根目录下。\n2. **执行启动器**，在项目环境里运行 `run_launcher.exe`。\n3. **选择配置文件**，从交互式菜单里挑一个目标 AI IDE/CLI 环境。\n   - Option 1 对应 Cursor 编辑器，会生成 `.cursorrules`。\n   - Option 2 对应 Claude Code CLI / 通用 AI，会生成 `.ai-skills.md`。\n4. **部署**，原生可执行程序会自动把 `skills/` 文件夹下的所有模块化技能聚合成一份统一的系统提示矩阵（system prompt matrix）。下一次交互时，AI 智能体（agent）就能立刻读取这个状态。\n\n## 系统架构与工作流管道\n\n这个框架用一套结构化的软件开发生命周期（Software Development Life Cycle，SDLC）管道，替换掉了标准的对话式接口。AI 智能体不再直接吐出未经校验的代码片段，必须穿过一道道严格的质量校验关卡。\n\n```\n[ 用户提示 / 功能需求 ]\n        │\n        ▼\n┌──────────────────────────────┐\n│   01_brainstorming.md        │ -> 关卡 1：架构冻结（GATE 1: Architecture Freeze）\n│   （苏格拉底式对话与提问）     │            必须获得用户明确批准\n└──────────────┬───────────────┘\n               │ 已批准\n               ▼\n┌──────────────────────────────┐\n│   02_writing_plans.md        │ -> 关卡 2：微型 Jira 清单（GATE 2: Micro-Jira Checklist）\n│   （原子化步骤与测试）         │            线性任务承诺\n└──────────────┬───────────────┘\n               │ 逐步骤获得批准\n               ▼\n┌──────────────────────────────┐\n│   03_subagents.md            │ -> 上下文隔离（CONTEXT ISOLATION）\n│   （沙箱化子智能体生成）       │            避免 token 膨胀造成的死循环\n└──────────────┬───────────────┘\n               │ 构建失败 / 测试回归\n               ▼\n┌──────────────────────────────┐\n│   04_debugging.md            │ -> 根因分析（ROOT CAUSE ANALYSIS）\n│   （严格的四阶段协议）         │            禁止猜测式补丁\n```\n\n## 核心技能模块深入剖析\n\n`skills/` 目录下的每一个模块，都用绝对化、高度命令式的散文风格写成，专门为当下最先进的大语言模型做了优化。\n\n### 综合规格矩阵\n\n**模块 01（01_brainstorming.md）**\n\n- 目标角色，首席软件架构师（Principal Software Architect）\n- 核心系统约束，严格的架构冻结（STRICT ARCHITECTURAL FREEZE）。在用户回答 3–5 个结构性边界问题之前，绝对禁止生成原始代码。\n\n**模块 02（02_writing_plans.md）**\n\n- 目标角色，敏捷技术负责人 / Scrum Master\n- 核心系统约束，线性执行关卡（LINEAR EXECUTION GATE）。强制要求制定严格的逐步清单（checklist），包含精确的文件路径、明确的修改内容以及准确的验证命令。\n\n**模块 03（03_subagents.md）**\n\n- 目标角色，主编排节点（Main Orchestration Node）\n- 核心系统约束，上下文窗口污染控制（CONTEXT WINDOW POISON CONTROL）。为繁重的代码修改任务生成隔离的、单一用途的子智能体（sub-agents），维持高 token 纯度。\n\n**模块 04（04_debugging.md）**\n\n- 目标角色，资深 QA 自动化专家\n- 核心系统约束，反猜测禁令（ANTI-GUESSWORK INTERDICTION）。禁止大面积替换代码。强制执行四步流程，定位（Localization）→ 假设（Hypothesis）→ 外科手术式修复（Surgical Fix）→ 测试验证（Test Validation）。\n\n## 提取后的目录结构\n\n解压 Superpowers.zip 之后，本地项目结构长这样。\n\n```\nyour-project-workspace/\n│\n├── run_launcher.exe         # 用于目标配置文件的原生自动化启动器\n├── README.md                # 详尽的开发者文档（即本文件）\n│\n└── skills/                  # 模块化行为技能仓库\n    ├── 01_brainstorming.md  # 架构发现阶段与查询参数\n    ├── 02_writing_plans.md  # 细粒度原子化步骤规划与验证映射\n    ├── 03_subagents.md      # 工作节点的生命周期编排与沙箱化\n    └── 04_debugging.md      # 事后分析与根因调查\n```\n\n## 生态目标映射\n\nSuperpowers AI 通过把自己改造成各生态的标准结构化配置，原生扩展到了最主流的几个智能体编程层。\n\n- **Cursor 编辑器**，生成项目级 `.cursorrules` 配置文件，强制 Composer 与 Chat 功能进入结构化执行模式。\n- **Claude Code CLI**，通过自动化的 `.ai-skills.md` / `CLAUDE.md` 元数据注入规则映射到系统配置中。\n- **GitHub Copilot Workspace**，直接注入 `.github/copilot-instructions.md` 配置节点。\n- **本地运行环境（Ollama / Open WebUI）**，提供可直接在自定义 Modelfile 中解析的原始系统提示矩阵。\n\n## 常见问题解答（FAQ）\n\n**问：为什么我的 AI 拒绝立即写代码？**\n\n答：这正是设计初衷。`01_brainstorming` 模块会在你明确底层结构性约束之前，有意阻塞代码生成。这能消掉后续 90% 的架构重写。\n\n**问：我能不能临时绕过框架规则？**\n\n答：可以。如果你需要快速、直接的答案或脚本，不想走正式流程校验，就在提示里任意位置敲上全局覆写系统关键词，`FORCE_RAW_MODE`。\n\n**问：`run_launcher.exe` 需要联网吗？**\n\n答：完全不需要。`run_launcher.exe` 是一个轻量级、已编译的独立工具，在本地运行，专门用来拼接配置 schema。它不会联网，也不会向你的环境之外传输任何遥测数据。\n\n## 许可证\n\n本项目基于 BSD 3-Clause 许可证（BSD 3-Clause License）授权，详情见下文。\n\n以源代码和二进制形式进行再分发（无论是否修改）都是允许的，但必须满足以下条件。\n\n- 以源代码形式再分发时，必须保留上述版权声明、本条件列表以及以下免责声明。\n- 以二进制形式再分发时，必须在随分发提供的文档和/或其他材料中复制上述版权声明、本条件列表以及以下免责声明。\n- 未经特定的事先书面许可，版权持有者的名称以及贡献者的名称不得用于为基于本软件衍生的产品背书或进行推广。\n\n本软件由版权持有者和贡献者按「原样」（AS IS）提供，明示或暗示的任何保证（包括但不限于对适销性和特定用途适用性的暗示保证）均被免责。在任何情况下，无论基于何种责任理论（合同、严格责任还是侵权行为，包括疏忽等），版权持有者或贡献者均不对因使用本软件而产生的任何直接、间接、附带、特殊、惩戒性或后果性损害（包括但不限于采购替代商品或服务、使用数据或利润的损失、业务中断）承担责任，即使已被告知此类损害的可能性。",
+      "translation_kind": "full",
+      "translation_source": "article"
     }
   ],
   "errors": []
