@@ -1,11 +1,13 @@
 {
   "date": "2026-09-20",
   "url": "https://z-xj.com/daily/2026-09-20/",
-  "count": 4,
+  "count": 6,
   "titles": [
     "为什么我仍未相信真正的递归自我改进",
     "jev-mcp：基于TypeSafe Jev模型的MCP判定工具",
     "geo-sleuth：能展示推理过程的图片地理定位Agent技能",
-    "awesome-jev-tools：Jev模型相关资源汇总"
+    "awesome-jev-tools：Jev模型相关资源汇总",
+    "Minecraft代理项目：Astra规划器与JEV控制器",
+    "Hermes代理的JEV技能扩展包"
   ]
 }
