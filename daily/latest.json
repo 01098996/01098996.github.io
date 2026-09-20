@@ -1,15 +1,11 @@
 {
-  "date": "2026-09-19",
-  "url": "https://z-xj.com/daily/2026-09-19/",
-  "count": 8,
+  "date": "2026-09-20",
+  "url": "https://z-xj.com/daily/2026-09-20/",
+  "count": 4,
   "titles": [
-    "Claude Code 2.1.277 更新：自动模式服务端分类器与 AGENTS.md 支持",
-    "Repopilot：基于 Codex SDK 的验证驱动型 AI 软件迭代工具",
-    "AI 大模型世界：把 556 个模型做成像素小人的可视化站点",
-    "Jev 发布两天内涌现的 6 个社区克隆",
-    "GPT-6 Astra 解开一战德军 ADFGVX 无线电密文",
-    "typesafe-mcp：把 Typesafe AI 的 Jev 模型接入代理的 MCP 连接器",
-    "Abide：让编码代理遵循项目规则的 Claude Code 插件",
-    "Superpowers Multi-AI：面向多种编码代理的提示工程框架"
+    "为什么我仍未相信真正的递归自我改进",
+    "jev-mcp：基于TypeSafe Jev模型的MCP判定工具",
+    "geo-sleuth：能展示推理过程的图片地理定位Agent技能",
+    "awesome-jev-tools：Jev模型相关资源汇总"
   ]
 }
