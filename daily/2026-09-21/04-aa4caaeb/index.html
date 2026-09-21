@@ -1,0 +1,51 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>y0usaf/pi-jev：为 Pi 代理加入类型安全的 Jev 决策层 · 2026-09-21 AI 日报 · 面向Google编程</title><meta name="description" content="内容未获取。仅依据标题与仓库元信息整理：该仓库把 Jev 作为 Pi 编程代理的类型安全决策层，提供工具调用守卫与 jev_ask 类型化问答能力，主语言 TypeScript，获 126 星。"><meta property="og:title" content="y0usaf/pi-jev：为 Pi 代理加入类型安全的 Jev 决策层 · 2026-09-21 AI 日报"><meta property="og:description" content="内容未获取。仅依据标题与仓库元信息整理：该仓库把 Jev 作为 Pi 编程代理的类型安全决策层，提供工具调用守卫与 jev_ask 类型化问答能力，主语言 TypeScript，获 126 星。"><meta property="og:type" content="article"><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/daily/style.css"><link rel="alternate" type="application/atom+xml" title="AI 日报" href="/daily/atom.xml"></head><body><a class="skip" href="#main">跳到正文</a><div class="page wide"><header><a class="brand" href="/">面向Google编程<span>CHARLES ZHANG</span></a><nav aria-label="主导航"><a href="/">博客</a><a class="active" href="/daily/">AI 日报</a><a href="/daily/tags.html">标签</a><a href="/daily/archive.html">往期</a></nav></header><div class="layout"><main id="main"><section class="intro"><p class="eyebrow">AI DAILY / 2026-09-21</p><h1>y0usaf/pi-jev：为 Pi 代理加入类型安全的 Jev 决策层</h1><p class="original">y0usaf/pi-jev</p><div class="meta"><span class="tag">Agent 开发</span><span>GitHub · 2026-09-16</span></div><div class="tags"><a class="tag-pill" href="/daily/tags.html#Pi">Pi</a><a class="tag-pill" href="/daily/tags.html#Jev">Jev</a><a class="tag-pill" href="/daily/tags.html#Guardrails">Guardrails</a><a class="tag-pill" href="/daily/tags.html#TypeScript">TypeScript</a><a class="tag-pill" href="/daily/tags.html#%E7%B1%BB%E5%9E%8B%E5%AE%89%E5%85%A8">类型安全</a></div></section><p class="muted">全文中文翻译 · AI 生成，仅供学习交流</p><section class="translation"><h2>y0usaf/pi-jev</h2><p>Jev 针对一段 state（状态）回答类型化（typed）的问题。问它&quot;是不是真的&quot;，你会得到一个概率；让它从列表里挑，它会返回所选项以及其他选项的概率分布。它不写散文，所以这里不存在任何句子层面的解析。答案是数字，由你的代码决定分支走向。</p><p>有三处会用到它：一个 gate 在 bash、write、edit 调用运行前进行判定；一个 output judge 读取 bash 调用的输出；一个 jev_ask 工具让模型自己发起同样形式的判定。</p><h3>安装</h3><pre><code>pi install npm:@y0usaf/pi-jev</code></pre><p>该扩展需要一把 API key。没有 key 时它仍会加载，提示一次，然后保持静默不打扰。</p><h3>The gate</h3><p>| 问题 | 类型 | 读取 | 阈值 |<br>| --- | --- | --- | --- |<br>| 该操作是否具有破坏性？ | noul | destructive | 0.90 |<br>| 是否把本地数据或机密发送到本机之外？ | noul | exfiltration | 0.70 |<br>| 是否影响了用户请求范围之外的内容？ | noul | beyond_scope | 0.85 |<br>| 如果用户不希望发生该操作，损失有多大？ | score（4 档） | impact | 2.50 |四个问题合并在同一次请求里，因此一次判定只需约 300 ms 的一次往返，而不是四次。</p><p>默认模式为 shadow（影子模式）。</p><p>被标记的调用会产生一条通知，并在页脚显示状态。在 enforce（强制）模式下，被标记的调用在运行前会要求你确认。无头运行（-p、RPC）无法显示提示，因此除非设置 <code>gate.blockWithoutUI</code>，否则强制模式会退化为同样的警告。</p><p>所有出错路径都采取 fail open（放行）策略。缺失的 key、超时、429 或格式错误的响应都不会产生判定，工具调用照常执行。错误提示每分钟最多上报一次，因此失效的接口不会把会话日志塞满。</p><p>相同的输入在 cacheSeconds（默认 120）内只判定一次。来自同一条助手消息的同级调用共享一个进行中的请求，而不是各自单独请求。</p><h3>The output judge</h3><p>Gate 看得到意图，却看不到命令的输出。因此它抓不到打印到会话里的凭据，也分不清网络抖动和类型错误，这两类判定都针对调用之后才出现的文本。</p><p><code>tool_result</code> 在同一次请求里问两个问题，并在任一题触发时向工具结果附加一行：</p><p>| 问题 | 类型 | 读取 | 阈值 |<br>| --- | --- | --- | --- |<br>| 该输出是否包含机密或凭据？ | noul | leaks_secret | 0.90 |<br>| 这是哪一类失败？ | choice（6 项） | failure_class | confidence 0.60 |若判定为泄露，会附加一句&quot;不要在回复、文件或命令中复述该值，请改用名称引用&quot;，并触发一条通知。失败类别会附加处理建议：transient 原样重试，environment 修复环境，code_bug 修改代码，permission 不要重试，user_error 修正调用方式。no_failure 则什么都不附加。</p><p>建议来自一张表，而不是分支逻辑。<code>src/output.ts</code> 中的 <code>CLASS_ADVICE</code> 把每个类别映射到一句话，因此新增一个类别只需要新增一行。</p><p>它从不会阻塞，且在没有任何命中时保持静默。被判定的工具默认为 <code>[&quot;bash&quot;]</code>：对每次读取都做判定，每次打开文件都要消耗一次请求。</p><h3>jev_ask</h3><p>对于那些希望以类型化形式而非自然语言形式返回的决策：</p><pre><code>{
+  &quot;state&quot;: &quot;the tool output, diff, or message to judge&quot;,
+  &quot;questions&quot;: [
+    {
+      &quot;id&quot;: &quot;relevant&quot;,
+      &quot;type&quot;: &quot;noul&quot;,
+      &quot;instructions&quot;: &quot;Is this relevant to the user&#x27;s question?&quot;
+    },
+    {
+      &quot;id&quot;: &quot;label&quot;,
+      &quot;type&quot;: &quot;choice&quot;,
+      &quot;instructions&quot;: &quot;Which bucket?&quot;,
+      &quot;options&quot;: [
+        {&quot;name&quot;: &quot;bug&quot;, &quot;description&quot;: &quot;Defect in existing behaviour&quot;},
+        {&quot;name&quot;: &quot;feature&quot;}
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;quality&quot;,
+      &quot;type&quot;: &quot;score&quot;,
+      &quot;instructions&quot;: &quot;How thorough is this?&quot;,
+      &quot;levels&quot;: [&quot;Superficial&quot;, &quot;Adequate&quot;, &quot;Thorough&quot;]
+    }
+  ]
+}</code></pre><p>每个条目只问一件事，再由你自己的代码合并答案。TypeSafe 建议将多因素问题拆开，因为同时权衡多个因素的问题返回的结果更不可靠。</p><h3>配置</h3><p>配置文件为 <code>~/.pi/agent/pi-jev.json</code>，或项目范围内的 <code>.pi/pi-jev.json</code>。项目级配置优先生效，且每个文件只会覆盖其中显式设置的键。</p><pre><code>{
+  &quot;apiKeyFile&quot;: &quot;~/keys/typesafe.txt&quot;,
+  &quot;model&quot;: &quot;jev-latest&quot;,
+  &quot;maxStateChars&quot;: 4000,
+  &quot;gate&quot;: {
+    &quot;enabled&quot;: true,
+    &quot;mode&quot;: &quot;shadow&quot;,
+    &quot;tools&quot;: [&quot;bash&quot;, &quot;write&quot;, &quot;edit&quot;],
+    &quot;argumentChars&quot;: 400,
+    &quot;cacheSeconds&quot;: 120,
+    &quot;minConfidence&quot;: 0.5,
+    &quot;blockWithoutUI&quot;: false,
+    &quot;blockOn&quot;: {
+      &quot;destructive&quot;: 0.9,
+      &quot;exfiltration&quot;: 0.7,
+      &quot;beyondScope&quot;: 0.85,
+      &quot;impact&quot;: 2.5
+    }
+  },
+  &quot;output&quot;: {
+    &quot;enabled&quot;: true,
+    &quot;tools&quot;: [&quot;bash&quot;],
+    &quot;outputChars&quot;: 2000,
+    &quot;leakThreshold&quot;: 0.9,
+    &quot;minConfidence&quot;: 0.6
+  }
+}</code></pre><p>API key 按以下顺序解析：环境变量 <code>TYPESAFE_API_KEY</code> → 配置文件中的 <code>apiKey</code> → <code>apiKeyFile</code>（指向密钥文件路径，<code>~</code> 会展开）。<code>blockOn.impact</code> 是 0 到 3 损伤量表上的一个值。<code>minConfidence</code> 仅作用于该维度，因为那三个 noul 问题只返回概率，不返回置信度。</p><h3>命令</h3><p>- <code>/jev</code> 显示模式、模型、密钥来源、被判定工具和缓存大小<br>- <code>/jev on</code> 和 <code>/jev off</code> 切换当前会话内两个判定器的开关<br>- <code>/jev mode shadow|enforce</code> 切换 gate 模式，无需重新加载<br>- <code>/jev last</code> 打印最近一次 gate 判定及其四个答案<br>- <code>/jev output</code> 打印最近一次输出判定：泄露概率与失败类别<br>- <code>/jev check &lt;text&gt;</code> 对你提供的文本运行 gate 的判定问题</p><h3>数据外传情况</h3><p>每次判定都会将工作目录、工具名、上一条用户消息（取前 1200 个字符）以及工具参数发送到 `api</p></section><aside class="about"><h2>编辑导读</h2><p>内容未获取。仅依据标题与仓库元信息整理：该仓库把 Jev 作为 Pi 编程代理的类型安全决策层，提供工具调用守卫与 jev_ask 类型化问答能力，主语言 TypeScript，获 126 星。</p><p><strong>为什么读</strong>展示了如何用类型系统约束代理的工具调用，是降低误调用与幻觉的一种工程化思路。</p><p><strong>带着问题读</strong>类型守卫是否覆盖所有工具调用路径，运行时类型校验会带来多少额外开销？</p></aside><aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="https://github.com/y0usaf/pi-jev" rel="noopener noreferrer">y0usaf/pi-jev ↗</a></p><p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="/daily/2026-09-21/04-aa4caaeb/">返回本期 →</a></p></aside><nav class="postnav" aria-label="上下篇"><a class="prev" href="/daily/2026-09-21/03-d6aed320/"><span class="dir">← 上一篇</span>zai-org/ZCode：Z.ai 推出的编程代理框架</a><span></span></nav></main><aside class="sidebar"><section class="sideblock"><h2>相关阅读</h2><ul><li><a href="/daily/2026-09-21/03-d6aed320/">zai-org/ZCode：Z.ai 推出的编程代理框架</a><span class="meta">2026-09-21 · GitHub</span></li><li><a href="/daily/2026-09-21/02-63628ad2/">wuyoscar/jev-skill：Jev 用例、工作流与代理技能合集</a><span class="meta">2026-09-21 · GitHub</span></li><li><a href="/daily/2026-09-20/02-90793d32/">jev-mcp：基于TypeSafe Jev模型的MCP判定工具</a><span class="meta">2026-09-20 · GitHub</span></li><li><a href="/daily/2026-09-19/06-2bfc6059/">typesafe-mcp：把 Typesafe AI 的 Jev 模型接入代理的 MCP 连接器</a><span class="meta">2026-09-19 · GitHub</span></li><li><a href="/daily/2026-09-18/05-e86e6c10/">AI News 每日摘要：智能体运行时、长时工作流与协调器 UI 的兴起</a><span class="meta">2026-09-18 · Latent Space</span></li></ul><p class="more"><a href="/daily/tags.html">按标签浏览 →</a></p><p class="more"><a href="/daily/archive.html">全部往期 →</a></p></section></aside></div><footer><span>AI 日报 · 保持好奇，动手验证</span><a href="/daily/atom.xml">RSS 订阅 ↗</a></footer></div></body></html>
