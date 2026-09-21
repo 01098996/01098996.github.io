@@ -1,11 +1,13 @@
 {
-  "date": "2026-09-21",
-  "url": "https://z-xj.com/daily/2026-09-21/",
-  "count": 4,
+  "date": "2026-09-22",
+  "url": "https://z-xj.com/daily/2026-09-22/",
+  "count": 6,
   "titles": [
-    "Pirate Face：用 BitTorrent 思路抗删除的 Hugging Face 模型镜像",
-    "wuyoscar/jev-skill：Jev 用例、工作流与代理技能合集",
-    "zai-org/ZCode：Z.ai 推出的编程代理框架",
-    "y0usaf/pi-jev：为 Pi 代理加入类型安全的 Jev 决策层"
+    "RetroChimera：用模型集成与学习排序提升小分子逆合成预测",
+    "开源模型的当前力量格局：中美的此消彼长",
+    "MCP从一开始就是个坏主意？",
+    "jev-codex-router：为Codex按轮次动态路由模型与推理深度",
+    "awesome-typesafe-jev：Jev生态的源码佐证资源清单",
+    "jianying-headless：剪映的原生无头模式与Agent Skill"
   ]
 }

@@ -1,0 +1,49 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>jev-codex-router：为Codex按轮次动态路由模型与推理深度 · 2026-09-22 AI 日报 · 面向Google编程</title><meta name="description" content="GitHub项目，为Codex提供按轮次的模型与推理路由。由Jev（TypeSafe System One）驱动，可为每轮自动选择模型、思考深度与速度模式，以适配不同任务需求。当前星标约155，面向macOS用户。"><meta property="og:title" content="jev-codex-router：为Codex按轮次动态路由模型与推理深度 · 2026-09-22 AI 日报"><meta property="og:description" content="GitHub项目，为Codex提供按轮次的模型与推理路由。由Jev（TypeSafe System One）驱动，可为每轮自动选择模型、思考深度与速度模式，以适配不同任务需求。当前星标约155，面向macOS用户。"><meta property="og:type" content="article"><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/daily/style.css"><link rel="alternate" type="application/atom+xml" title="AI 日报" href="/daily/atom.xml"></head><body><a class="skip" href="#main">跳到正文</a><div class="page wide"><header><a class="brand" href="/">面向Google编程<span>CHARLES ZHANG</span></a><nav aria-label="主导航"><a href="/">博客</a><a class="active" href="/daily/">AI 日报</a><a href="/daily/tags.html">标签</a><a href="/daily/archive.html">往期</a></nav></header><div class="layout"><main id="main"><section class="intro"><p class="eyebrow">AI DAILY / 2026-09-22</p><h1>jev-codex-router：为Codex按轮次动态路由模型与推理深度</h1><p class="original">0xNatoshi/jev-codex-router</p><div class="meta"><span class="tag">AI 编程实践</span><span>GitHub · 2026-09-17</span></div><div class="tags"><a class="tag-pill" href="/daily/tags.html#Jev">Jev</a><a class="tag-pill" href="/daily/tags.html#Codex">Codex</a><a class="tag-pill" href="/daily/tags.html#%E6%A8%A1%E5%9E%8B%E8%B7%AF%E7%94%B1">模型路由</a><a class="tag-pill" href="/daily/tags.html#TypeSafe">TypeSafe</a></div></section><p class="muted">全文中文翻译 · AI 生成，仅供学习交流</p><section class="translation"><h2>0xNatoshi/jev-codex-router</h2><pre><code>{&quot;state&quot;:{&quot;goal&quot;:&quot;open the docs&quot;},&quot;questions&quot;:{&quot;next&quot;:{&quot;type&quot;:&quot;choice&quot;,&quot;instructions&quot;:&quot;Which element advances the goal?&quot;,&quot;criteria&quot;:{&quot;e5&quot;:&quot;link Documentation&quot;}}}}</code></pre><pre><code>#→ {&quot;model&quot;:&quot;jev-1.13.0&quot;,&quot;answers&quot;:{&quot;next&quot;:{...}},&quot;usage&quot;:{...},&quot;ms&quot;:612}</code></pre><p>校验就是整个契约：一个可 JSON 序列化（JSON-serialisable）的状态，字符数不超过 120k，问题最多 40 个，每个问题是 noul、choice 或 score 类型，并附带各自的 instructions 和 criteria。调用方的状态永远不会被记录（logged）。</p><p><code>...</code> 暴露一次上游 Jev 故障 ， <code>...</code> 表示 TypeSafe 账户额度已用尽 ， 而 <code>...</code> 表示未配置 key。</p><h2>仓库布局</h2><p>- <code>BACKTEST.md</code> ， 节约方案回测：协议说明、表格、局限性（即&quot;证据&quot;）<br>- <code>AGENTS.md</code> ， 自治安装与运维手册（供 AI agent 使用）<br>- <code>poc/</code> ， 分层 POC、影子回放（shadow replay）以及回测工具<br>- <code>server/</code> ， 在线服务及其安装脚本（实际运行的部分）<br>- <code>hook/</code> ， 探索过的替代方案（LiteLLM callback tap）， 保留作为参考</p><h2>快速上手</h2><p><strong>前置条件</strong>：macOS，已安装 Codex 桌面端并接入 Codex Router（用 <code>bin/codex-router</code> 检出），Python 3.11+，以及一个 TypeSafe API key（Jev）。</p><p><strong>1. 把 TypeSafe key 提供给服务</strong>， 要么在服务环境中 <code>export TYPESAFE_API_KEY=...</code>，要么：</p><pre><code>echo &#x27;TYPESAFE_API_KEY=your-key&#x27; &gt;&gt; ~/.hermes/.env   # 默认环境文件
+# 用 JEV_ENV_FILE=/path/to/env 可以覆盖路径</code></pre><p><strong>2. 启动服务（前台测试）</strong></p><pre><code>python3 server/jev_server.py
+curl -s http://127.0.0.1:4319/health</code></pre><p><strong>3. 向 Codex Router 注册</strong></p><pre><code>cd &lt;codex-router checkout&gt;
+
+# 启用 chatgpt 会话
+./bin/codex-router chatgpt-session enable
+
+# 声明通用 provider（我们的本地服务，使用原生 Responses 格式）
+./bin/codex-router providers generic add jev \
+    --name &quot;Jev Router&quot; \
+    --base-url http://127.0.0.1:4319/v1 \
+    --adapter openai-responses \
+    --allow-private
+
+# 声明模型：~/.codex/codex-router/user-models.json
+# （此文件为本地状态 ， router 的更新不会触碰它）
+{
+  &quot;version&quot;: 1,
+  &quot;models&quot;: [
+    {
+      &quot;slug&quot;: &quot;jev/auto&quot;,
+      &quot;gatewayModel&quot;: &quot;jev-auto&quot;,
+      &quot;compHash&quot;: &quot;jev-auto-user-v1&quot;,
+      &quot;upstreamModel&quot;: &quot;auto&quot;,
+      &quot;provider&quot;: &quot;jev&quot;,
+      &quot;listed&quot;: true,
+      &quot;displayName&quot;: &quot;Jev Codex Router&quot;,
+      &quot;description&quot;: &quot;Auto-routing by Jev: every turn is classified and served by luna, terra, sol or astra at the thinking depth it needs.&quot;,
+      &quot;priority&quot;: 1,
+      &quot;defaultEffort&quot;: &quot;medium&quot;,
+      &quot;reasoningLevels&quot;: [
+        {&quot;effort&quot;: &quot;low&quot;,    &quot;description&quot;: &quot;Quick reasoning&quot;},
+        {&quot;effort&quot;: &quot;medium&quot;, &quot;description&quot;: &quot;Balanced reasoning&quot;},
+        {&quot;effort&quot;: &quot;high&quot;,   &quot;description&quot;: &quot;Deep reasoning&quot;},
+        {&quot;effort&quot;: &quot;xhigh&quot;,  &quot;description&quot;: &quot;Extended reasoning&quot;},
+        {&quot;effort&quot;: &quot;max&quot;,    &quot;description&quot;: &quot;Maximum reasoning&quot;}
+      ],
+      &quot;contextWindow&quot;: 400000,
+      &quot;autoCompact&quot;: true,
+      &quot;searchTool&quot;: {&quot;mode&quot;: &quot;hosted&quot;},
+      &quot;supportsSearchHistory&quot;: true,
+      &quot;inputModalities&quot;: [&quot;text&quot;, &quot;image&quot;]
+    }
+  ]
+}
+
+# 发布目录，让模型在选择器中可见
+./bin/codex-router refresh-catalog
+./bin/control picker set jev/auto show</code></pre><p><strong>4. 退出并重启 Codex</strong>，然后在模型选择器中挑选&quot;Jev Codex Router&quot;。</p><p>同时核对传输方式以及选择器：<code>jev/auto</code> 必须命中本地 router，而非 OpenAI 的原生端点。仅靠目录条目或 <code>[model_providers.jev]</code> 声明本身，并不会选定这种传输方式。</p><p>如果 Codex 报告 <code>jev/auto</code> 在 ChatGPT 账户下不受支持，请参阅传输故障排查（transport troubleshooting）。</p><p><strong>5. 设为永久生效（可选但推荐）</strong>：在你自己终端中运行服务安装脚本（受监管的 agent 内有意限制了 launchd 管理权限）：</p><pre><code>bash server/install-service.sh</code></pre><p>若不执行此步骤，<code>server/watchdog.sh</code>（每 5 分钟一次的 cron）会在服务停止响应时将其重启。</p><h2>运维</h2><p>| 动作 | 命令 |<br>| --- | --- |<br>| 查看路由决策 | <code>tail -f ~/.codex/codex-router/jev-router-live.jsonl</code> |在会话中查看所选模型：每个推理摘要片段的两侧各带一个路由标记作为分隔符：</p><p>· 🧠sol:low ·每种路由对应一个图标：</p><p>- ⚡ luna（经济型）<br>- 🧠 sol（主力机型）<br>- 🚀 astra（前沿）<br>- 🌍 terra由 Codex-dry 协同提供服务时：</p><p>- 🐳 deepseek<br>- ✨ glm</p></section><aside class="about"><h2>编辑导读</h2><p>GitHub项目，为Codex提供按轮次的模型与推理路由。由Jev（TypeSafe System One）驱动，可为每轮自动选择模型、思考深度与速度模式，以适配不同任务需求。当前星标约155，面向macOS用户。</p><p><strong>为什么读</strong>看看如何为Codex配置按轮次的模型路由，以在成本、速度与质量之间灵活取舍。</p><p><strong>带着问题读</strong>Jev在选择模型时考虑了哪些信号，是否包含成本、延迟或任务类型？</p></aside><aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="https://github.com/0xNatoshi/jev-codex-router" rel="noopener noreferrer">0xNatoshi/jev-codex-router ↗</a></p><p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="/daily/2026-09-22/04-ba182247/">返回本期 →</a></p></aside><nav class="postnav" aria-label="上下篇"><a class="prev" href="/daily/2026-09-22/03-e41c515d/"><span class="dir">← 上一篇</span>MCP从一开始就是个坏主意？</a><a class="next" href="/daily/2026-09-22/05-411a35fb/"><span class="dir">下一篇 →</span>awesome-typesafe-jev：Jev生态的源码佐证资源清单</a></nav></main><aside class="sidebar"><section class="sideblock"><h2>相关阅读</h2><ul><li><a href="/daily/2026-09-20/06-f72a4981/">Hermes代理的JEV技能扩展包</a><span class="meta">2026-09-20 · GitHub</span></li><li><a href="/daily/2026-09-18/01-18b16bab/">Jev-Review：面向 AI 编程代理的本地优先 MCP 代码评审插件</a><span class="meta">2026-09-18 · GitHub</span></li><li><a href="/daily/2026-09-20/03-4ad1fc24/">geo-sleuth：能展示推理过程的图片地理定位Agent技能</a><span class="meta">2026-09-20 · GitHub</span></li><li><a href="/daily/2026-09-15/03-52d972cf/">AgentVerse-OS：面向开发者与 AI Agent 的个人云操作系统</a><span class="meta">2026-09-15 · GitHub</span></li><li><a href="/daily/2026-09-11/11-3d6c1446/">Maskit：面向大模型的本地隐私脱敏网关</a><span class="meta">2026-09-11 · GitHub</span></li></ul><p class="more"><a href="/daily/tags.html">按标签浏览 →</a></p><p class="more"><a href="/daily/archive.html">全部往期 →</a></p></section></aside></div><footer><span>AI 日报 · 保持好奇，动手验证</span><a href="/daily/atom.xml">RSS 订阅 ↗</a></footer></div></body></html>
