@@ -1,13 +1,19 @@
 {
   "date": "2026-09-22",
   "url": "https://z-xj.com/daily/2026-09-22/",
-  "count": 6,
+  "count": 12,
   "titles": [
     "RetroChimera：用模型集成与学习排序提升小分子逆合成预测",
     "开源模型的当前力量格局：中美的此消彼长",
     "MCP从一开始就是个坏主意？",
     "jev-codex-router：为Codex按轮次动态路由模型与推理深度",
     "awesome-typesafe-jev：Jev生态的源码佐证资源清单",
-    "jianying-headless：剪映的原生无头模式与Agent Skill"
+    "jianying-headless：剪映的原生无头模式与Agent Skill",
+    "AI评估完全FAQ：常见问题与实操建议",
+    "Jev与System One决策模型：TypeSafe AI的非自回归路径",
+    "Jev决策模型详解：黑箱回归与适用边界",
+    "RSI、中美AI差距与能力断层：与Epoch AI联合对谈",
+    "jev-chat-jarvis：手机端只读对话副驾项目",
+    "KLPO：面向智能体强化学习的KL正则策略优化项目"
   ]
 }
