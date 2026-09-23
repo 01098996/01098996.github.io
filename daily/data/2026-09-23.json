@@ -1,0 +1,174 @@
+{
+  "date": "2026-09-23",
+  "generated_at": "2026-09-23T13:49:51.853814+08:00",
+  "articles": [
+    {
+      "title": "How UK AISI and EvalEval Are Making Benchmark Results Reproducible",
+      "url": "https://huggingface.co/blog/evaleval-aisi",
+      "source": "Hugging Face",
+      "published": "2026-09-22T00:00:00+00:00",
+      "excerpt": "As AI deployment accelerates, evaluations are becoming increasingly important sources of evidence about model and system performance. Yet results are reported across many formats, platforms, and outlets, often without enough information to reproduce them. Running the evaluations again may itself be prohibitively expensive. EvalEval's mission is to improve this ecosystem through a shared reporting schema, Every Eval Ever, and an open platform, Evaluation Cards, that brings evaluation results and the information needed to interpret them into a common structure. This builds naturally on AISI's work to make evaluation more efficient through OptStop, more statistically rigorous through HiBayES, and more standardised in areas including transcript analysis and capability elicitation. Together, AISI and EvalEval are working to diagnose gaps in evaluation reporting and build shared infrastructure",
+      "category": "评测与可靠性",
+      "score": 15.38,
+      "evidence_kind": "article",
+      "title_zh": "英国AISI与EvalEval：让基准评测结果可复现",
+      "summary": "针对AI部署加速下评测可信度下降的痛点，介绍英国AI安全研究所与EvalEval的协作。EvalEval提供共享报告规范、Every Eval Ever数据集与Evaluation Cards开放平台；AISI则贡献OptStop提升效率、HiBayES强化统计严谨性，并在能力激发、转录分析等领域推动标准化。",
+      "why": "了解官方机构与开源项目如何系统性地解决\"评测不可复现\"这一行业顽疾。",
+      "question": "Evaluation Cards这套结构在实际中能否被主流模型厂商真正采纳，避免沦为形式化框架？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "AISI",
+        "EvalEval",
+        "基准评测",
+        "可复现性",
+        "OptStop"
+      ],
+      "translation": "# 英国 AISI 与 EvalEval 如何让基准测试结果可复现\n\nAI 部署越来越快，评估也越来越受重视，成了说明模型和系统性能的关键证据。可现实是，结果发布的格式、平台、渠道五花八门，往往缺了能让你复现的细节。重新跑一遍评估本身又贵得吓人。\n\nEvalEval 想做的，是用一套共享的报告框架（schema）Every Eval Ever，加一个开放平台 Evaluation Cards，把这个生态改善一下。Evaluation Cards 把评估结果和解读结果需要的信息塞进同一个结构里。\n\n这跟 AISI 的工作是一脉相承的。AISI 通过 OptStop 让评估更高效，通过 HiBayES 让评估在统计上更扎实，又在转写分析（transcript analysis）和能力探查（capability elicitation）等方向推进标准化。AISI 和 EvalEval 现在一起做的事，就是诊断评估报告里的缺口，再搭一套共享基础设施把这些缺口填上。\n\n## AISI 这次公开了什么\n\n转写层面的透明度（transcript-level transparency）不光是复现的关键，做分析和诊断时也离不开它。合作进入新阶段，AISI 会把已报告的评估方法和发现在合适的时候放到 Evaluation Cards 上。这次公开的内容包括论文主实验中五个基准（benchmark）的已核验结果、上下文和配置信息，分别是 HealthBench、FrontierMath、Humanity's Last Exam、SWE-Bench Pro、Terminal-Bench 2.0。\n\n涉及六个前沿模型（frontier models），分别是 Claude Opus 4、Claude Opus 4.5、Claude Opus 4.6、GPT-5、GPT-5.2 和 GPT-5.4。还有两项网络安全评估的结果，Cyber CTFs 和 The Last Ones，用的是另一套模型，跟上面那批有部分重叠。这些数据跟 AISI 的论文《How Inference Compute Shapes Frontier LLM Evaluation》一并发布，那篇论文研究的是基准性能怎么受推理时算力（inference-time compute）和评估方案的影响。\n\nHumanity's Last Exam 上的成绩会跟着评估方案和推理算力的变化而变化。每条曲线画的是在给定 token（词元）数以内被解决任务的累计占比，统计时每个任务取最早观察到的成功。模型每次尝试完后，如果能从 oracle（标准答案来源）拿到对错反馈，token 用得越多，解出的题就越多。\n\n结果如果连同配置信息一起公开，研究者和从业者就能更仔细地看每项研究，也能在跨生态的范围内互相比较。对于那些缺细节的报告，AISI 这次公开的内容就成了已核验的参考点。比如，可以帮研究者看清配置选择会怎么影响报告出来的成绩。等用上 EEE 的评估者多起来，这种开放比较能撑起更大、更可靠的元研究（meta-research）。\n\n> AISI 的 Terminal-Bench 2.0 结果，跟同模型在其他已报告评估、不同评估配置下的结果并列展示。\n\n看到这一做法被采用，我们很兴奋。接下来希望能跟 AISI 以及其他 AI 评估机构一起，把评估的标准化和共享再往前推一推。\n\n## 加入共同使命\n\n- **模型开发者**，把核验过的评估结果报上来。\n- **评估开发者**，按 Every Eval Ever 框架来报基准和运行数据。\n- **评估、治理和政策研究者**，按基准或模型去翻 Evaluation Cards，也可以用它看看整个评估报告的生态状况。\n\n## 关于 EvalEval 联盟\n\nEvalEval 联盟（EvalEval Coalition）是一个研究社区，专门为评估生态打造科学扎实的研究和能落地的部署基础设施。目标有三个，把评估科学做得更扎实，弥合评估适用性和效用上达不成共识的现状，再把对科学研究和政策分析真正重要的影响覆盖得更广。\n\n联盟的旗舰项目有两个。Every Eval Ever，一套共享的框架加仓库，专门装评估结果。Evaluation Cards，把基准元数据、评估运行数据和模型元数据打包成可读的记录。两样东西合起来，让人更容易看清楚，看起来差不多的分数，背后可能是在差很远的条件下跑出来的。\n\n## 关于英国 AI 安全研究所\n\n英国 AI 安全研究所（UK AI Security Institute，AISI）归英国政府科学、创新与技术部管，是个研究机构。任务就是给政府提供对前沿 AI 风险的科学认知。AISI 做研究、搭基础设施，目的有三，搞清前沿 AI 的能力和影响，开发并测试缓解手段，给政策提供依据。",
+      "translation_kind": "full",
+      "translation_source": "article"
+    },
+    {
+      "title": "🔬 An Oscar, Two Asteroids, and the Algorithm in Your sklearn: John Platt on AI for Science",
+      "url": "https://www.latent.space/p/john-platt",
+      "source": "Latent Space",
+      "published": "2026-09-22T21:07:39+00:00",
+      "excerpt": "We talked to Google’s Oscar winning “Giganerd” about automating science, solving climate change, and how future generations can contribute to science in the age of superintelligent AI Brandon Anderson Sep 22, 2026 Transcript How often do you get to talk to a guest who has both an Academy Award and who invented textbook machine learning algorithms? John Platt has an Oscar, two textbook algorithms, two named asteroids, and an Erdos-Bacon number of 6. This was easily the most fun bio of all the guests we’ve read to date. And the result was an epic and fun chat covering Google’s Empirical Research Assistance (ERA), how AI can help battle climate change, and tons of great stories about the co-evolution of science and AI. John’s colleague Dave Bacon likes to tease John that his career has been defined by being twenty years early to the next big thing. This may be convolutional neural networks ",
+      "category": "上下文与记忆",
+      "score": 4.82,
+      "evidence_kind": "article",
+      "title_zh": "奥斯卡、行星与你sklearn里的算法：John Platt谈AI for Science",
+      "summary": "访谈从John Platt获奥斯卡奖、发明经典算法谈起，介绍其团队打造的Google ERA系统。该系统把科学问题抽象为可打分任务，用Gemini驱动的蒙特卡洛树搜索自动演化notebook寻找高分解法，已催生多篇论文。嘉宾也讨论如何避免模型自欺、以及Kaggle竞赛中数据陷阱被队伍钻空子的方法论问题。",
+      "why": "听一位横跨机器学习与科学应用数十年的亲历者，讲解AI如何真正加速科研。",
+      "question": "ERA的\"可打分\"范式能否推广到难以量化奖励的开放性科学发现场景？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "John Platt",
+        "Google ERA",
+        "科学发现",
+        "Kaggle",
+        "蒙特卡洛树搜索"
+      ],
+      "translation_kind": "failed",
+      "images": [
+        "img/1.jpg",
+        "img/2.jpg",
+        "img/3.jpg",
+        "img/4.jpg"
+      ]
+    },
+    {
+      "title": "Unreal Agent",
+      "url": "https://unreallabs.ai/blog/unreal-agent",
+      "source": "Hacker News",
+      "published": "2026-09-22T18:15:53+00:00",
+      "excerpt": "While deploying agents in the wild, we wanted them to respond to users quickly and be cost-effective to run. We’ve noticed that agents spend a lot of time and tokens managing tool calls, which motivated us to build Unreal Agent with a harness that would reduce the model’s tool-management overhead. The Unreal Agent harness manages tool calls in a completely asynchronous way, relieving the underlying model of the need to manage waits, polls, and heartbeats for tools. This approach drives two major benefits. First, it always allows users to steer the agent without the need to wait for tool calls to finish. Second, it allows the agent to schedule more useful tool call work between model calls, driving frontier cost efficiency. The current version achieves up to 40% cost savings compared to Codex and up to 20% compared to Pi in real workloads and on agentic benchmarks, which we share here. We",
+      "discussion": "https://news.ycombinator.com/item?id=49805748",
+      "category": "Agent 开发",
+      "score": 3.76,
+      "evidence_kind": "article",
+      "title_zh": "Unreal Agent：用异步工具调度把开销砍下40%",
+      "summary": "文章介绍Unreal Agent的运行机制：传统Agent需在模型层同步等待工具返回，导致响应慢、成本高。Unreal Agent把工具调用完全异步化，让模型无需关心等待、轮询与心跳，从而允许用户随时打断Agent，并在模型推理间隙插入更多工具工作。当前版本相对Cod可节省最高40%的开销。",
+      "why": "看清Agent工程化中一个被低估的瓶颈——工具管理的同步开销。",
+      "question": "异步工具编排对需要强一致性的任务（如数据库事务、支付流）是否会引入新的竞态风险？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "Unreal Agent",
+        "Agent Harness",
+        "异步工具调用",
+        "成本优化"
+      ],
+      "translation": "#Unreal Agent\n\n在真实环境中部署智能体（agent）时，我们希望它们能快速响应用户，并且运行成本低廉。我们注意到，智能体在管理工具调用上耗费了大量的时间和令牌（token），这促使我们构建了 Unreal Agent，并设计了一套能减少模型在工具管理上的开销的 harness（执行框架）。\n\nUnreal Agent 的 harness 以完全异步的方式管理工具调用，让底层模型无需处理工具的等待、轮询（poll）和心跳（heartbeat）。\n\n这种方式带来了两大主要好处。首先，它始终允许用户随时引导（steer）智能体，而无需等待工具调用完成。其次，它使智能体能够在两次模型调用之间安排更多有用的工具调用工作，从而达到业界领先的成本效率。当前版本在真实业务负载和智能体基准测试中，相比 Codex 最多可节省 40% 的成本，相比 Pi 最多可节省 20%，我们在此分享相关数据。\n\n我们认为 harness 设计本身就是一个独立的研究方向，仍有许多有前景的想法值得研究和实现。\n\n#动机与架构\n\n如果你尝试构建一个以智能体为核心的产品，很快就会发现并不存在一条标准化的实现路径。各大厂商提供不同的 SDK 来构建智能体，每套都有不同的权衡取舍，而这些取舍往往并不一目了然。\n\n在 Unreal Labs，我们构建过多款智能体产品，并在此过程中对主流 SDK 积累了一些经验。\n\n例如，以 CLI 为导向的 SDK（如 Claude 的 Agent SDK）带有对本地会话、子进程和资源限制的预设假设，这些假设无法顺畅地迁移到生产环境中。可靠地处理完成、取消和后台任务，往往意味着需要在它们之外自行构建一套生命周期管理逻辑。\n\n接入其他模型提供方会带来额外的兼容性工作：切换 API 模式可能会破坏工具调用或上下文压缩，而 SDK 升级可能改变消息格式，迫使我们重写集成代码。庞大的依赖树为这个本就需要我们自己理解和打补丁的运行时，又增加了维护成本和供应链风险。\n\n根据我们的经验，那些依赖 harness 钩子和专用工具来实现的审批与安全机制，往往需要更多维护工作，并且不如直接在 harness 之外施加的确定性环境或沙箱约束（例如允许/禁止的主机列表、细粒度的访问令牌、带审批关卡的代理）稳健。\n\n除了这些技术层面的动机，我们还希望构建一个能够始终无延迟地接收用户引导消息、并且能并行调度异构工具调用，而不会给模型增加额外认知负担的 harness。例如，我们希望智能体能在并行探索代码库和搜索网页的同时，发起一个可能耗时数分钟的本地开发环境搭建任务，全程不产生额外的令牌开销。\n\n每当 Unreal Agent 发出一个工具调用，我们会立即向事件日志（event log）追加一条该工具已返回「进行中（in-progress）」状态的记录，同时让工具在后台继续执行。一旦工具真正完成，我们再把结果追加到会话日志中，然后调用一次大语言模型（LLM）。在不破坏缓存（cache）的前提下实现这一点，本身就是一个有趣的工程挑战。\n\n观看下面的动画。\n\n[[IMG1]]\n\n#成本效率\n\n表面上看，Unreal Agent 用更少的模型调用轮次和更少的输入令牌达成了同样的结果。\n\n我们把成本节省归因于两个因素：极简的 harness 占用（footprint）以及对工具输出使用的精心设计。Unreal Agent 拥有简洁的提示词、经过令牌优化的工具结果，并且没有任何子智能体（sub-agent）或工作流（workflow）。\n\n每轮模型调用承载更多工具工作量。Unreal Agent 拥有一套简单明了的异步工具调用模型，并清楚地向 LLM 解释清楚。这使它能在每轮模型调用中发出更多重量级工具调用，而不会在轮询或等待上浪费令牌。\n\n#基准测试\n\n我们构建 Unreal Agent 是为了支撑真实的业务工作流，不过它在基准测试中的表现也同样亮眼。我们使用 GPT-6 Astra xhigh 对其进行了测试，并与 Codex 和 Pi 进行了对比。以下是部分结果。\n\n在通过率上存在边际差异，我们将其归因于基准测试的方差（variance）。\n\n#Terminal-Bench 4.0\n\nGPT-6 Astra · xhigh。Codex (lb) 是排行榜基线；Unreal Agent 和 Pi 的运行记录见下方链接。\n\n| Agent | Rate | Total $ | In/trial | Out/trial | Turns | Tools | Harbor |\n|---|---|---|---|---|---|---|---|\n| unreal-agent | 57.9% | 1.73M | | 32k | | | 6ccd097a |\n| Codex (leaderboard) | 57.9% | — | — | — | — | — | — |\n| Pi | 55.0% | 2.83M | | 35k | | | |\n\n#SWE-Atlas Codebase QnA\n\n| Agent | Rate | Total $ | In/trial | Out/trial | Turns | Tools | Harbor |\n|---|---|---|---|---|---|---|---|\n| unreal-agent | 65.8% | 898k | | 15k | | | 3d2fa057 |\n| Codex | 63.3% | 1.69M | | 17k | | | 11a440fb |\n| Pi | 64.0% | 1.29M | | 16k | | | da4ac972 |\n\n#DeepSWE 1.1\n\n| Agent | Rate | Total $ | In/trial | Out/trial | Turns | Tools | Harbor |\n|---|---|---|---|---|---|---|---|\n| unreal-agent | 72.4% | 1.60M | | 28k | | | 2311ca63 |\n| Codex | 69.0% | 2.19M | | 30k | | | e20ecafd |\n| Pi | 69.6% | 2.21M | | 30k | | | cd7d8de6 |\n\n#Agents' Last Exam · ALE-CLI\n\n完整通过率和平均分如下。这些运行未在 Harbor 上进行。\n\n| Agent | Full pass | Mean score | Total $ | In/task | Out/task | Turns | Tools |\n|---|---|---|---|---|---|---|---|\n| unreal-agent | 30.0% | 59.7 | 0.76M | | 18k | | |\n| Codex | 29.0% | 58.1 | 1.59M | | 15k | — | |\n| Pi | 29.0% | 59.2 | 1.19M | | 19k | | |\n\n我们主要运行编程类基准测试，因为它们可以在 Harbor 上获取，这使得复现和验证更为容易，但这个 harness 本身是与领域无关的。\n\n#开始使用 Unreal Agent\n\nUnreal Agent SDK 目前提供：\n\n- 可直接集成到代码库中的 Go 库\n- 类似于 `claude -p` / `codex exec` 的 Runner 可执行文件\n- 兼容 Harbor 的基准测试运行器\n\n如果你想亲自尝试，请查看我们的 GitHub 仓库。\n\n#参考资料\n\n[1] Melissa Z. Pan, Shuo Yang, Negar Arabzadeh, Wei-Lin Chiang, Ion Stoica, and Matei Zaharia. \"HarnessTax: How Much Does Harness Matter for Coding Agents?\" 2026.\n\n（译注：这是一篇关于 harness 对编程智能体影响程度的研究论文标题，HarnessTax 直译为「harness 税」，意指 harness 设计带来的额外开销。）\n\n[2] 在 Responses API 的文档中，在同一个上下文里使用两条工具调用结果条目（一条进行中、一条最终结果）的做法属于「未明确规定」。在测试期间，我们在某些模型和某些推理服务提供商（非 OpenAI）上遇到过被拒绝的情况，而且在这些情况下 `function_call_output` 的 `status` 字段似乎没有产生影响。\n\n我们的测试表明，只要对话格式被接受，模型是能够理解从「运行中更新」到「最终结果」这一进展过程的。我们认为 Responses API 应当明确支持这种模式，并在各推理服务提供商之间保持一致的支持。",
+      "translation_kind": "full",
+      "translation_source": "article",
+      "images": [
+        "img/1.png"
+      ]
+    },
+    {
+      "title": "malevrigns/agent-jev",
+      "url": "https://github.com/malevrigns/agent-jev",
+      "source": "GitHub",
+      "published": "2026-09-21T16:24:42Z",
+      "excerpt": "AgentJev-0.6B does not write. You hand it a state and questions you have already phrased. One forward pass returns a probability for every option. The number of decoded tokens is zero. Put it where an agent loop needs a gate, a route, or a score. Leave the prose to a larger model. The job A coding agent, a triage bot, or a workflow spends most of its steps on questions that are not writing problems. Did the tests pass. Which tool is next. Is this command safe to run. The usual answer is to ask a 27B–70B model to talk its way to a boolean, then parse the talk. A writer, used as a switch AgentJev Output Text you hope is JSON A distribution over options you supplied Decode One token at a time None Failure A malformed object, or a confident sentence A probability you can threshold Place in the loop The whole turn The reflex under the turn The state stays unstructured. The questions are typed",
+      "category": "Agent 开发",
+      "score": 3.22,
+      "evidence_kind": "article",
+      "title_zh": "AgentJev-0.6B：50毫秒给出校准概率的\"系统一\"决策模型",
+      "summary": "AgentJev-0.6B是一个面向AI Agent的快速决策小模型。它接收任意非结构化状态（diff、trace、log）和结构化问题，单次前向推理即输出校准的概率分布，无需任何输出token解码，约50毫秒即可完成一轮判断，适合嵌入高频决策链路。",
+      "why": "在大模型推理开销高企的当下，这个0.6B模型展示了\"小而专\"路线的实用价值。",
+      "question": "50ms推理的代价下，其校准性能否覆盖足够复杂的Agent决策场景？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "AgentJev",
+        "0.6B",
+        "概率分布",
+        "决策模型",
+        "低延迟推理"
+      ],
+      "translation": "# AgentJev-0.6B 不写文本\n\n你交给它一个状态（state）和你已经拟好的问题。一次前向传播（forward pass）就为每个候选选项返回一个概率。解码出的 token（模型输出的最小语义单元）数为零。\n\n把它放到 agent 循环中需要把关（gate）、路由（route）或打分（score）的位置。把需要长篇输出的活儿留给更大的模型。\n\n## 这件活\n\n一个写代码的 agent、一个分流机器人，或一个工作流，它的大多数步骤花在了并不是写作任务的问题上。测试都通过了吗。下一步该用哪个工具。这条命令跑起来安全吗。通常的做法是请一个 27B–70B 的模型一路聊出布尔值，然后再去解析那段话。\n\n| 类型 | 用作开关的写手 | AgentJev |\n|---|---|---|\n| 输出 | 你希望是 JSON 的文本 | 你给定的选项上的一个分布 |\n| 解码 | 一次一个 token | 无 |\n| 失败 | 一个结构不合法的对象，或一句自信的话 | 一个你可以设阈值的概率 |\n| 放在循环里 | 整轮 | 这一轮之下的反射动作 |\n\n状态保持非结构化。问题是带类型的（typed）。答案就是这个分布。\n\n状态可以是一个 diff（一段代码改动）、一段堆栈跟踪、一条工单线索，或一张表格。把它序列化成一个对象，就以稳定的 JSON 发送出去。问题 id 的存在是为了让你能匹配响应。模型是看不到这些 id 的。语义必须落在问题文本和选项文本里。\n\n## 三种原语\n\n三种形态。每一种返回的都是完整的分布，而不是只返回胜出者。\n\n### Boolean（布尔）\n\n**问**：一个命题\n**你传入**：可选的 true 和 false 的判定标准\n**你得到**：`value`、true 的概率、两个质量（mass，指分配到该选项上的概率份额）\n\n### Choice（选择）\n\n**问**：在这些选项里选哪一个，必须正好就是这些选项\n**你传入**：2–255 个选项，每个都是一段描述；可以是一个列表或一个映射\n**你得到**：`value`、`top_probability`、`margin`（前两名的差距）、完整的 map\n\n### Score（打分）\n\n**问**：在这条有序的评分量表上处于何处\n**你传入**：2–10 个等级描述，从低到高\n**你得到**：`level`（argmax，即概率最高的等级）、`score = Σ i · Pᵢ`\n\nmargin 是最佳选项与次佳选项之间的差距。Choice 是你所传入集合内部的一种偏好。它并不是\"该动作会成功\"的独立概率。如果你需要那个概率，请对每个动作单独问一个 boolean，并基于你自己的结果自行校准。\n\n## 一次前向传播\n\n骨干网络是 Qwen3-0.6B，去掉了语言模型头。每个候选都在其最后一个 token 处读取。一个小型的置换等变（permutation-equivariant）头（head，即附加在骨干网络上的输出层）再对这个集合打分：选项的顺序不会偷偷夹带排序。Softmax（把原始打分归一化为概率分布的函数）在每个问题内部独立进行。\n\n```mermaid\nflowchart LR\n    state[\"State\"] --> enc[\"Qwen3-0.6B\"]\n    questions[\"Boolean, choice, score\"] --> enc\n    enc --> head[\"Candidate head\"]\n    head --> dist[\"Distribution\"]\n```\n\n## 加载\n\n三个值得落实而非空喊的特性。\n\n### 不做任何解码\n\n隐藏状态直接进入 logits（模型输出的未归一化打分）。没有输出词表这一步，因此没有需要修缮的 JSON。\n\n### 上下文为 2,048 token，超长输入会被拒绝\n\n放不下的 diff 或跟踪信息会报错，而不是悄悄截掉问题或候选。\n\n### 同一问题的候选之间复用共享前缀\n\n在一种固定的负载下，64 个 Choice 选项加 1 个 boolean，共 66 条路径、33,547 个路径 token，不共享时中位数是 609.65 ms。共享前缀路径是 298.91 ms。最大概率差为 0.000508，且所选选项不变。两种情况下生成的 token 都是 0。这个数字是这种负载、预热后测得的，并非对每条 prompt 的承诺。\n\n状态只编码一次。候选从这个前缀上分叉。\n\n不同问题之间目前还不共享状态缓存。代码中训练侧留了一个树形编码器作为接缝点（seam）。上文测得的服务路径是上面那个共享前缀的运行时，而不是那个接缝点。\n\n## Typed Decisions 基准\n\nTyped Decisions 的官方测试集划分：400 个 case（用例），2,000 个问题，一个状态上 5 个问题，4 类工作流。准确率是与公开的教师模型 argmax（概率最大的类别）的一致率。它不是一个被测出来的、写代码 agent 的成功率。\n\n最新的写代码补全检查点（checkpoint，训练过程中保存的模型快照）在代码集上达到 57.8% 准确率和 57.8% 召回率，业务策略（business policy）上 100%，通用 agent 集上 16/16，票据处理上 87.2%。\n\n| 模型 | 类别 | Top-1 | Soft CE ↓ | Brier ↓ | ECE ↓ | Score MAE ↓ |\n|---|---|---|---|---|---|---|\n| AgentJev-0.6B，本次 | 专用 | 79.25% · 1585/2000 | 0.8494 | 0.0448 | 0.1687 | 0.2096 |\n| Laya，公开检查点 | 专用 | 77.00% · 1540/2000 | 0.8844 | 0.0615 | 0.2170 | 0.2423 |\n| TypeSafe Jev 1.13.0 | 通用，零样本 | 72.7% | — | 0.148 | 0.144 | 0.391 |\n| ModernBERT-base，149M | 专用 | 64.6% | — | 0.119 | 0.179 | 0.444 |\n| MiniLM-L6，22M | 专用 | 58.7% | — | 0.143 | 0.108 | 0.515 |\n| AgentJev 第 4 阶段，本次之前 | 专用 | 38.70% · 774/2000 | 1.2817 | 0.2577 | 0.1050 | 0.7062 |\n| Prior，按标签频率 | 参考 | 47.0% | — | 0.189 | 0.088 | — |\n| Uniform（均匀分布） | 参考 | 30.8% | — | 0.238 | 0.169 | — |\n\n没有 Soft CE 数字的行是从数据集说明卡里抄来的。它们没有在这个仓库里重跑过，而且那张说明卡并没有公布软交叉熵（soft cross-entropy）。这些行的 Brier（一种衡量概率预测准确度的损失）、ECE（Expected Calibration Error，期望校准误差）和 Score MAE 用的是说明卡里的定义。\n\n在这个划分上对比 Laya，准确率差距是 +2.25 个百分点。对 400 个 case 做 case 级自助重采样（bootstrap），得到 95% 区间 [+0.65, +3.90]。\n\n对比本次启动所用的第 4 阶段权重，差距是 +40.55 个百分点，区间 [+37.35, +43.50]。\n\n### 按工作流看\n\n每类 500 个问题。AgentJev 是校准过的检查点。Laya 与上表里同一份公开的专用检查点相同。\n\n| 工作流 | AgentJev | Laya |\n|---|---|---|\n| 票据处理 | 86.20% | 81.20% |\n| 客服 | 82.20% | 76.40% |\n| 安全事件 | 76.80% | 77.60% |\n| Agent trace 可观测性 | 71.80% | 72.80% |\n\n### 按原语看\n\n| 原语 | 问题数 | Top-1 | Soft CE |\n|---|---|---|---|\n| Boolean | — | 88.83% | 0.4935 |\n| Choice | — | 75.33% | 0.9767 |\n| Score | — | 75.00% | 1.0209 |\n\n### 表格阅读须知\n\n专用和通用不是同一种度量方式。数据集说明卡上就这么说，表格里也做了标记。Jev 1.13.0 是对这些 schema（输入/输出的字段结构定义）做零样本回答。AgentJev、Laya、ModernBERT 和 MiniLM 是在该基准上专门训练过的。\n\nLaya 的公开检查点是在全部 1,200 个官方训练 case 上训练的。本次留出了 120 个开发 case 和 120 个校准 case，并在测试划分打开之前，按开发集软交叉熵选出了第 600 步的检查点。温度（temperature，用于在 softmax 前缩放 logits 的标量）每个原语一个正标量，仅在校准 case 上拟合。损失是软交叉熵加上 0.1 倍的\"候选和 Brier\"。Seed。数据集版本 ea9306458d6e9563628369a3d1e72e362fb381d2。\n\n目标是教师模型的分布，包括合成 case。在某一行上胜出，并不意味着有 pull request 被合并、有事件被处置、或有票据被支付。\n\n完整数字见 `typed_decisions/comparison.json`、`typed_decisions/protocol.json`、`typed_decisions/REPORT_zh.md`。\n\n## 延迟与吞吐\n\n跟 Laya 的取舍很清晰：Laya 在单个短问题上更小更快；AgentJev 在候选集很宽的场景下才能把规模优势发挥出来。\n\n| 负载 | Laya（421M，ModernBERT） | AgentJev（598M，Qwen3） | 差异 |\n|---|---|---|---|\n| P50 case 延迟（1 个状态上 5 个问题，测试划分） | 41.53 ms | ~60–70 ms | Laya 在短输入上快约 20 ms；其编码器少了 1.77 亿参数 |\n| P90 case 延迟（1 个状态上 5 个问题） | 47.14 ms | ~85 ms | 两者都在交互式响应预算之内 |\n| 宽候选负载（64 Choice + 1 Boolean，33k token） | ~500–600 ms（重复前向） | 298.91 ms（共享前缀） | AgentJev 通过 KV（键值缓存）前缀复用提速约 2 倍 |\n| 上下文上限 | 1,024 token | 2,048 token | Laya 在 1,024 以上会截断或拒绝；AgentJev 能容纳两倍的状态 |\n\nLaya 的 ModernBERT 骨干网络没有因果前缀接缝点：一个 64 选项问题里的每个候选都需要对状态文本做一次完整的前向传播。AgentJev 把 prompt 前缀 token 缓存一次，然后让所有候选分支共用这一份 KV 上下文，把冗余的骨干网络 token 操作从 33,547 降到 2,551（减少 92.4%）。\n\n## 运行\n\n权重是 safetensors（一种高效的模型权重序列化格式）的 state_dict（模型的参数字典），位于 `huggingface.co/aimeigaoshou/agent-jev` 上。这个 git 仓库里是代码。服务进程想要的是一个 torch 检查点，所以请把文件包一层。\n\n```bash\ngit clone https://github.com/malevrigns/agent-jev.git\ncd agent-jev\npython -m venv .venv\npip install -r requirements.txt\npip install huggingface_hub safetensors\n```\n\n```python\nfrom huggingface_hub import hf_hub_download\nfrom safetensors.torch import load_file\nimport torch\n\nsrc = hf_hub_download(\n    \"aimeigaoshou/agent-jev\",\n    \"model.safetensors\",\n)\ntorch.save(\n    {\"state_dict\": load_file(src)},\n    \"agentjev_v1.pt\",\n)\nhf_hub_download(\n    \"aimeigaoshou/agent-jev\",\n    \"temperatures.json\",\n    local_dir=\".\",\n)\n```\n\n```bash\npython -m jev_service.server \\\n  --checkpoint agentjev_v1.pt \\\n  --model-path Qwen/Qwen3-0.6B \\\n  --temperatures temperatures.json \\\n  --port 8149\n```\n\n`model.safetensors` 是完整模块，骨干网络加候选头。它不是一个因果语言模型，`AutoModelForCausalLM` 加载不了它。\n\n`AgentJevModel` 先搭出 Qwen3 的骨架，然后用 `load_state_dict(..., strict=True)` 替换掉。加载时请使用 `dtype=torch.bfloat16`。这些张量就是 bf16（brain float 16，一种 16 位浮点格式）。\n\n进程只绑定 127.0.0.1。工作台在 `http://127.0.0.1:8149/`。\n\n`GET /health` 和 `GET /api/info` 返回已加载的检查点。上表所选的那个基准检查点是第 600 步。这些已发布的张量就是那次训练的产物。\n\n`--temperatures` 接收在留出的校准 case 上拟合出的标量。\n\n`--page` 切换工作台的 HTML。\n\n`--device` 默认为 `cuda:0`。\n\n`--max-tokens` 默认为 2048。\n\n### 客户端\n\n`agentjev_client.py` 与上述服务进程通信。除了标准库以外没有额外依赖。\n\n```python\nfrom agentjev_client import AgentJev\n\njev = AgentJev(\"http://127.0.0.1:8149\")\n\nstate = {\n    \"task\": \"Fix NullPointerException in UserAuthService.verifyToken\",\n    \"test_output\": \"Tests run: 14, Failures: 1 — test_expired_token\",\n}\n\ngate = jev.decide_boolean(\n    state,\n    \"Have all tests passed?\",\n    criteria={\n        \"true\": \"The suite is green and the project builds.\",\n        \"false\": \"Any test is still failing.\",\n    },\n)\n\nroute = jev.decide_choice(\n    state,\n    \"What should the agent do next?\",\n    options={\n        \"read_failed_test\": \"Open test_expired_token and read the assertion.\",\n        \"rewrite_file\": \"Ask a larger model to rewrite the service.\",\n        \"commit\": \"Commit the current diff anyway.\",\n        \"retry\": \"Rerun the suite without changing the code.\",\n    },\n)\n\nrisk = jev.score(\n    state,\n    \"How much operational risk does this change carry?\",\n    levels=[\n        \"Isolated change, no external behavior.\",\n        \"A unit assertion moved.\",\n        \"A public signature changed.\",\n        \"Authentication behavior may be bypassed.\",\n    ],\n)\n```\n\n`gate` 带回 `decision`、`prob_true`、`prob_false`、`confidence`、`wall_ms`。\n\n`route` 带回 `best_action`、`probability`、`margin`、`distribution`。\n\n`risk` 带回 `level` 和 `expected_score`。\n\n`evaluate(state, questions)` 是底层调用，用于一个状态在同一次请求里需要多个问题的情形。多个状态放在 HTTP body 的 `requests` 字段里，最多 32 个。\n\n### 脚本\n\n这些脚本假定服务进程已经在 8149 端口监听：\n\n```bash\npython run_practical_test.py\npython test_coding_scenarios.py\npython test_game_suite.py\n```\n\n前两个走的是软件工程场景。第三个走的是客服、迷宫、贪吃蛇和类似 ViZDoom 形式的决策。它们是针对在线服务进程的演示，不是离线单元测试套件。\n\n### HTTP\n\n```http\nPOST /api/evaluate\n```\n\n请求：\n\n```json\n{\n  \"state\": \"23 tests passed, 1 failed.\",\n  \"questions\": [\n    {\n      \"id\": \"done\",\n      \"type\": \"boolean\",\n      \"question\": \"Are all tests passing?\",\n      \"criteria\": {\n        \"true\": \"The suite is green.\",\n        \"false\": \"At least one test failed.\"\n      }\n    },\n    {\n      \"id\": \"next\",\n      \"type\": \"choice\",\n      \"question\": \"What is the useful next action?\",\n      \"options\": {\n        \"debug_failure\": \"Read the failing assertion.\",\n        \"submit_patch\": \"Open a pull request now.\"\n      }\n    }\n  ]\n}\n```\n\n响应：\n\n```json\n{\n  \"api_version\": \"agentjev.decision.v1\",\n  \"results\": [\n    {\n      \"id\": \"\",\n      \"answers\": [\n        {\n          \"id\": \"done\",\n          \"type\": \"boolean\",\n          \"probability\": 0.08,\n          \"value\": false,\n          \"distribution\": {\"true\": 0.08, \"false\": 0.92}\n        },\n        {\n          \"id\": \"next\",\n          \"type\": \"choice\",\n          \"value\": \"debug_failure\",\n          \"top_probability\": 0.87,\n          \"margin\": 0.74,\n          \"distribution\": {\"debug_failure\": 0.87, \"submit_patch\": 0.13}\n        }\n      ]\n    }\n  ],\n  \"usage\": {\"generated_tokens\": 0}\n}\n```\n\n上面的概率仅用来示意形状。Score 类型的答案还会附加 `score`、`level` 和 `legend`。批处理请用 `{\"requests\": [{\"id\", \"state\", \"questions\"}, ...]}`。单次调用的限制：32 个状态、128 个问题、1,024 条候选路径，body 大小在 1 到 1,000,000 字节之间。同一问题内的候选描述必须互不相同。\n\n### 工具前端的把关\n\n`agentjev_hook.py` 是一个 Claude Code PreToolUse（工具调用前）命令钩子（hook），作用于 Bash、Write 和 Edit。它把工具的载荷（payload）发到 `http://127.0.0.1:8149/api/evaluate`，问一个 boolean 和一个四档 score，然后打印一个决策。\n\n它只在 score 为第 3 档、且 boolean 说该动作不安全时阻塞。如果服务进程没有响应，钩子以退出码 0 退出，工具继续执行。把钩子指向上述脚本，并让服务进程保持在 8149 端口。端点地址在文件里是固定的。\n\n这个钩子判断的是\"该不该调用这个工具\"。它并不会取代写出补丁的 agent。\n\n`assets/decision_arena.html` 是一个可以直接在浏览器里打开的静态对战页面。在 8149 端口上跑出来的那张页面就是活的工作台，与已加载的检查点绑定。\n\n## 哪些数据被留出了\n\n训练 case 与 400 个测试 case 按 case id 划分。一个 case 的所有问题都落在同一个划分里。因子（factor）、gold label（人工标注的标准答案）和 case id 都不作为模型输入。测试划分没有被用来挑选检查点或温度。",
+      "translation_kind": "full",
+      "translation_source": "article",
+      "images": [
+        "img/1.webp"
+      ]
+    },
+    {
+      "title": "jev-chat/jev-chat-windows",
+      "url": "https://github.com/jev-chat/jev-chat-windows",
+      "source": "GitHub",
+      "published": "2026-09-21T14:37:14Z",
+      "excerpt": "jev-chat-windows微信（Windows 4.x）旁挂的回复辅助：本地 OCR 读屏上的对话 → Jev 判断意图/情绪 → 给出 3 条候选回复 →一键填入微信输入框。 发送永远手动，程序不替你按发送。 判断内核来自安卓版Finderchangchang/jev-chat-JARVIS，这里把采集换成了 Windows 端的窗口截图 + 离线 OCR。 下载即用（推荐） 普通使用直接下载，不用装 Python、不用碰源码。 后面的「源码运行」是给开发者的。 👉下载最新版在 Releases 页下载jev-chat-windows-vX.Y.Z.zip（约 146 MB） 解压到一个固定目录（整个文件夹一起，exe 要用旁边那堆文件） 双击jev-chat-windows.exe要求：Windows 10 1903+ / 11，微信 Windows 4.x，两个 API key（判断一个、起草一个，见下）。 首次启动会弹设置页填这两个 key。key 写进 Windows 用户环境变量（注册表HKCU\\Environment）——全程只有JEV_API_KEY和LLM_API_KEY这两个，不落任何文件；其余设置写在 exe 旁边的config.json，整个文件夹拷走设置也跟着走。 exe 没签名，SmartScreen 会拦一下：「更多信息」→「仍要运行」。介意就往下看「自己打包」，自己打的更踏实。 使用说明第一次启动设置页的「模型」卡片分两节，各填一把 key： 判断 · Jev—— 判断意图、紧张度，并给三条候选排序。来源选OpenRouter（默认，key 在openrouter.ai申请）或TypeSafe 直连（key 在console.typesafe.ai申请）。填的是哪家的 key 看你上面选了哪家。 起草 · 语言模型—— 写那三条候选。默认DeepSeek 官网直连，key 在platform.deepseek.com申请（很便宜，起草一次几厘钱）。 换别家见下面的表，OpenAI / Anthropic / Gemini 三种接口都",
+      "category": "上下文与记忆",
+      "score": 0.18,
+      "evidence_kind": "article",
+      "title_zh": "jev-chat-windows：本地OCR为微信回复加一道意图判断",
+      "summary": "这是一款Windows端微信旁挂辅助工具。它截取聊天窗口，由本地离线OCR读取对方消息，再交给Jev模型判断意图，最终生成三条候选回复待用户一键填入。整条链路无需联网，发送动作始终由用户手动完成，强调本地优先与隐私保护。",
+      "why": "在AI纷纷注入各类App的趋势下，这种\"只读不注\"的本地化设计思路值得借鉴。",
+      "question": "截图OCR的延迟与准确率，在实际微信长会话与群聊刷屏场景下能否保持可用？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "jev-chat",
+        "本地OCR",
+        "微信辅助",
+        "本地优先",
+        "隐私"
+      ],
+      "translation_kind": "original",
+      "images": [
+        "img/1.png",
+        "img/2.png",
+        "img/3.png"
+      ]
+    },
+    {
+      "title": "jev-chat/jev-chat-jarvis-mac",
+      "url": "https://github.com/jev-chat/jev-chat-jarvis-mac",
+      "source": "GitHub",
+      "published": "2026-09-21T11:39:32Z",
+      "excerpt": "面板使用 macOS 原生浅色磨砂材质：顶部是当前聊天、分析状态、正在处理的消息与上下文；中间依次显示意图、识别率、风险等级和行动建议；底部按话术分组展示候选回复。当前风险圆点会轻微呼吸提示。每条候选左侧是本地排序概率，右侧仍只有「复制」和「填入」；候选行会随完整文字自动增高，不截断内容，发送始终由用户在微信里手动完成。 面板默认开三组话术： 高情商话术、贴吧老哥 v1.0、阴阳怪气，每个下拉可换成其余语气或「不用」；「不用」的话术槽只保留一行下拉选择，不生成也不占候选行；开启或关闭话术只改变面板高度，不改变判断与轮询流程。黄色窗口按钮收起到聊天名与状态，红色窗口按钮退出。 聊天标题支持单字和较短的联系人名称；识别到聊天标题变化时，即使最后一条消息相同，也会重新分析。 用法仅支持 Apple Silicon（M 系列）Mac，macOS 13+。不支持 Intel Mac，也不要通过 Rosetta 运行（本地判断模型依赖的 torch 没有 Intel 版本，#19）；启动时会检测并以中文提示原因。 只想用： Releases下载.app，解压拖进「应用程序」，第一次右键 → 打开（没做公证，双击会被 Gatekeeper 拦）。 [[IMG2]] 弹窗若显示「已损坏，无法打开，你应该将它移到废纸篓」（浏览器下载的 zip 常见，右键打开也绕不过），别删——在终端清掉隔离属性即可： sudo xattr -r -d com.apple.quarantine /Applications/jev-jarvis.app.app若改过名（如「jev-jarvis 2.app」），把命令里的目录名换成实际路径。 首次启动按提示授予「屏幕录制」权限（系统设置 › 隐私与安全性 › 录屏与系统录音，给jev-jarvis打开），退出重开生效；「填入」另需「辅助功能」权限，第一次点会弹系统授权框。v0.3.1 及更早的旧版本还需把python3.12那条一并打开。 缺少可用的 uv 时，两种启动入口都先完整下载并执行官方安装脚本（下载含超时和重试），失败后尝试已有的 Homebrew",
+      "category": "上下文与记忆",
+      "score": 0.12,
+      "evidence_kind": "article",
+      "title_zh": "jev-chat-jarvis-mac：macOS上的微信意图识别悬浮窗",
+      "summary": "该项目为macOS平台上的微信消息提供悬浮窗式意图识别。它通过读取屏幕内容，由本地小模型判断消息意图与风险等级，再依预设话术生成回复候选。整个流程只读取微信界面、不注入进程，本地推理优先，强调隐私保护。",
+      "why": "macOS生态下少见的\"只读式\"微信AI辅助方案，体现了对系统边界的克制。",
+      "question": "在macOS屏幕录制权限收紧的背景下，纯屏幕读取方式长期稳定性如何？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "jev-chat",
+        "macOS",
+        "意图识别",
+        "本地推理",
+        "OCR"
+      ],
+      "translation_kind": "original",
+      "images": [
+        "img/1.gif",
+        "img/2.png",
+        "img/3.png",
+        "img/4.png"
+      ]
+    }
+  ],
+  "errors": []
+}

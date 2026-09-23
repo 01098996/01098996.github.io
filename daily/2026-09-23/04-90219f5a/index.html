@@ -1,0 +1,116 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>AgentJev-0.6B：50毫秒给出校准概率的&quot;系统一&quot;决策模型 · 2026-09-23 AI 日报 · 面向Google编程</title><meta name="description" content="AgentJev-0.6B是一个面向AI Agent的快速决策小模型。它接收任意非结构化状态（diff、trace、log）和结构化问题，单次前向推理即输出校准的概率分布，无需任何输出token解码，约50毫秒即可完成一轮判断，适合嵌入高频决策链路。"><meta property="og:title" content="AgentJev-0.6B：50毫秒给出校准概率的&quot;系统一&quot;决策模型 · 2026-09-23 AI 日报"><meta property="og:description" content="AgentJev-0.6B是一个面向AI Agent的快速决策小模型。它接收任意非结构化状态（diff、trace、log）和结构化问题，单次前向推理即输出校准的概率分布，无需任何输出token解码，约50毫秒即可完成一轮判断，适合嵌入高频决策链路。"><meta property="og:type" content="article"><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/daily/style.css"><link rel="alternate" type="application/atom+xml" title="AI 日报" href="/daily/atom.xml"></head><body><a class="skip" href="#main">跳到正文</a><div class="page wide"><header><a class="brand" href="/">面向Google编程<span>CHARLES ZHANG</span></a><nav aria-label="主导航"><a href="/">博客</a><a class="active" href="/daily/">AI 日报</a><a href="/daily/tags.html">标签</a><a href="/daily/archive.html">往期</a></nav></header><div class="layout"><main id="main"><section class="intro"><p class="eyebrow">AI DAILY / 2026-09-23</p><h1>AgentJev-0.6B：50毫秒给出校准概率的&quot;系统一&quot;决策模型</h1><p class="original">malevrigns/agent-jev</p><div class="meta"><span class="tag">Agent 开发</span><span>GitHub · 2026-09-21</span></div><div class="tags"><a class="tag-pill" href="/daily/tags.html#AgentJev">AgentJev</a><a class="tag-pill" href="/daily/tags.html#0.6B">0.6B</a><a class="tag-pill" href="/daily/tags.html#%E6%A6%82%E7%8E%87%E5%88%86%E5%B8%83">概率分布</a><a class="tag-pill" href="/daily/tags.html#%E5%86%B3%E7%AD%96%E6%A8%A1%E5%9E%8B">决策模型</a><a class="tag-pill" href="/daily/tags.html#%E4%BD%8E%E5%BB%B6%E8%BF%9F%E6%8E%A8%E7%90%86">低延迟推理</a></div></section><p class="muted">全文中文翻译 · AI 生成，仅供学习交流</p><section class="translation"><h2>AgentJev-0.6B 不写文本</h2><p>你交给它一个状态（state）和你已经拟好的问题。一次前向传播（forward pass）就为每个候选选项返回一个概率。解码出的 token（模型输出的最小语义单元）数为零。</p><p>把它放到 agent 循环中需要把关（gate）、路由（route）或打分（score）的位置。把需要长篇输出的活儿留给更大的模型。</p><h3>这件活</h3><p>一个写代码的 agent、一个分流机器人，或一个工作流，它的大多数步骤花在了并不是写作任务的问题上。测试都通过了吗。下一步该用哪个工具。这条命令跑起来安全吗。通常的做法是请一个 27B–70B 的模型一路聊出布尔值，然后再去解析那段话。</p><p>| 类型 | 用作开关的写手 | AgentJev |<br>|---|---|---|<br>| 输出 | 你希望是 JSON 的文本 | 你给定的选项上的一个分布 |<br>| 解码 | 一次一个 token | 无 |<br>| 失败 | 一个结构不合法的对象，或一句自信的话 | 一个你可以设阈值的概率 |<br>| 放在循环里 | 整轮 | 这一轮之下的反射动作 |状态保持非结构化。问题是带类型的（typed）。答案就是这个分布。</p><p>状态可以是一个 diff（一段代码改动）、一段堆栈跟踪、一条工单线索，或一张表格。把它序列化成一个对象，就以稳定的 JSON 发送出去。问题 id 的存在是为了让你能匹配响应。模型是看不到这些 id 的。语义必须落在问题文本和选项文本里。</p><h3>三种原语</h3><p>三种形态。每一种返回的都是完整的分布，而不是只返回胜出者。</p><h4>Boolean（布尔）</h4><p><strong>问</strong>：一个命题<br><strong>你传入</strong>：可选的 true 和 false 的判定标准<br><strong>你得到</strong>：<code>value</code>、true 的概率、两个质量（mass，指分配到该选项上的概率份额）</p><h4>Choice（选择）</h4><p><strong>问</strong>：在这些选项里选哪一个，必须正好就是这些选项<br><strong>你传入</strong>：2–255 个选项，每个都是一段描述；可以是一个列表或一个映射<br><strong>你得到</strong>：<code>value</code>、<code>top_probability</code>、<code>margin</code>（前两名的差距）、完整的 map</p><h4>Score（打分）</h4><p><strong>问</strong>：在这条有序的评分量表上处于何处<br><strong>你传入</strong>：2–10 个等级描述，从低到高<br><strong>你得到</strong>：<code>level</code>（argmax，即概率最高的等级）、<code>score = Σ i · Pᵢ</code>margin 是最佳选项与次佳选项之间的差距。Choice 是你所传入集合内部的一种偏好。它并不是&quot;该动作会成功&quot;的独立概率。如果你需要那个概率，请对每个动作单独问一个 boolean，并基于你自己的结果自行校准。</p><h3>一次前向传播</h3><p>骨干网络是 Qwen3-0.6B，去掉了语言模型头。每个候选都在其最后一个 token 处读取。一个小型的置换等变（permutation-equivariant）头（head，即附加在骨干网络上的输出层）再对这个集合打分：选项的顺序不会偷偷夹带排序。Softmax（把原始打分归一化为概率分布的函数）在每个问题内部独立进行。</p><pre><code>flowchart LR
+    state[&quot;State&quot;] --&gt; enc[&quot;Qwen3-0.6B&quot;]
+    questions[&quot;Boolean, choice, score&quot;] --&gt; enc
+    enc --&gt; head[&quot;Candidate head&quot;]
+    head --&gt; dist[&quot;Distribution&quot;]</code></pre><h3>加载</h3><p>三个值得落实而非空喊的特性。</p><h4>不做任何解码</h4><p>隐藏状态直接进入 logits（模型输出的未归一化打分）。没有输出词表这一步，因此没有需要修缮的 JSON。</p><h4>上下文为 2,048 token，超长输入会被拒绝</h4><p>放不下的 diff 或跟踪信息会报错，而不是悄悄截掉问题或候选。</p><h4>同一问题的候选之间复用共享前缀</h4><p>在一种固定的负载下，64 个 Choice 选项加 1 个 boolean，共 66 条路径、33,547 个路径 token，不共享时中位数是 609.65 ms。共享前缀路径是 298.91 ms。最大概率差为 0.000508，且所选选项不变。两种情况下生成的 token 都是 0。这个数字是这种负载、预热后测得的，并非对每条 prompt 的承诺。</p><p>状态只编码一次。候选从这个前缀上分叉。</p><p>不同问题之间目前还不共享状态缓存。代码中训练侧留了一个树形编码器作为接缝点（seam）。上文测得的服务路径是上面那个共享前缀的运行时，而不是那个接缝点。</p><h3>Typed Decisions 基准</h3><p>Typed Decisions 的官方测试集划分：400 个 case（用例），2,000 个问题，一个状态上 5 个问题，4 类工作流。准确率是与公开的教师模型 argmax（概率最大的类别）的一致率。它不是一个被测出来的、写代码 agent 的成功率。</p><p>最新的写代码补全检查点（checkpoint，训练过程中保存的模型快照）在代码集上达到 57.8% 准确率和 57.8% 召回率，业务策略（business policy）上 100%，通用 agent 集上 16/16，票据处理上 87.2%。</p><p>| 模型 | 类别 | Top-1 | Soft CE ↓ | Brier ↓ | ECE ↓ | Score MAE ↓ |<br>|---|---|---|---|---|---|---|<br>| AgentJev-0.6B，本次 | 专用 | 79.25% · 1585/2000 | 0.8494 | 0.0448 | 0.1687 | 0.2096 |<br>| Laya，公开检查点 | 专用 | 77.00% · 1540/2000 | 0.8844 | 0.0615 | 0.2170 | 0.2423 |<br>| TypeSafe Jev 1.13.0 | 通用，零样本 | 72.7% | — | 0.148 | 0.144 | 0.391 |<br>| ModernBERT-base，149M | 专用 | 64.6% | — | 0.119 | 0.179 | 0.444 |<br>| MiniLM-L6，22M | 专用 | 58.7% | — | 0.143 | 0.108 | 0.515 |<br>| AgentJev 第 4 阶段，本次之前 | 专用 | 38.70% · 774/2000 | 1.2817 | 0.2577 | 0.1050 | 0.7062 |<br>| Prior，按标签频率 | 参考 | 47.0% | — | 0.189 | 0.088 | — |<br>| Uniform（均匀分布） | 参考 | 30.8% | — | 0.238 | 0.169 | — |没有 Soft CE 数字的行是从数据集说明卡里抄来的。它们没有在这个仓库里重跑过，而且那张说明卡并没有公布软交叉熵（soft cross-entropy）。这些行的 Brier（一种衡量概率预测准确度的损失）、ECE（Expected Calibration Error，期望校准误差）和 Score MAE 用的是说明卡里的定义。</p><p>在这个划分上对比 Laya，准确率差距是 +2.25 个百分点。对 400 个 case 做 case 级自助重采样（bootstrap），得到 95% 区间 [+0.65, +3.90]。</p><p>对比本次启动所用的第 4 阶段权重，差距是 +40.55 个百分点，区间 [+37.35, +43.50]。</p><h4>按工作流看</h4><p>每类 500 个问题。AgentJev 是校准过的检查点。Laya 与上表里同一份公开的专用检查点相同。</p><p>| 工作流 | AgentJev | Laya |<br>|---|---|---|<br>| 票据处理 | 86.20% | 81.20% |<br>| 客服 | 82.20% | 76.40% |<br>| 安全事件 | 76.80% | 77.60% |<br>| Agent trace 可观测性 | 71.80% | 72.80% |</p><h4>按原语看</h4><p>| 原语 | 问题数 | Top-1 | Soft CE |<br>|---|---|---|---|<br>| Boolean | — | 88.83% | 0.4935 |<br>| Choice | — | 75.33% | 0.9767 |<br>| Score | — | 75.00% | 1.0209 |</p><h4>表格阅读须知</h4><p>专用和通用不是同一种度量方式。数据集说明卡上就这么说，表格里也做了标记。Jev 1.13.0 是对这些 schema（输入/输出的字段结构定义）做零样本回答。AgentJev、Laya、ModernBERT 和 MiniLM 是在该基准上专门训练过的。</p><p>Laya 的公开检查点是在全部 1,200 个官方训练 case 上训练的。本次留出了 120 个开发 case 和 120 个校准 case，并在测试划分打开之前，按开发集软交叉熵选出了第 600 步的检查点。温度（temperature，用于在 softmax 前缩放 logits 的标量）每个原语一个正标量，仅在校准 case 上拟合。损失是软交叉熵加上 0.1 倍的&quot;候选和 Brier&quot;。Seed。数据集版本 ea9306458d6e9563628369a3d1e72e362fb381d2。</p><p>目标是教师模型的分布，包括合成 case。在某一行上胜出，并不意味着有 pull request 被合并、有事件被处置、或有票据被支付。</p><p>完整数字见 <code>typed_decisions/comparison.json</code>、<code>typed_decisions/protocol.json</code>、<code>typed_decisions/REPORT_zh.md</code>。</p><h3>延迟与吞吐</h3><p>跟 Laya 的取舍很清晰：Laya 在单个短问题上更小更快；AgentJev 在候选集很宽的场景下才能把规模优势发挥出来。</p><p>| 负载 | Laya（421M，ModernBERT） | AgentJev（598M，Qwen3） | 差异 |<br>|---|---|---|---|<br>| P50 case 延迟（1 个状态上 5 个问题，测试划分） | 41.53 ms | ~60–70 ms | Laya 在短输入上快约 20 ms；其编码器少了 1.77 亿参数 |<br>| P90 case 延迟（1 个状态上 5 个问题） | 47.14 ms | ~85 ms | 两者都在交互式响应预算之内 |<br>| 宽候选负载（64 Choice + 1 Boolean，33k token） | ~500–600 ms（重复前向） | 298.91 ms（共享前缀） | AgentJev 通过 KV（键值缓存）前缀复用提速约 2 倍 |<br>| 上下文上限 | 1,024 token | 2,048 token | Laya 在 1,024 以上会截断或拒绝；AgentJev 能容纳两倍的状态 |Laya 的 ModernBERT 骨干网络没有因果前缀接缝点：一个 64 选项问题里的每个候选都需要对状态文本做一次完整的前向传播。AgentJev 把 prompt 前缀 token 缓存一次，然后让所有候选分支共用这一份 KV 上下文，把冗余的骨干网络 token 操作从 33,547 降到 2,551（减少 92.4%）。</p><h3>运行</h3><p>权重是 safetensors（一种高效的模型权重序列化格式）的 state_dict（模型的参数字典），位于 <code>huggingface.co/aimeigaoshou/agent-jev</code> 上。这个 git 仓库里是代码。服务进程想要的是一个 torch 检查点，所以请把文件包一层。</p><pre><code>git clone https://github.com/malevrigns/agent-jev.git
+cd agent-jev
+python -m venv .venv
+pip install -r requirements.txt
+pip install huggingface_hub safetensors</code></pre><pre><code>from huggingface_hub import hf_hub_download
+from safetensors.torch import load_file
+import torch
+
+src = hf_hub_download(
+    &quot;aimeigaoshou/agent-jev&quot;,
+    &quot;model.safetensors&quot;,
+)
+torch.save(
+    {&quot;state_dict&quot;: load_file(src)},
+    &quot;agentjev_v1.pt&quot;,
+)
+hf_hub_download(
+    &quot;aimeigaoshou/agent-jev&quot;,
+    &quot;temperatures.json&quot;,
+    local_dir=&quot;.&quot;,
+)</code></pre><pre><code>python -m jev_service.server \
+  --checkpoint agentjev_v1.pt \
+  --model-path Qwen/Qwen3-0.6B \
+  --temperatures temperatures.json \
+  --port 8149</code></pre><p><code>model.safetensors</code> 是完整模块，骨干网络加候选头。它不是一个因果语言模型，<code>AutoModelForCausalLM</code> 加载不了它。</p><p><code>AgentJevModel</code> 先搭出 Qwen3 的骨架，然后用 <code>load_state_dict(..., strict=True)</code> 替换掉。加载时请使用 <code>dtype=torch.bfloat16</code>。这些张量就是 bf16（brain float 16，一种 16 位浮点格式）。</p><p>进程只绑定 127.0.0.1。工作台在 <code>http://127.0.0.1:8149/</code>。</p><p><code>GET /health</code> 和 <code>GET /api/info</code> 返回已加载的检查点。上表所选的那个基准检查点是第 600 步。这些已发布的张量就是那次训练的产物。</p><p><code>--temperatures</code> 接收在留出的校准 case 上拟合出的标量。</p><p><code>--page</code> 切换工作台的 HTML。</p><p><code>--device</code> 默认为 <code>cuda:0</code>。</p><p><code>--max-tokens</code> 默认为 2048。</p><h4>客户端</h4><p><code>agentjev_client.py</code> 与上述服务进程通信。除了标准库以外没有额外依赖。</p><pre><code>from agentjev_client import AgentJev
+
+jev = AgentJev(&quot;http://127.0.0.1:8149&quot;)
+
+state = {
+    &quot;task&quot;: &quot;Fix NullPointerException in UserAuthService.verifyToken&quot;,
+    &quot;test_output&quot;: &quot;Tests run: 14, Failures: 1 — test_expired_token&quot;,
+}
+
+gate = jev.decide_boolean(
+    state,
+    &quot;Have all tests passed?&quot;,
+    criteria={
+        &quot;true&quot;: &quot;The suite is green and the project builds.&quot;,
+        &quot;false&quot;: &quot;Any test is still failing.&quot;,
+    },
+)
+
+route = jev.decide_choice(
+    state,
+    &quot;What should the agent do next?&quot;,
+    options={
+        &quot;read_failed_test&quot;: &quot;Open test_expired_token and read the assertion.&quot;,
+        &quot;rewrite_file&quot;: &quot;Ask a larger model to rewrite the service.&quot;,
+        &quot;commit&quot;: &quot;Commit the current diff anyway.&quot;,
+        &quot;retry&quot;: &quot;Rerun the suite without changing the code.&quot;,
+    },
+)
+
+risk = jev.score(
+    state,
+    &quot;How much operational risk does this change carry?&quot;,
+    levels=[
+        &quot;Isolated change, no external behavior.&quot;,
+        &quot;A unit assertion moved.&quot;,
+        &quot;A public signature changed.&quot;,
+        &quot;Authentication behavior may be bypassed.&quot;,
+    ],
+)</code></pre><p><code>gate</code> 带回 <code>decision</code>、<code>prob_true</code>、<code>prob_false</code>、<code>confidence</code>、<code>wall_ms</code>。</p><p><code>route</code> 带回 <code>best_action</code>、<code>probability</code>、<code>margin</code>、<code>distribution</code>。</p><p><code>risk</code> 带回 <code>level</code> 和 <code>expected_score</code>。</p><p><code>evaluate(state, questions)</code> 是底层调用，用于一个状态在同一次请求里需要多个问题的情形。多个状态放在 HTTP body 的 <code>requests</code> 字段里，最多 32 个。</p><h4>脚本</h4><p>这些脚本假定服务进程已经在 8149 端口监听：</p><pre><code>python run_practical_test.py
+python test_coding_scenarios.py
+python test_game_suite.py</code></pre><p>前两个走的是软件工程场景。第三个走的是客服、迷宫、贪吃蛇和类似 ViZDoom 形式的决策。它们是针对在线服务进程的演示，不是离线单元测试套件。</p><h4>HTTP</h4><pre><code>POST /api/evaluate</code></pre><p>请求：</p><pre><code>{
+  &quot;state&quot;: &quot;23 tests passed, 1 failed.&quot;,
+  &quot;questions&quot;: [
+    {
+      &quot;id&quot;: &quot;done&quot;,
+      &quot;type&quot;: &quot;boolean&quot;,
+      &quot;question&quot;: &quot;Are all tests passing?&quot;,
+      &quot;criteria&quot;: {
+        &quot;true&quot;: &quot;The suite is green.&quot;,
+        &quot;false&quot;: &quot;At least one test failed.&quot;
+      }
+    },
+    {
+      &quot;id&quot;: &quot;next&quot;,
+      &quot;type&quot;: &quot;choice&quot;,
+      &quot;question&quot;: &quot;What is the useful next action?&quot;,
+      &quot;options&quot;: {
+        &quot;debug_failure&quot;: &quot;Read the failing assertion.&quot;,
+        &quot;submit_patch&quot;: &quot;Open a pull request now.&quot;
+      }
+    }
+  ]
+}</code></pre><p>响应：</p><pre><code>{
+  &quot;api_version&quot;: &quot;agentjev.decision.v1&quot;,
+  &quot;results&quot;: [
+    {
+      &quot;id&quot;: &quot;&quot;,
+      &quot;answers&quot;: [
+        {
+          &quot;id&quot;: &quot;done&quot;,
+          &quot;type&quot;: &quot;boolean&quot;,
+          &quot;probability&quot;: 0.08,
+          &quot;value&quot;: false,
+          &quot;distribution&quot;: {&quot;true&quot;: 0.08, &quot;false&quot;: 0.92}
+        },
+        {
+          &quot;id&quot;: &quot;next&quot;,
+          &quot;type&quot;: &quot;choice&quot;,
+          &quot;value&quot;: &quot;debug_failure&quot;,
+          &quot;top_probability&quot;: 0.87,
+          &quot;margin&quot;: 0.74,
+          &quot;distribution&quot;: {&quot;debug_failure&quot;: 0.87, &quot;submit_patch&quot;: 0.13}
+        }
+      ]
+    }
+  ],
+  &quot;usage&quot;: {&quot;generated_tokens&quot;: 0}
+}</code></pre><p>上面的概率仅用来示意形状。Score 类型的答案还会附加 <code>score</code>、<code>level</code> 和 <code>legend</code>。批处理请用 <code>{&quot;requests&quot;: [{&quot;id&quot;, &quot;state&quot;, &quot;questions&quot;}, ...]}</code>。单次调用的限制：32 个状态、128 个问题、1,024 条候选路径，body 大小在 1 到 1,000,000 字节之间。同一问题内的候选描述必须互不相同。</p><h4>工具前端的把关</h4><p><code>agentjev_hook.py</code> 是一个 Claude Code PreToolUse（工具调用前）命令钩子（hook），作用于 Bash、Write 和 Edit。它把工具的载荷（payload）发到 <code>http://127.0.0.1:8149/api/evaluate</code>，问一个 boolean 和一个四档 score，然后打印一个决策。</p><p>它只在 score 为第 3 档、且 boolean 说该动作不安全时阻塞。如果服务进程没有响应，钩子以退出码 0 退出，工具继续执行。把钩子指向上述脚本，并让服务进程保持在 8149 端口。端点地址在文件里是固定的。</p><p>这个钩子判断的是&quot;该不该调用这个工具&quot;。它并不会取代写出补丁的 agent。</p><p><code>assets/decision_arena.html</code> 是一个可以直接在浏览器里打开的静态对战页面。在 8149 端口上跑出来的那张页面就是活的工作台，与已加载的检查点绑定。</p><h3>哪些数据被留出了</h3><p>训练 case 与 400 个测试 case 按 case id 划分。一个 case 的所有问题都落在同一个划分里。因子（factor）、gold label（人工标注的标准答案）和 case id 都不作为模型输入。测试划分没有被用来挑选检查点或温度。</p><figure><img src="img/1.webp" loading="lazy" alt="原文配图"></figure></section><aside class="about"><h2>编辑导读</h2><p>AgentJev-0.6B是一个面向AI Agent的快速决策小模型。它接收任意非结构化状态（diff、trace、log）和结构化问题，单次前向推理即输出校准的概率分布，无需任何输出token解码，约50毫秒即可完成一轮判断，适合嵌入高频决策链路。</p><p><strong>为什么读</strong>在大模型推理开销高企的当下，这个0.6B模型展示了&quot;小而专&quot;路线的实用价值。</p><p><strong>带着问题读</strong>50ms推理的代价下，其校准性能否覆盖足够复杂的Agent决策场景？</p></aside><aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="https://github.com/malevrigns/agent-jev" rel="noopener noreferrer">malevrigns/agent-jev ↗</a></p><p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="/daily/2026-09-23/04-90219f5a/">返回本期 →</a></p></aside><nav class="postnav" aria-label="上下篇"><a class="prev" href="/daily/2026-09-23/03-dbc3929d/"><span class="dir">← 上一篇</span>Unreal Agent：用异步工具调度把开销砍下40%</a><a class="next" href="/daily/2026-09-23/05-f647c749/"><span class="dir">下一篇 →</span>jev-chat-windows：本地OCR为微信回复加一道意图判断</a></nav></main><aside class="sidebar"><section class="sideblock"><h2>相关阅读</h2><ul><li><a href="/daily/2026-09-22/08-65e21f46/">Jev与System One决策模型：TypeSafe AI的非自回归路径</a><span class="meta">2026-09-22 · Latent Space</span></li><li><a href="/daily/2026-09-15/04-729d3f84/">turkish-native：让 AI 文案写出地道土耳其语的 Agent 技能</a><span class="meta">2026-09-15 · GitHub</span></li><li><a href="/daily/2026-09-17/06-d0a38892/">typesafe-mario：用结构化仿真器状态玩超级马里奥的智能体</a><span class="meta">2026-09-17 · GitHub</span></li><li><a href="/daily/2026-09-12/08-d922068f/">Awesome-OKF：面向智能体的开放知识格式精选目录</a><span class="meta">2026-09-12 · GitHub</span></li><li><a href="/daily/2026-09-11/12-4744c1ff/">pcb-skill：从硬件创意到可制造 PCB 的 Agent 技能</a><span class="meta">2026-09-11 · GitHub</span></li></ul><p class="more"><a href="/daily/tags.html">按标签浏览 →</a></p><p class="more"><a href="/daily/archive.html">全部往期 →</a></p></section></aside></div><footer><span>AI 日报 · 保持好奇，动手验证</span><a href="/daily/atom.xml">RSS 订阅 ↗</a></footer></div></body></html>
