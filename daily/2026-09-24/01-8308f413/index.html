@@ -1,0 +1,111 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>NVIDIA Warp 与 MJWarp：机器人仿真与学习的 GPU 加速 · 2026-09-24 AI 日报 · 面向Google编程</title><meta name="description" content="介绍 NVIDIA Warp 与基于其构建的 MuJoCo Warp（MJWarp），如何将兼容的 MuJoCo 模型迁移到 GPU 规模的并行仿真。文中以 SO-101 跟随臂为示例，展示从熟悉的 MuJoCo 工作流扩展到 2048 个并行环境的过渡过程，并梳理支撑这一转变的关键技术与验证步骤。"><meta property="og:title" content="NVIDIA Warp 与 MJWarp：机器人仿真与学习的 GPU 加速 · 2026-09-24 AI 日报"><meta property="og:description" content="介绍 NVIDIA Warp 与基于其构建的 MuJoCo Warp（MJWarp），如何将兼容的 MuJoCo 模型迁移到 GPU 规模的并行仿真。文中以 SO-101 跟随臂为示例，展示从熟悉的 MuJoCo 工作流扩展到 2048 个并行环境的过渡过程，并梳理支撑这一转变的关键技术与验证步骤。"><meta property="og:type" content="article"><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/daily/style.css"><link rel="alternate" type="application/atom+xml" title="AI 日报" href="/daily/atom.xml"></head><body><a class="skip" href="#main">跳到正文</a><div class="page wide"><header><a class="brand" href="/">面向Google编程<span>CHARLES ZHANG</span></a><nav aria-label="主导航"><a href="/">博客</a><a class="active" href="/daily/">AI 日报</a><a href="/daily/tags.html">标签</a><a href="/daily/archive.html">往期</a></nav></header><div class="layout"><main id="main"><section class="intro"><p class="eyebrow">AI DAILY / 2026-09-24</p><h1>NVIDIA Warp 与 MJWarp：机器人仿真与学习的 GPU 加速</h1><p class="original">How to Use NVIDIA Warp and MjWarp to Accelerate Robotics Simulation and Learning Workflows</p><div class="meta"><span class="tag">进阶工作流</span><span>Hugging Face · 2026-09-23</span></div><div class="tags"><a class="tag-pill" href="/daily/tags.html#NVIDIA%20Warp">NVIDIA Warp</a><a class="tag-pill" href="/daily/tags.html#MuJoCo">MuJoCo</a><a class="tag-pill" href="/daily/tags.html#MJWarp">MJWarp</a><a class="tag-pill" href="/daily/tags.html#GPU%20%E4%BB%BF%E7%9C%9F">GPU 仿真</a><a class="tag-pill" href="/daily/tags.html#%E5%B9%B6%E8%A1%8C%E7%8E%AF%E5%A2%83">并行环境</a></div></section><p class="muted">全文中文翻译 · AI 生成，仅供学习交流</p><section class="translation"><h2>如何使用 NVIDIA Warp 和 MjWarp 加速机器人仿真与学习工作流</h2><p>用于开发、测试和控制机器人，并且可以在 CPU 核心上并行采样。但随着学习工作负载的增长，问题的重点从「一个世界能跑多快」转变为「能同时跑多少个世界」。GPU 加速让我们能够以大批量推进这些世界，同时让仿真和学习数据贴近设备。</p><p>MuJoCo Warp（MJWarp）基于 NVIDIA Warp 构建，可以将兼容的 MuJoCo 模型带入 GPU 级别的规模。在本文中，我们将把一只 SO-101 从动机械臂（follower arm）从熟悉的 MuJoCo 工作流迁移到多达 2,048 个并行 MJWarp 环境，并审视让这一过渡得以实现的技术与验证步骤。</p><figure><img src="img/1.png" loading="lazy" alt="原文配图"></figure><p>图 1. MJWarp 如何连接 Python 与 GPU 仿真。MuJoCo 加载并编译 MJCF 模型；MJWarp 用 NVIDIA Warp 实现物理逻辑，再编译成 CUDA kernel，在 NVIDIA GPU 上推进仿真状态。</p><p>这是我们「State of Simulation for Physical AI」系列的第二篇文章。第一篇文章梳理了机器人仿真的整体格局。在本文中，我们准备并扩展仿真环境，但不训练策略。后面的 Newton 与 Isaac Lab 章节将介绍更上层的集成。</p><h2>Putting it together</h2><p>| 层级 | 在栈中的角色 |<br>|------|--------------|<br>| NVIDIA Warp | Python kernel 语言：单指令多线程（SIMT）、自动微分（autodiff）、与 PyTorch/JAX 互操作 |<br>| MJWarp | 基于 Warp 的 MuJoCo 物理：相同的 MJCF，批量化 GPU 吞吐 |<br>| 你的场景（SO-101） | 熟悉的 Menagerie / Robot Studio 资产 + 任务几何 |<br>| 后续（Newton / Isaac Lab） | 多求解器 API、USD、传感器、管理器、训练循环 |</p><h2>Decision shortcut</h2><p>| 如果你需要…… | 选用…… |<br>|--------------|--------|<br>| 单机器人 MPC（模型预测控制）/ 遥操作 | MuJoCo CPU |<br>| 原始 MuJoCo 物理的最大吞吐 | MJWarp（或 mjlab） |<br>| JAX 训练配方 | MuJoCo Playground / MJX（<code>impl=&#x27;warp&#x27;</code>） |<br>| 多求解器 + Isaac Lab 集成 | Newton，本系列的下一篇文章 |</p><h2>Start with one useful Warp Kernel</h2><p>NVIDIA Warp 是一个用于编写高性能、GPU 加速 kernel 的 Python 框架。Warp 让开发者可以用 Python 编写静态类型的 kernel，并把它们编译到 CPU 或 CUDA 上执行。第一次启动会构建并缓存一个原生模块；之后的启动会复用它。kernel 语言是 Python 的一个面向性能的子集，而常规 Python 仍负责配置、分配和启动调度。</p><p>下面这段面向机器人场景的小 kernel 在重力作用下推进质点的位置。一个逻辑线程处理一个质点，所以同一段代码可以从两个点扩展到上百万个点，而不会在控制流中引入 GPU 相关的术语。</p><p>Warp 的三大价值主张是：</p><p>| 维度 | 你能得到什么 |<br>|------|-------------|<br>| 性能 | 通过即时编译（JIT）、kernel 融合、CUDA Graphs（CUDA 图）达到原生 CUDA 速度 |<br>| 易用性 | 纯 Python 编写，内置向量、矩阵、四元数、层次包围体（BVH）、哈希网格、稀疏矩阵与 tile 原语 |<br>| 能力 | 可微 kernel，以及类 DLPack 互操作，使仿真能够嵌入到机器学习训练循环中 |</p><pre><code>import numpy as np
+import warp as wp
+
+@wp.kernel
+def integrate (positions: wp.array[wp.vec3], velocities: wp.array[wp.vec3], dt: float,):
+    i = wp.tid()
+    velocities[i] += wp.vec3(0.0, 0.0, -9.81) * dt
+    positions[i] += velocities[i] * dt
+
+wp.init()
+device =&quot;cuda:0&quot;
+
+if wp.is_cuda_available() else&quot;cpu&quot;
+
+start = np.array([[0.0, 0.0, 0.5], [0.2, 0.0, 0.5]], dtype=np.float32)
+positions = wp.array(start, dtype=wp.vec3, device=device)
+velocities = wp.zeros_like(positions)
+
+wp.launch(integrate, dim=len (start), inputs=[positions, velocities, 0.01], device=device,)
+wp.synchronize_device(device)
+print (positions.numpy())</code></pre><p>让它在机器人领域有用的三个特性：</p><p><strong>显式的并行工作</strong>。<code>wp.tid()</code> 标识当前逻辑线程所负责的质点、接触点、刚体或世界。</p><p><strong>显式的设备数组</strong>。数组位于选定的设备上。在 CUDA 数组上调用 <code>.numpy()</code> 会同步并把数据拷贝到 CPU 内存；这不是一条零拷贝路径。对于常驻设备的 PyTorch 或 JAX 流水线，请改用 Warp 的框架适配器或支持 DLPack 的共享方式。</p><p><strong>可组合的 kernel 启动</strong>。程序可以启动一系列聚焦的 kernel，并把支持的 CUDA 工作捕获到图中，以降低重复调度的开销。图捕获只是把启动动作在已有缓冲区上重放，并不会对任意 kernel 进行融合。</p><h3>Differentiability and Determinism</h3><p>还有两项 Warp 能力值得一提，虽然本文的 SO-101 工作流中都没有用到。Warp 的 kernel 是可微的：<code>wp.Tape</code> 会记录在其上下文内启动的前向 kernel，在调用 <code>backward()</code> 时按反序回放它们的伴随（adjoint），这正是很多团队用 Warp 构建可微几何、CFD（计算流体力学）以及自定义物理的原因，包括用于仿真与设计优化的 CAE（计算机辅助工程）工作流。Warp 还支持确定性执行，该功能在 Warp 1.15 中引入：默认情况下 GPU 的原子操作依赖调度器，因此重复启动同一个 kernel 可能产生细微差异；可显式开启的确定性模式会牺牲一定性能，以换取仿真、验证与回归测试中的可复现顺序。这些只是 Warp 本身的能力，并不能保证整个 MJWarp rollout 也具备可微性或确定性。详见 Warp 文档中关于可微性与确定性执行的说明。</p><p>试一下 Warp：<code>pip install warp-lang</code>（≥ 1.15 以获得 GPU 确定性），然后 <code>python -m warp.examples.browse</code>，或使用教程 notebook。</p><h2>What is MuJoCo Warp (MJWarp)?</h2><p>机器人仿真器反复计算下一步：给定当前的关节位置、速度、控制量以及接触情况，将场景向前推进一个微小的时间步。在本文中，一个「world」指该场景及其状态的一份独立拷贝。一个 world 可能包含一只正在抓取方块的 SO-101 机械臂；另一个 world 可能包含从略微不同位姿开始的同一只机械臂。</p><p>MuJoCo 与 MJWarp 都能跑同一套兼容的机器人和任务，但它们组织工作的方式不同。MuJoCo 天然适合在一两个 CPU world 上进行开发与检查。</p><p>MJWarp 是 NVIDIA Warp 对 MuJoCo 物理管线的实现，把模型与一批相互独立的状态都放到 NVIDIA GPU 上；一次 <code>mjw.step</code> 调用就能推进整批状态。</p><p>MJWarp 的价值并不一定是让单个 world 的步进更快，而是能够同时推进成百上千个 world，从而给 GPU 提供足够的并行工作来提高<strong>聚合吞吐（aggregate throughput）</strong>，即每秒完成的世界步数（world-steps）总和。这正好契合强化学习与大规模采样的需求：在这些场景下，收集经验比压低单个环境的延迟更重要。</p><p>本文涵盖以下内容：验证一个 MuJoCo world、迁移到 MJWarp、组成批量、对批量进行验证、并正确地测量。</p><p>求解器调优、雅可比矩阵表示，以及专业的多 GPU 或确定性主题，对本次迁移来说并非必需，可以另行讨论。</p><p>接下来，关键区分要讲清楚：</p><p><strong>延迟（Latency）</strong>是指一次仿真步的挂钟时间（wall-clock time）。<br><strong>聚合吞吐（aggregate throughput）</strong>是指在测得的挂钟秒内完成的世界步总数。</p><h2>Basic usage: structs, batch sizes, and a minimal step</h2><p>核心 API 的过渡很小：</p><p>| MuJoCo host 工作流 | MJWarp 工作流 |<br>|--------------------|--------------|<br>| <code>mujoco.MjModel</code> | <code>mjw.put_model(mjm)</code> 创建设备端模型 |<br>| <code>mujoco.MjData</code> | <code>mjw.put_data(mjm, mjd, ...)</code> 保留并批量化已有状态 |<br>| <code>mujoco.mj_step(mjm, mjd)</code> | <code>mjw.step(m, d)</code> 推进 <code>d</code> 中的每个 world |<br>| host 数组，如 <code>mjd.ctrl</code> | 批量化设备数组，如 <code>d.ctrl</code>，形状为 <code>(nworld, nu)</code> |如果需要默认/全新状态，请使用 <code>mjw.make_data()</code>；如果需要把已初始化的 MuJoCo 状态精确地穿越迁移边界，请使用 <code>mjw.put_data()</code>。</p><p>分配批量资源时需要定义以下参数（参见 Batch sizes）：</p><p>| 参数 | 含义 |<br>|------|------|<br>| <code>nworld</code> | 并行环境的总数 |<br>| <code>nconmax</code> | 单个 world 预期的接触数（总容量约为 <code>nconmax × nworld</code>） |<br>| <code>naconmax</code> | 替代设置：所有环境合计的全局最大接触数（若两者都定义，则以该值为准） |<br>| <code>njmax</code> | 每个 world 的约束硬上限 |</p><h2>Performance tuning</h2><p>1. <strong>CUDA 图捕获</strong>：<code>mjw.step</code> 由很多 kernel 启动构成；只捕获一次，多次重放：</p><pre><code>   with wp.ScopedCapture() as capture:
+       mjw.step(m, d)
+   wp.capture_launch(capture.graph)
+   </code></pre><p>2. <strong>把 <code>nconmax / naconmax / njmax</code> 调紧凑</strong>：内存和工作量随它们线性变化。使用 <code>mjwarp-testspeed --measure_alloc</code> 进行调优，并留意 <code>mjwarp-viewer</code> 中的溢出。</p><h3>Additional tuning considerations</h3><p>在调整好接触与约束缓冲区大小之后，在不改变任务行为的前提下测试求解器的迭代上限。网格与 CCD（连续碰撞检测）设置会增加内存占用；当测得的接触数允许时，调小 <code>nccdmax / naccdmax</code> 可以减少 CCD 缓冲区的分配。MJWarp 的 compact solver 借用了 MuJoCo 的 Newton 约束求解器与 sleeping 机制，而不是另立的 Newton 物理引擎框架。compact solver 与多 GPU 配置超出本文范围，请参阅 MJWarp 性能调优文档。</p><p>要在 MJWarp 物理上训练策略：</p><p>- 通过 Newton 的 Isaac Lab<br>- <code>mjlab</code>（直接在 MJWarp + PyTorch 上的 manager API）<br>- 通过 MJX（<code>impl=&#x27;warp&#x27;</code>）的 MuJoCo Playground安装/试用：<code>pip install mujoco-warp</code> · <code>mjwarp-viewer path/to/scene.xml</code> · Colab 教程</p><h2>Workflow to migrate a MuJoCo scene to MjWarp</h2><h3>Establish a MuJoCo CPU baseline</h3><h4>The scene.</h4><p>这一节暂时与 MJWarp 无关：一只 SO-101 机械臂、一张桌子和两个要堆叠的方块，按普通的 MJCF 写法给出。</p><figure><img src="img/2.png" loading="lazy" alt="原文配图"></figure><p>图 2. 从 MuJoCo CPU 仿真渲染出的 SO-101 pick-and-place 场景。任务是抓取边长为 44 mm 的红色方块并将其叠在蓝色方块之上；同一台机器人和同一个场景也会被用于 MJWarp 验证。</p><pre><code>&lt;mujoco model=&quot;so101_pick_place&quot;&gt;
+  &lt;include file=&quot;so101.xml&quot;/&gt;
+  &lt;worldbody&gt;
+    &lt;light pos=&quot;0.3 0 1.5&quot;
+            dir=&quot;0 0 -1&quot;
+            directional=&quot;true&quot;/&gt;
+    &lt;geom name=&quot;floor&quot;
+          type=&quot;plane&quot;
+          size=&quot;0 0 0.05&quot;/&gt;
+    &lt;geom name=&quot;table&quot;
+          type=&quot;box&quot;
+          pos=&quot;0.35 -0.04 0.012&quot;
+          size=&quot;0.16 0.26 0.012&quot;
+          rgba=&quot;0.32 0.32 0.32 1&quot;
+          friction=&quot;1 0.005 0.0005&quot;
+          condim=&quot;3&quot;/&gt;
+    &lt;body name=&quot;red_cube&quot;
+           pos=&quot;0.33 -0.13 0.046&quot;&gt;
+      &lt;freejoint name=&quot;red_cube_joint&quot;/&gt;
+      &lt;geom type=&quot;box&quot;
+            size=&quot;0.022 0.022 0.022&quot;
+            mass=&quot;0.08&quot;
+            rgba=&quot;0.85 0.05 0.04 1&quot;
+            friction=&quot;1.2 0.005 0.0005&quot;
+            condim=&quot;3&quot;/&gt;
+    &lt;/body&gt;
+    &lt;body name=&quot;blue_cube&quot;
+           pos=&quot;0.33 0.06 0.046&quot;&gt;
+      &lt;freejoint name=&quot;blue_cube_joint&quot;/&gt;
+      &lt;geom type=&quot;box&quot;
+            size=&quot;0.022 0.022 0.022&quot;
+            mass=&quot;0.08&quot;
+            rgba=&quot;0.05 0.20 0.90 1&quot;
+            friction=&quot;1.2 0.005 0.0005&quot;
+            condim=&quot;3&quot;/&gt;
+    &lt;/body&gt;
+  &lt;/worldbody&gt;
+&lt;/mujoco&gt;</code></pre><p>对于 MJCF 中的 box，<code>size</code> 的数值是半边长：<code>size=&quot;0.022 …&quot;</code> 表示一个边长为 44 mm 的立方体。任务用该尺寸作为成功阈值。机械臂基座位于原点，可达范围沿 +X 方向，方块沿 Y 方向排布。</p><p>在配套仓库中，该文件并非手写，而是生成的：<code>resolve_pick_place_scene()</code> 把 Menagerie 机械臂拷贝到 <code>.generated/</code>，从机器人配置中填充桌子与方块坐标，并写出 <code>scene_pick_place.xml</code>。本文使用 SO-101 配置；可选的 reBot 变体将在下面介绍。</p><h4>Loading it.</h4><p>编译与步进就是普通的 MuJoCo：</p><pre><code>import mujoco
+mjm = mujoco.MjModel.from_xml_path(&quot;scene_pick_place.xml&quot;
+)
+mjd = mujoco.MjData(mjm)
+fps =
+
+# controller rate
+sim_substeps =
+
+# physics steps per control frame
+frame_dt =1.0/ fps
+mjm.opt.timestep = frame_dt / sim_substeps
+controller = PickPlaceController(spec=spec)
+
+# waypoints + damped-least-squares IK
+for_in range ():
+
+# 600 control frames
+ctrl = controller.step(mjm, mjd, frame_dt)
+for_in range (sim_substeps):
+mjd.ctrl[: mjm.nu] = ctrl
+mujoco.mj_step(mjm, mjd)</code></pre><p>记住这个结构：每帧计算一次控制量，物理步进 <code>sim_substeps</code> 次。</p><p>Gate 2 只改动内层循环，这正是迁移易于复核的原因。</p><h4>Match the simulation and control rates.</h4><p>在 50 控制帧/秒、每帧 10 个物理子步的情况下，应使用 0.002 秒的物理时间步。请在 CPU rollout 之前，以及在用 <code>mjw.put_model</code> 上传模型之前设置好它，让两端的仿真在相同的模拟时间下推进：</p><pre><code>mjm.opt.timestep = frame_dt / sim_substeps
+
+# 50 Hz × 10 substeps -&gt; 0.002 s</code></pre><p>如果没有这一行，后面所有的测量都会带上这个不匹配：一致性对比、以「仿真秒」形式给出的吞吐数字，以及任何动作频率与部署不再匹配的学到的策略。</p><h4>Check whether the cubes are stacked successfully.</h4><p>在 44 mm 的方块下，成功有两个可量化的条件：水平中心误差 <code>xy_err ≤ 0.015 m</code>（在两个方块中心之间测量），以及两个方块中心之间的竖直分离 <code>0.035 m ≤ dz ≤ 0.055 m</code>（约一个方块边长，并留有沉降余量）。请在方块稳定之后再对这两个条件进行评估；仅靠进程成功退出并不足以认定为任务成功。</p><h4>Run the CPU task from the companion checkout.</h4><p><strong>发布阻断项（publication blocker）</strong>：在发布这些说明之前，请确认可访问的仓库 URL 以及固定的依赖和资产版本；下文给出的仓库占位符不是可执行的 URL。</p><pre><code>git clone https://github.com/NVIDIA/accelerated-computing-hub.git
+blogs cd blogs/tutorials/sim2real-blogs/notebooks/mujoco
+uv venv --python 3.12 &amp;&amp;source.venv/bin/activate
+uv pip install -r requirements.txt
+cd/tutorials/sim2real-blogs/notebooks/mujoco
+python solutions/so101_pick_place_solution.py --headless-steps 600 --debug</code></pre><p>运行结束时会打印上面提到的两个数字（stack check: <code>xy_err=… dz=…</code>），这也是本文后续用作对照的断言。旁边的 <code>so101_pick_place.py</code> 是同一份程序，但把物理步进留作练习。</p><p>机械臂直接取自 MuJoCo Menagerie 的某个固定到已知可用 commit 的版本，因为 Menagerie 资产会变动，所以请把这个场景当作模板使用。</p><h4>Optional reBot variant.</h4><p>配套代码还通过 <code>--robot rebot</code> 暴露了一个独立的机器人配置，用于场景布局、夹爪与容量上限（<code>nconmax=256</code>、<code>njmax=500</code>）。本文使用的是 SO-101。请先独立验证 reBot 资产与任务，再报告其结果。</p><h3>Validate one-world MJWarp parity</h3><p>先把一个 world 放到 GPU 上跑，host 仍在循环中，这样可以在同一个 viewer 中观察同一任务并对比同一组数字。上传模型、分配批量化状态、用初始化的 host state 对其播种，然后做一次 forward 之后才开始步进：</p><pre><code>wp.init()
+import mujoco_warp as mjw
+device = wp.get_device()
+m = mjw.put_model(mjm)
+d = mjw.make_data(mjm, nworld=, nconmax=spec.nconmax, njmax=spec.njmax)
+wp.copy(d.qpos, wp.array(mjd.qpos[None, :], dtype=wp.float32, device=device))
+wp.copy(d.qvel, wp.array(mjd.qvel[None, :], dtype=wp.float32, device=device))
+wp.copy(d.ctrl, wp.array(mjd.ctrl[None, :], dtype=wp.float32, device=device))
+mjw.forward(m, d)</code></pre><p>每个设备数组都带有一个领先的世界维度，这就是为什么 host 状态要写成 <code>mjd.qpos[None, :]</code>，形状为 <code>(1, nq)</code> 而不是 <code>(nq,)</code>。后续扩展到上千个 world 时，只会改变这个领先维度，调用本身不变。<code>mjw.put_model()</code> 同时也是一次兼容性检查：若模型使用了不支持的特性，它会直接抛错，而不是悄悄丢弃。</p><p>显式地播种这三个字段是最直观的做法，能清楚说明究竟是什么数据被传到设备端；<code>mjw.put_data(mjm, mjd, nworld=…)</code> 则是用一次调用把整个初始化好的结构体搬过去。</p><p>之后，帧循环就是 Gate 1 那个循环，只是把内部步进重定向到 GPU、再镜像回 host：</p><pre><code>def simulate_frame () -&gt;None:
+    ctrl = controller.step(mjm, mjd, frame_dt)
+    for_in range (sim_substeps):
+        mjd.ctrl[: mjm.nu] = ctrl
+        wp.copy(d.ctrl, wp.array(mjd.ctrl[None, :], dtype=wp.float32, device=device))
+        mjw.step(m, d)
+        mjd.qpos[:] = d.qpos.numpy()[]
+
+        mjd.qvel[:] = d.qvel.numpy()[]
+
+        mujoco.mj_forward(mjm, mjd)</code></pre><p><code>.numpy()</code> 读操作会在每个子步上同步并把数据拷回 host，因此这是一条用于任务验证的路径，而不是吞吐基准测试。它把逆运动学（IK）、可视化和任务检查都保留在 host 端。在拷贝完 <code>qpos</code> 和 <code>qvel</code> 之后，调用 <code>mujoco.mj_forward(mjm, mjd)</code> 来刷新诸如 <code>mjd.xpos</code> 等由 host 派生的量，再用于控制、可视化或堆叠检查。在循环结束之后再读取这些字段是不会自动刷新的。Gate 4 把这些每步的 host 拷贝从吞吐路径中移除。</p><h3>Size contact and constraint capacity</h3><p>MJWarp 在步进之前会分配接触与约束缓冲区。即使执行在溢出告警而不是异常的情况下继续，超出这些容量仍会使相应的 rollout 在验证或基准测试中失效。请增大相应的上限并重跑任务。更大的缓冲区会占用更多 GPU 内存，因此请在整个任务上确认容量，然后再收紧分配。</p><p>为正在仿真的机器人和任务设置接触与约束上限。SO-101 配置使用的起点容量是 <code>nconmax=128</code> 和 <code>njmax=300</code>。请在任务中接触最密集的时刻确认这些上限足够：例如在 pick-and-place 中，是夹爪两爪与桌面同时接触方块的那一瞬间，而不是机械臂在自由空间中悬停的时刻。</p><p>溢出是被报告而不是抛出的：在默认的 <code>Option.warn_overflow</code> 下，MJWarp 会在你脚本运行的终端或 viewer 中打印 &quot;narrowphase overflow - please increase nconmax to …&quot;（即需要增大的预算），并在 <code>Data.overflow</code> 中标记受影响的 world，便于你在一次步进之后回查。只有 <code>mjw.put_data</code> 会直接抛错，因为它可以拿预算去和已有的 MuJoCo 状态对比。</p><p><code>mjwarp-testspeed --measure_alloc</code> 会报告场景实际消耗的接触与约束数量，并在任何 world 溢出时立即以出错的 world ID 终止 rollout。请把这些报告视为失败：先调大上限并重跑，再去相信这条轨迹或这份基准，然后每当模型、碰撞几何或任务发生变化时再重新压缩。</p><h3>Scale to 2,048 worlds</h3><p>一旦单 world 的一致性通过，就可以按目标尺寸重新分配，并把初始化状态复制到整批。相对 Gate 2 来说，这里有两处变化：<code>nworld</code>，以及每步不再有数据穿越 PCIe 总线。</p><pre><code>nworld =2_048
+d = mjw.make_data(mjm, nworld=nworld, nconmax=spec.nconmax, njmax=spec.njmax)
+wp.copy(d.qpos, wp.array(np.tile(mjd.qpos, (nworld,)), dtype=wp.float32, device=device))
+wp.copy(d.qvel, wp.array(np.tile(mjd.qvel, (nworld,)), dtype=wp.float32, device=device))
+wp.copy(d.ctrl, wp.array(np.tile(mjd.ctrl, (nworld,)),</code></pre><figure><img src="img/3.png" loading="lazy" alt="原文配图"></figure></section><aside class="about"><h2>编辑导读</h2><p>介绍 NVIDIA Warp 与基于其构建的 MuJoCo Warp（MJWarp），如何将兼容的 MuJoCo 模型迁移到 GPU 规模的并行仿真。文中以 SO-101 跟随臂为示例，展示从熟悉的 MuJoCo 工作流扩展到 2048 个并行环境的过渡过程，并梳理支撑这一转变的关键技术与验证步骤。</p><p><strong>为什么读</strong>提供了从 CPU 串行仿真迁移到 GPU 大规模并行仿真的实操路径与配套验证方法</p><p><strong>带着问题读</strong>在 2048 并行环境下，仿真确定性、时间同步与真实部署之间的差距该如何控制？</p></aside><aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="https://huggingface.co/blog/nvidia/how-to-use-nvidia-warp-and-mjwarp" rel="noopener noreferrer">How to Use NVIDIA Warp and MjWarp to Accelerate Robotics Simulation and Learning Workflows ↗</a></p><p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="/daily/2026-09-24/01-8308f413/">返回本期 →</a></p></aside><nav class="postnav" aria-label="上下篇"><a class="prev" href="/daily/2026-09-23/12-3b960701/"><span class="dir">← 上一篇</span>WeChatBridge：把微信聊天一键转发到 AI Agent 与 Obsidian</a><a class="next" href="/daily/2026-09-24/02-476a5a47/"><span class="dir">下一篇 →</span>美国联邦政府将 AI 批评者定性为「外国代理人」</a></nav></main><aside class="sidebar"><section class="sideblock"><h2>相关阅读</h2><ul><li><a href="/daily/2026-09-07/05-4be3ed23/">AI 原生企业如何把工作流沉淀为组织能力</a><span class="meta">2026-09-07 · OpenAI</span></li><li><a href="/daily/2026-09-22/01-c60359aa/">RetroChimera：用模型集成与学习排序提升小分子逆合成预测</a><span class="meta">2026-09-22 · Microsoft Research</span></li><li><a href="/daily/2026-09-08/02-ba0502e1/">开源模型许可证动态：Motif-3、GLM-5.3、Hy4-preview 与许可证走向</a><span class="meta">2026-09-08 · Interconnects</span></li><li><a href="/daily/2026-09-24/04-8e856804/">面向真实世界的物理 AI 机器人推理卸载</a><span class="meta">2026-09-24 · Microsoft Research</span></li><li><a href="/daily/2026-09-24/03-105c2b06/">VSCode 的 SSH Agent 实现剖析</a><span class="meta">2026-09-24 · Hacker News</span></li></ul><p class="more"><a href="/daily/tags.html">按标签浏览 →</a></p><p class="more"><a href="/daily/archive.html">全部往期 →</a></p></section></aside></div><footer><span>AI 日报 · 保持好奇，动手验证</span><a href="/daily/atom.xml">RSS 订阅 ↗</a></footer></div></body></html>

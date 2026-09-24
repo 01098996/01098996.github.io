@@ -1,19 +1,13 @@
 {
-  "date": "2026-09-23",
-  "url": "https://z-xj.com/daily/2026-09-23/",
-  "count": 12,
+  "date": "2026-09-24",
+  "url": "https://z-xj.com/daily/2026-09-24/",
+  "count": 6,
   "titles": [
-    "英国AISI与EvalEval：让基准评测结果可复现",
-    "奥斯卡、行星与你sklearn里的算法：John Platt谈AI for Science",
-    "Unreal Agent：用异步工具调度把开销砍下40%",
-    "AgentJev-0.6B：50毫秒给出校准概率的\"系统一\"决策模型",
-    "jev-chat-windows：本地OCR为微信回复加一道意图判断",
-    "jev-chat-jarvis-mac：macOS上的微信意图识别悬浮窗",
-    "Engram 实战指南：让智能体真正\"记住\"该记的事",
-    "Claude Opus 5.5 发布：对标 Fable 5.1，成本降四成",
-    "Claude Code 读取 AGENTS.md 竟依赖遥测开关",
-    "rgem227/knowledge-base 项目速览（仅含仓库元数据）",
-    "AnyJev：无需训练把任意 LLM 变成 Jev 风格决策模型",
-    "WeChatBridge：把微信聊天一键转发到 AI Agent 与 Obsidian"
+    "NVIDIA Warp 与 MJWarp：机器人仿真与学习的 GPU 加速",
+    "美国联邦政府将 AI 批评者定性为「外国代理人」",
+    "VSCode 的 SSH Agent 实现剖析",
+    "面向真实世界的物理 AI 机器人推理卸载",
+    "Magpie：在 macOS 菜单栏统一切换多种 LLM 代理",
+    "JevRev：融合 Jev 与 LLM 的工作流工具"
   ]
 }
