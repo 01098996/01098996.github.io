@@ -1,13 +1,14 @@
 {
   "date": "2026-09-25",
   "url": "https://z-xj.com/daily/2026-09-25/",
-  "count": 6,
+  "count": 7,
   "titles": [
     "Latent Space的未来：AINews改版与Discord合并计划",
     "Claude Opus 5.5与GPT-6 Sol/Luna齐发：新一轮大模型价格战",
     "铸造厂与导航者：AI如何降低生物科技的研究成本",
     "Private AI Compute引入服务端安全记忆",
     "GitHub热门AI工程课程：从机器学习到智能体系统设计",
-    "TypeSafe AI System One决策模型Jev的资源索引"
+    "TypeSafe AI System One决策模型Jev的资源索引",
+    "yukitorido/short-video-generator-AI：用LLM自动剪辑竖屏短视频"
   ]
 }

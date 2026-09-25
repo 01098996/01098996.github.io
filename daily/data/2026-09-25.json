@@ -1,6 +1,6 @@
 {
   "date": "2026-09-25",
-  "generated_at": "2026-09-25T14:04:25.483718+08:00",
+  "generated_at": "2026-09-25T23:08:30.490204+08:00",
   "articles": [
     {
       "title": "[AINews] The Future of Latent Space",
@@ -166,7 +166,37 @@
       "images": [
         "img/4.png"
       ]
+    },
+    {
+      "title": "yukitorido/short-video-generator-AI",
+      "url": "https://github.com/yukitorido/short-video-generator-AI",
+      "source": "GitHub",
+      "published": "2026-09-23T18:11:57Z",
+      "excerpt": "A free open-source project designed to turn youtube-videos into viral short videos. Highlight detection, subtitles, translation, voiceover, all in one for your content: no pre-clip credits or any watermarks. Designed for creators who want an alternative to short-video SaaS tools like OpusClip or Vidyo.ai for free. Examples of a processed video [[IMG4]] \"The Speech that Made Obama President\" \"How Tom Overcame Social Anxiety - The Mindset That Changed Everything\" \"How to stay calm when you know you'll be stressed | Daniel Levitin | TED\" Features 🪁API: Freely use this generator in your own projects via our API. Convenient: Paste a YouTube link (any length!) and get a ready-to-post 9:16 short. Hooks option: When enabled, adds a context-aware AI-generated hook at the start of the clip Web version: Besides the CLI, you can also generate videos on a local website Smart Highlight Selection: Find",
+      "category": "上下文与记忆",
+      "score": 0.06,
+      "evidence_kind": "article",
+      "title_zh": "yukitorido/short-video-generator-AI：用LLM自动剪辑竖屏短视频",
+      "summary": "该GitHub项目提供一条AI视频自动化处理流水线，先用Whisper转录音频，借助LLM识别内容亮点，再由程序自动完成剪辑并输出竖屏短视频。代码以Python实现，主打作为OpusClip的替代方案，适合内容创作者快速把长视频切条传播。项目在GitHub已获441颗星。",
+      "why": "值得读是因为它把Whisper转录、LLM摘要与自动化剪辑整合成一条可复用的流水线，可作为OpusClip之外的开源方案参考。",
+      "question": "LLM判定内容亮点的阈值与提示词是否可以配置，不同视频长度下命中率是否稳定？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "Whisper",
+        "LLM",
+        "OpusClip",
+        "短视频自动化",
+        "Python"
+      ],
+      "translation": "# yukitorido/short-video-generator-AI\n\n一个免费的开源项目，专门把 YouTube 视频剪成能火的短视频。高光检测、字幕、翻译、配音，一套流程搞定。不会在片头加出处标注，也不带任何水印。给那些想找 OpusClip、Vidyo.ai 这类短视频 SaaS（Software as a Service，软件即服务）工具免费替代品的创作者用。\n\n处理好的视频示例 [[IMG4]]\n\n> 「The Speech that Made Obama President」\n>\n> 「How Tom Overcame Social Anxiety - The Mindset That Changed Everything」\n>\n> 「How to stay calm when you know you'll be stressed | Daniel Levitin | TED」\n\n## 功能\n\n- **API**，可以把它接到自己的项目里，通过我们的应用程序编程接口（API）自由调用这个生成器。\n- **省事**，粘贴一个 YouTube 链接（不管多长都行），就能拿到一条可以直接发的 9:16 竖屏短视频。\n- **钩子选项**，开启后会在片段开头加一段 AI 根据上下文生成的钩子。\n- **Web 版本**，除了命令行界面（CLI），也可以在本地网页上生成视频。\n- **智能高光**，按算法自动挑出视频里最可能爆的热门片段。\n\n## 工作原理\n\n- **抓源视频**，从 YouTube 拉视频，或者直接用本地文件路径。\n- **转写**，用 faster-whisper 在本地生成带时间戳的转写文本。不管最后用哪家 LLM_PROVIDER，这一步都一样。\n- **判断内容类型**，选定的 LLM 会给视频分类（播客、采访、教程、Vlog 等），顺便判断节奏。这样高光提示词就能按不同内容风格调优。\n- **高光排序**，选定的 LLM（openai/gemini/muapi）会按一套爆款框架扫描转写文本，维度包括钩子时刻、情绪高峰、观点炸弹、真相揭露、冲突、金句、故事高潮、实用价值，然后输出带 0–100 分数的候选排序。\n- **去重**，把重叠的候选按分数合并掉。\n- **Top-N 选取**，挑出排名前 --n 的候选。\n- **自动裁剪**，每个高光都会按指定的 --ratio 渲染成竖屏短视频。如果不设 --no-hook，开头还会加一段可选的 AI 生成钩子。\n\n## 环境要求\n\n- Python 3.10+\n- 任一 LLM 的 API 密钥（OpenAI/Gemini/MuAPI）\n- requirements.txt 里的依赖\n\n## 快速开始\n\n克隆仓库：\n\n```bash\ngit clone https://github.com/yukitorido/short-video-generator-AI.git\ncd short-video-generator-AI\n```\n\n创建并激活虚拟环境：\n\nWindows：\n\n```bash\npython -m venv venv\nvenv\\S cripts\\a ctivate\n```\n\nLinux/MacOS：\n\n```bash\npython -m venv venv\nvenv\\S cripts\\a ctivate\n```\n\n安装依赖：\n\n```bash\npip install -r requirements.txt\n```\n\n设置 `.env`：\n\n```bash\n#Used LLM provider(openai/gemini/MuAPI)\nLLM_PROVIDER=openai\n\n#Enter the API key for the chosen provider\nOPENAI_API_KEY=your_openai_key_here\nOPENAI_MODEL=gpt-4o-mini#optional\n\nGEMINI_API_KEY=your_gemini_key_here\nGEMINI_MODEL=gemini-2.5-flash#optional\n\nMUAPI_API_KEY=your_muapi_key_here\n\n#Whisper settings\nLOCAL_WHISPER_MODEL=base#tiny / base / small / medium / large-v3\nLOCAL_WHISPER_DEVICE=auto#auto / cpu / cuda\n```\n\n不确定该用哪家？\n\n| 服务商   | 免费额度？               | 获取密钥                    |\n|----------|--------------------------|-----------------------------|\n| Gemini   | ✅ 有，但有每日限额      | https://aistudio.google.com |\n| OpenAI   | ❌ 付费                   | https://platform.openai.com |\n| MuAPI    | ❌ 付费，按量计费，无订阅 | https://muapi.ai            |\n\n## 使用\n\n基础用法：\n\n```bash\npython main.py \"https://www.youtube.com/watch?v=video_id\"\n```\n\n渲染好的片段会保存到 output 文件夹。\n\n带参数：\n\n```bash\npython main.py \"https://www.youtube.com/watch?v=video_id\" --n 3 --ratio 9:16 --resolution 1080\n```\n\n也可以用本地视频文件代替 YouTube 链接，比如：\n\n```bash\npython main.py \"/Users/Admin/Folder/video.mp4\" --n 4 --ratio 9:16 --resolution 720 --language zh\n```\n\n### CLI 参数\n\n| 参数          | 默认值           | 说明                                       |\n|---------------|------------------|--------------------------------------------|\n| --n           |                  | 要渲染的片段数                             |\n| --ratio       | 9:16             | 任意比例 / 9:16 适合短视频 / 1:1 适合方形  |\n| --resolution  | 源视频下载分辨率 |                                            |\n| --language    | auto             | 强制指定 Whisper 语言代码（比如 en）       |\n| --no-hook     |                  | 不在片段开头加 AI 生成的钩子               |\n\n## Web 版本设置\n\n不想用命令行也行，可以打开本地 Web 界面，一次排多个视频，参数也能可视化地调。LLM 服务商和 API 密钥仍在",
+      "translation_kind": "full",
+      "translation_source": "article",
+      "images": [
+        "img/4.png"
+      ]
     }
   ],
-  "errors": []
+  "errors": [
+    "Hacker News·LLM"
+  ]
 }
