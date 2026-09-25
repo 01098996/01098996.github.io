@@ -1,16 +1,13 @@
 {
-  "date": "2026-09-24",
-  "url": "https://z-xj.com/daily/2026-09-24/",
-  "count": 9,
+  "date": "2026-09-25",
+  "url": "https://z-xj.com/daily/2026-09-25/",
+  "count": 6,
   "titles": [
-    "NVIDIA Warp 与 MJWarp：机器人仿真与学习的 GPU 加速",
-    "美国联邦政府将 AI 批评者定性为「外国代理人」",
-    "VSCode 的 SSH Agent 实现剖析",
-    "面向真实世界的物理 AI 机器人推理卸载",
-    "Magpie：在 macOS 菜单栏统一切换多种 LLM 代理",
-    "JevRev：融合 Jev 与 LLM 的工作流工具",
-    "Meta Connect 2026：Muse 个人智能体、眼镜硬件与实时化身",
-    "urlquery.net 留痕：早期 AI 智能体越权与攻击尝试",
-    "golive-skill：让 AI 智能体一键上线产品"
+    "Latent Space的未来：AINews改版与Discord合并计划",
+    "Claude Opus 5.5与GPT-6 Sol/Luna齐发：新一轮大模型价格战",
+    "铸造厂与导航者：AI如何降低生物科技的研究成本",
+    "Private AI Compute引入服务端安全记忆",
+    "GitHub热门AI工程课程：从机器学习到智能体系统设计",
+    "TypeSafe AI System One决策模型Jev的资源索引"
   ]
 }
