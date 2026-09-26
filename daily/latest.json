@@ -1,10 +1,11 @@
 {
   "date": "2026-09-26",
   "url": "https://z-xj.com/daily/2026-09-26/",
-  "count": 3,
+  "count": 4,
   "titles": [
     "从开源种子到被Stripe收购：OpenRouter如何成为多模型路由基础设施",
     "OpenAI智能体如何攻陷Hugging Face：一份基于公开信息的入侵细节报告",
-    "zh-tech-writing：基于阮一峰规范的中文技术文档写作Agent Skill"
+    "zh-tech-writing：基于阮一峰规范的中文技术文档写作Agent Skill",
+    "Seep反向实验台：面向Agent的跨平台逆向与授权审计工作台"
   ]
 }

@@ -1,0 +1,89 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark light"><title>Seep反向实验台：面向Agent的跨平台逆向与授权审计工作台 · 2026-09-26 AI 日报 · 面向Google编程</title><meta name="description" content="Seep-Reverse-Lab是一个Python编写的Agent-Native实验工作台，专为AI Agent参与逆向工程与安全审计而设计。它面向多平台，目标聚焦CWE-602（客户端授权绕过）类漏洞，将审计流程拆解为Agent可调用的任务。项目把客户端校验这一典型安全反模式抽象为可重复测试的工作流，目前在GitHub上约254星标，属于小而专的实验型项目。"><meta property="og:title" content="Seep反向实验台：面向Agent的跨平台逆向与授权审计工作台 · 2026-09-26 AI 日报"><meta property="og:description" content="Seep-Reverse-Lab是一个Python编写的Agent-Native实验工作台，专为AI Agent参与逆向工程与安全审计而设计。它面向多平台，目标聚焦CWE-602（客户端授权绕过）类漏洞，将审计流程拆解为Agent可调用的任务。项目把客户端校验这一典型安全反模式抽象为可重复测试的工作流，目前在GitHub上约254星标，属于小而专的实验型项目。"><meta property="og:type" content="article"><link rel="icon" href="/images/favicon.ico"><link rel="stylesheet" href="/daily/style.css"><link rel="alternate" type="application/atom+xml" title="AI 日报" href="/daily/atom.xml"></head><body><a class="skip" href="#main">跳到正文</a><div class="page wide"><header><a class="brand" href="/">面向Google编程<span>CHARLES ZHANG</span></a><nav aria-label="主导航"><a href="/">博客</a><a class="active" href="/daily/">AI 日报</a><a href="/daily/tags.html">标签</a><a href="/daily/archive.html">往期</a></nav></header><div class="layout"><main id="main"><section class="intro"><p class="eyebrow">AI DAILY / 2026-09-26</p><h1>Seep反向实验台：面向Agent的跨平台逆向与授权审计工作台</h1><p class="original">angusdevgo/Seep-Reverse-Lab</p><div class="meta"><span class="tag">Agent 开发</span><span>GitHub · 2026-09-23</span></div><div class="tags"><a class="tag-pill" href="/daily/tags.html#CWE-602">CWE-602</a><a class="tag-pill" href="/daily/tags.html#%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8E%88%E6%9D%83">客户端授权</a><a class="tag-pill" href="/daily/tags.html#%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B">逆向工程</a><a class="tag-pill" href="/daily/tags.html#Python%E5%B7%A5%E5%85%B7">Python工具</a><a class="tag-pill" href="/daily/tags.html#Agent%E5%B7%A5%E4%BD%9C%E6%B5%81">Agent工作流</a></div></section><p class="muted">全文中文翻译 · AI 生成，仅供学习交流</p><section class="translation"><h2>Seep 逆向工程工作台</h2><p>Seep 把碎片化的逆向工程工具链（Radare2 / JADX / Apktool / Frida / IDA）、一线作战知识库、Prompt 工程契约和久经考验的实战经验，整合成一个面向 Agent 的自主工作台。</p><p>用户只需用自然语言提出技术目标，Agent 就会自主完成平台识别、漏洞类型分类、精准的二进制补丁（binary patching）以及闭环证据交付。</p><h3>五大核心痛点与对应解决方案</h3><p>痛点 解决方案<br>🔧 工具链碎片化 23 个 MCP（Model Context Protocol，模型上下文协议）工具封装 Radare2、JADX、Apktool、Frida，统一的 API，零手动切换<br>🧠 Agent 决策漂移 softseep 编排器：两阶段自动分类（平台 × 9 种任务类型）+ 7 门决策树（7-gate decision tree）<br>🛡️ 安全审计场景下的模型拒答 三层缓解策略：BLOCK_NONE 注入 + 透明术语映射 + 认知重定向<br>📚 临时性知识 289 篇技术实战日志 + 9 个脱敏范式 + “执行前先查 KB”的强制纪律<br>📦 安装门槛 一键 install.ps1 → 支持 Pi Agent、Claude Code、DeepSeek Harness（DSH）、Codex / OpenCode</p><h3>⚙️ 工作原理</h3><pre><code>User Input (plain language — &quot;bypass the premium check in FooBar.apk&quot;)
+│
+▼
+┌───────────────────────────────────────────────────────────────────┐
+│  Lab Mode State Machine  (disk-backed ~/.pi/agent/lab-mode.flag)  │
+│  • Colloquial → compliance terminology auto-mapping               │
+│  • BLOCK_NONE injection + cognitive redirection (anti-refusal)    │
+│  • Context persists across model switches &amp; context compression   │
+└────────────────────────────┬──────────────────────────────────────┘
+│
+▼
+┌───────────────────────────────────────────────────────────────────┐
+│  softseep  Master Orchestrator                                    │
+│  ① Platform  →  Windows PE / Android APK / Linux ELF / Web       │
+│  ② Task Type →  9 Paradigms × 7 Gates (G0–G6 decision tree)      │
+│  ③ Route     →  apkseep / ida-reverse / seep MCP / KB            │
+└────────┬──────────────────┬────────────────────┬──────────────────┘
+│                  │                    │
+▼                  ▼                    ▼
+seep MCP            IDA Pro MCP         KB Search
+23 tools            (optional)          289 journals
+(Radare2/JADX/                          (Zero-Waste Recon)
+Apktool/Frida)
+│
+▼
+┌───────────────────────────────────────────────────────────────────┐
+│  Context Budget Control  (v1.1 noise reduction)                   │
+│  • seep_r2_decompile: full / fold (−60% tokens) / summary (−90%) │
+│  • seep_r2_disasm:   full / branch (control-flow only)           │
+│  • seep_r2_xrefs:    paginated, limit=10, total stats header      │
+└────────────────────────────┬──────────────────────────────────────┘
+│
+▼
+PoC Generated → Sandbox Execution → Self-Healing Loop
+│
+▼
+Airplane-Mode Confirmation (CWE-602 iron-clad proof)
+│
+▼
+3-Part Consulting-Grade Security Report  ✓</code></pre><h3>⚡ 30 秒演示</h3><p>部署完成后，只需用自然语言与 Agent 对话：</p><pre><code>lab: analyze FooBar.apk — find the premium check and bypass it</code></pre><p>Agent 将自主执行：</p><p>- <code>seep_auto_triage</code> → 识别出 DEX + ARM64 SO，未检测到加壳<br>- <code>seep_apk_decompile</code>，设 <code>output_mode=fold</code> → 仅抽取控制流骨架（节省约 60% token）<br>- <code>seep_kb_search</code> → 从实战日志 #142 中匹配到 CWE-602 模式<br>- <code>seep_apk_gen_hook</code> → 生成 <code>hook_verify.js</code> Frida 脚本<br>- 在已连接的设备上执行 → 捕获 stdout，自愈 <code>ClassNotFoundException</code>，重新运行<br>- 飞行模式确认（airplane-mode confirmation）✓ →<br>- <code>seep_gen_security_report</code> → 交付三段式审计报告在一个典型客户端应用上的总耗时：<strong>8–20 分钟，全程无人值守</strong>。</p><h3>⚡ 核心能力</h3><p>- 🎯 <strong>自然语言意图解析</strong>：二进制魔数（binary magic bytes）+ 语义动词映射 → 正确匹配工具链，无需记忆参数<br>- 🔍 <strong>CWE-602 授权审计</strong>：数分钟内判定功能门控是本地布尔型还是服务端权威型<br>- 🛡️ <strong>Authenticode 签名保留</strong>：DLL 搜索顺序劫持（<code>version.dll</code> / <code>sentry.dll</code>）保持宿主二进制签名完整<br>- 🔄 <strong>PoC 自愈循环</strong>：Frida 报错 → 根因映射 → 自动修复 → 重新执行（最多 3 次尝试，之后交由结构化流程接手）<br>- 💎 <strong>9 种工业级架构范式</strong>：单体离线 PE → 多进程 IPC → VM 仲裁 → .NET keygen → 弱 RSA 旁路（全部脱敏）<br>- 🔌 <strong>离线就绪</strong>：所有工具链预打包（251 MB），安装后零网络依赖</p><h3>📋 目录结构</h3><p>（译注：以下为项目完整目录树，点击可展开）</p><pre><code>Seep\ (251 MB)
+├── README.md                      ← This file (English default)
+├── README.zh.md                   ← Chinese documentation (中文文档)
+├── CLAUDE.md                      ← Project-level instructions for Claude Code
+├── .mcp.json                      ← Project-level MCP registration (Claude Code / OpenCode)
+├── DSH-PROFILE.md                 ← DeepSeek Harness Cordis plugin config template
+├── check.bat                      ← ⭐ Double-click one-shot health verifier (Windows)
+├── check.ps1                      ← PowerShell health verifier entry point
+│
+├── Tool\
+│   ├── skill\                     ← 10 specialized reverse engineering &amp; ops skills
+│   │   ├── softseep\              ← ⭐ Master orchestrator (Router + 8 on-demand references)
+│   │   ├── apkseep\               ← End-to-end Android APK/DEX/SO skill (115 files)
+│   │   ├── ida-reverse\           ← IDA Pro automated spawning &amp; MCP coordination
+│   │   ├── client-license-validation-bypass\ ← Cross-runtime license attack playbook
+│   │   ├── update\                ← 🔄 Explicit-target release &amp; GitHub sync skill
+│   │   └── safe-skills\           ← 5 standalone tool packages
+│   │
+│   ├── mcp\                       ← MCP Engine
+│   │   ├── seep_mcp_server.py     ← Core server: 23 native reversing &amp; KB tools
+│   │   ├── mcp.json.template      ← Global MCP client configuration template
+│   │   └── Tool\                  ← ⚠️ Hardcoded relative runtime path (do not rename)
+│   │       ├── safe\              ← Pre-bundled cross-platform toolchains
+│   │       │   ├── jadx\          ← 75 MB (v1.5.6)
+│   │       │   ├── radare2\       ← 39 MB (v6.2.2 full suite)
+│   │       │   ├── apktool\       ← 24 MB (v3.0.3)
+│   │       │   ├── hook-mcp\      ← Frida / LSPosed instrumentation templates
+│   │       │   ├── ida-pro-mcp\   ← IDA bridge adapter
+│   │       │   ├── js-reverse-mcp\← Web / JS debugging engine
+│   │       │   └── playwright-mcp\← Headless browser automation
+│   │       └── reverselab\        ← 289 field journals + attack chains
+│   │
+│   ├── prompts\                   ← Agent coordination specs &amp; runtime extensions
+│   │   ├── SYSTEM.md              ← Pi Agent system instructions
+│   │   ├── AGENTS.md              ← Cross-agent portable instructions
+│   │   └── extensions\            ← BLOCK_NONE injection + terminology mapping
+│   │
+│   ├── cases\                     ← 9 desensitized industrial paradigm projects (A ~ I)
+│   ├── upstream\                  ← apk-reverse offline verification test suite (MIT)
+│   ├── docs\                      ← Engineering reference docs
+│   └── scripts\                   ← Workspace automation scripts
+│
+├── setup\                         ← Automated install, repair &amp; self-check scripts
+└── MANUAL\                        ← 5 Tactical SOP guides
+    ├── PREREQUISITES.md           ← Environment requirements
+    ├── IDA-PRO.md                 ← Commercial IDA Pro integration guide
+    ├── ANTI-DEBUG.md              ← Anti-debug bypass dictionary &amp; proxy DLL framework
+    ├── UNPACKING.md               ← UPX/MPRESS/Themida/VMP unpacking SOP
+    └── POC-VALIDATION.md          ← Frida self-healing loop &amp; PoC sandbox validation</code></pre><h3>🛠️ MCP 工具矩阵</h3><p>捆绑的 seep MCP 服务对外暴露 23 个原生工具，分为五大功能组：</p><p>| 分类 | 工具 | 功能 | Token 模式 |<br>|---|---|---|---|<br>| 健康检查 | <code>seep_status</code> | 验证 Radare2、JADX、Apktool、KB 就绪状态 | — |<br>| | <code>seep_ida_status</code> | 探测 IDA Pro MCP 服务连通性 | — |<br>| 二进制 (R2) | <code>seep_r2_info</code> | 架构、位数、DEP/ASLR/Canary/PIE | — |<br>| | <code>seep_r2_strings</code> | 带正则与节过滤的字符串提取 | limit= |<br>| | <code>seep_r2_functions</code> | 函数、导入表、导出表、入口点 | limit= |<br>| | <code>seep_r2_disasm</code> | 带交叉引用的反汇编 | full / branch |<br>| | <code>seep_r2_decompile</code> | 基于 pdc 引擎的类 C 伪代码 | full / fold / summary |<br>| | <code>seep_r2_xrefs</code> | 交叉引用图，分页 | limit=10 默认 |<br>| | <code>seep_r2_diff</code> | 两个二进制之间的代码 / 十六进制 diff | — |<br>| | <code>seep_r2_asm</code> | 汇编 ↔ 反汇编机器码 | — |<br>| | <code>seep_r2_cmd</code> | 原始 Radare2 管道命令 | — |<br>| Android | <code>seep_apk_info</code> | APK manifest、权限、签名（不含 Java） | — |<br>| | <code>seep_apk_decompile</code> | JADX 全量 Java 源码反编译 | — |<br>| | <code>seep_apk_unpack</code> | Apktool 资源 + Smali 反汇编 | — |<br>| | <code>seep_apk_smali_search</code> | Smali 模式搜索（加密密钥、认证门控） | limit= |<br>| | <code>seep_apk_gen_hook</code> | 开箱即用的 Frida hook，附调用栈 | — |<br>| 知识库 | <code>seep_kb_search</code> | 在 289 篇实战日志中全文搜索 | limit= |<br>| | <code>seep_kb_read</code> | 按主题检索完整技术参考 | — |<br>| | <code>seep_kb_checklist</code> | 应急分诊清单与攻击矩阵 | — |<br>| | <code>seep_kb_payloads</code> | 安全测试种子（JWT、SSRF、SSTI、SQLi） | — |<br>| 编排 | <code>seep_task_init</code> | 初始化隔离的审计沙箱目录 | — |<br>| | <code>seep_auto_triage</code> | 自动化全样本健康检查 | — |<br>| | <code>seep_gen_security_report</code> | 综合生成三段式合规安全报告 | — |&gt; 💡 <strong>上下文预算控制（v1.1）</strong>：<code>seep_r2_decompile</code> 设置 <code>output_mode=fold</code> 可减少约 60% token 消耗；summary 模式可减少约 90%。请使用 <code>seep_r2_xrefs</code> 而非原始的 <code>axt</code>，避免数百条引用一次性涌入上下文窗口。</p><h3>🚀 快速上手与部署</h3><h4>1. 环境要求</h4><p>- 操作系统：Windows 10 / 11 x64（推荐），或兼容的 Linux / macOS<br>- 运行时：Python 3.11+、Node.js 18+、Git</p><h4>2. 一键安装</h4><p>以管理员权限打开 PowerShell 终端，进入项目根目录后执行：</p><pre><code>cd setup
+powershell ExecutionPolicy Bypass -File .\install.ps1</code></pre><p>此脚本会自动完成：解压依赖归档 → 校验预打包工具 → 安装 Python mcp 库 → 注册 MCP 服务 → 运行完整的自检。</p><h4>3. 多 Agent 配置</h4><p>| Agent | 指令文件 | MCP 配置 | 激活方式 |<br>|---|---|---|---|<br>| Pi Agent | <code>Tool/prompts/SYSTEM.md</code> | <code>~/.pi/agent/mcp.json</code> | <code>install.ps1</code> 自动写入全部内容 |<br>| Claude Code | <code>CLAUDE.md</code>（项目根目录） | <code>.mcp.json</code>（项目根目录） | 在工作区根目录运行 <code>claude</code> 即可自动加载 |<br>| DeepSeek Harness | <code>Tool/prompts/AGENTS.md</code> | <code>DSH-PROFILE.md</code>（Cordis YAML） | 复制指令 + 将插件配置粘贴到 DSH profile |<br>| OpenCode / Codex | <code>AGENTS.md</code>（项目根目录） | 客户端全局配置 | 将 <code>Tool/prompts/AGENTS.md</code> 复制到项目根目录 |</p><h4>4. 验证部署</h4><p>通过以下任意方式运行 7 段式健康验证器（共 35 项检查）：</p><p>| 方式 | 命令 |<br>|---|---|<br>| ⭐ 双击（最简单） | 在项目根目录双击 <code>check.bat</code> |<br>| PowerShell | <code>powershell -ExecutionPolicy Bypass -File .\check.ps1</code> |<br>| Agent 对话 | 发送 <code>check</code>（或 <code>doctor</code> / <code>检查</code>），Agent 会内联运行并报告 |</p><h3>🎮 工作流与 Lab 模式</h3><h4>Lab 模式协议（基于磁盘的状态机）</h4><p>- <strong>激活</strong>：<code>lab:</code>（或：<code>lab: analyze FooBar.exe</code>）<br>- <strong>退出</strong>：<code>exit lab</code><br>- <strong>状态存储位置</strong>：<code>~/.pi/agent/lab-mode.flag</code> ， 模型切换与上下文压缩后仍可持久保留<br>- <strong>激活后效果</strong>：术语自动映射、反拒答覆盖、快捷指令展开全部生效<br>- Lab 模式外的闲聊保持原样透传 ， 零干扰</p><h4>任务快捷指令（Lab 模式下生效）</h4><p>| 快捷指令 | 动作 |<br>|---|---|<br>| <code>poc &lt;target&gt;</code> | CWE-602 客户端授权审计 + 验证代码 |<br>| <code>find-auth &lt;target&gt;</code> | 定位 license、订阅、过期、硬件绑定等函数 |<br>| <code>hook &lt;function&gt;</code> | 生成带调用栈 + 返回值覆盖的 Frida hook |<br>| <code>gen-patch &lt;offset&gt;</code> | 二进制字节级补丁或代理 DLL（proxy DLL）脚手架 |<br>| <code>triage &lt;sample&gt;</code> | 全量分诊：架构、导入、加壳、字符串 |<br>| <code>check</code> | 内联运行 7 段式工作台健康验证器 |<br>| <code>report</code> | 综合当前目录下的证据，生成三段式审计报告 |</p><h3>🔬 技术范围</h3><p>（译注：以下为完整技术范围，点击可展开）</p><h4>1. 客户端授权审计（CWE-602）</h4><p><strong>权限归属判定</strong>：飞行模式 + loopback 劫持 + 时间戳偏移测试，可在数分钟内将门控归类为服务端权威型还是本地布尔型。</p><p><strong>九大工业级范式</strong>，全部脱敏：</p><p>| 项目 | 架构 | 关键技术 |<br>|---|---|---|<br>| A | 单体离线 PE | 标量返回值覆盖（<code>mov eax,1; ret</code>） |<br>| B | 多进程混合 | Proxy DLL 名称派发 + 三层状态持久化 |<br>| C | 资源模板 + UI | 双射按位置置换解码 + 对 <code>SetDlgItemTextW</code> 的 IAT hook |<br>| D | 重编译引发的非均匀偏移 | AOB 双状态签名迁移（3 个版本）+ PE gating + ACL 加锁 |<br>| E | EXECryptor VM 仲裁 | 2 点 Call 重定向至内存桩 |<br>| F | .NET 动态去混淆 | Harmony 内存 dump + 96 位组合哈希 keygen |<br>| G | 自指 SHA-384 | 5 字节函数入口补丁 + watchdog 持久化 |<br>| H | Ed25519 公钥替换 | 通过派生密钥流进行原地密文替换 |<br>| I | 弱模数 RSA | 滑动窗口旁路 + 在导出入口处注入激活 |</p><h4>2. Android 与 DEX/SO 分析</h4><p>- DEX 等长手术式补丁，自动重算 Adler-32 / SHA-1<br>- 加壳分类：Java2C / native payload / 抽壳壳 / 私有 DEX-VMP<br>- 运行时反分析：root 检测绕过、SSL pinning 绕过、Frida-RPC 桥接<br>- 重打包流水线：<code>STORED</code> 资源的 <code>resources.arsc</code> + 4 字节 Zipalign + v1+v2+v3 签名</p><h4>3. 二进制 / 原生层（PE / ELF / Mach-O）</h4><p>- 无头模式 Radare2：架构识别、熵扫描、符号恢复、类 C 反编译<br>- 完整 IDA Pro MCP 集成：Hex-Rays 反编译、交叉引用、结构体恢复<br>- 反调试对抗：主动 crash 桩、原始 <code>svc</code> 系统调用检测、内核态反调试</p><h4>4. CTF 与挑战赛工作流</h4><p>- 攻击链路由：信号 → <code>seep_kb_search</code> → 模板组装 → MCP 执行<br>- Web：JWT、KID 注入、SSRF 链、SSTI、反序列化 gadget 链、Protobuf 解码<br>- 种子库（<code>seep_kb_payloads</code>）+ 应急清单（<code>seep_kb_checklist</code>）</p><h3>🤖 Agent 执行契约</h3><p>- <strong>G-Auth 门控</strong>：每个新目标都必须确认测试授权。未授权 = 立刻停止。<br>- <strong>7 门决策树（G0–G6）</strong>：在触碰任何代码之前，先对权限归属（服务端 vs. 客户端）进行分类。<br>- <strong>两击原则</strong>：同形态失败两次 → 推翻当前技术模型，回退到分类阶段。严格禁止第三次变体尝试。<br>- <strong>零浪费侦察（Zero-Waste Recon）</strong>：检测到信号 → <code>seep_kb_search</code> → 已有工具 → 执行。在未先查 KB 的情况下绝不现写脚本。<br>- <strong>完成定义</strong>：目标哈希 → RVA（Relative Virtual Address，相对虚拟地址）识别 → PoC 执行 → 离线飞行模式确认 → 三段式结构化交付。仅靠控制台日志不构成证据。</p><h3>📝 交付物规范</h3><p>所有客户端漏洞评估均遵循咨询级的三段式结构：</p><p>1. <strong>漏洞细节与风险</strong> ， 精确的 RVA / 文件偏移、调用链、CWE-602 映射、业务严重等级<br>2. <strong>复现与 PoC</strong> ， 100% 可复现的步骤、proxy DLL 源码，或 Frida 脚本 + 离线确认证据<br>3. <strong>纵深防御修复方案</strong>：<br>   - <code>SetDefaultDllDirectories</code> → 阻止 DLL 劫持<br>   - <code>ProcessDynamicCodePolicy</code> → 阻止可执行内存注入<br>   - 通过加密签名与短时效令牌实现服务端权威校验</p><h3>🤝 致谢与社区</h3><p>特别感谢 <code>newliver666/apk-reverse</code> 提供了基础的 Android 逆向工程范式与验证方法论。</p><p>感谢 LINUX DO 社区提供的技术交流、洞察与研究协作。</p><h3>⚖️ 免责声明</h3><p>本仓库仅用于<strong>已获授权的安全研究、白盒审计、合规漏洞测试以及 CTF 教育训练</strong>。</p></section><aside class="about"><h2>编辑导读</h2><p>Seep-Reverse-Lab是一个Python编写的Agent-Native实验工作台，专为AI Agent参与逆向工程与安全审计而设计。它面向多平台，目标聚焦CWE-602（客户端授权绕过）类漏洞，将审计流程拆解为Agent可调用的任务。项目把客户端校验这一典型安全反模式抽象为可重复测试的工作流，目前在GitHub上约254星标，属于小而专的实验型项目。</p><p><strong>为什么读</strong>它把Agent协作、逆向工程与客户端授权漏洞三类话题打包在同一个工作台中，适合想用Agent改造安全审计流程的工程师参考借鉴。</p><p><strong>带着问题读</strong>项目宣称的Agent-Native到底落到哪些Agent接口或协议，审计流程是否真能由Agent端到端完成而无需人工介入？</p></aside><aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="https://github.com/angusdevgo/Seep-Reverse-Lab" rel="noopener noreferrer">angusdevgo/Seep-Reverse-Lab ↗</a></p><p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="/daily/2026-09-26/04-27ce8e12/">返回本期 →</a></p></aside><nav class="postnav" aria-label="上下篇"><a class="prev" href="/daily/2026-09-26/03-5a6a2c86/"><span class="dir">← 上一篇</span>zh-tech-writing：基于阮一峰规范的中文技术文档写作Agent Skill</a><span></span></nav></main><aside class="sidebar"><section class="sideblock"><h2>相关阅读</h2><ul><li><a href="/daily/2026-09-25/06-f179258b/">TypeSafe AI System One决策模型Jev的资源索引</a><span class="meta">2026-09-25 · GitHub</span></li><li><a href="/daily/2026-09-22/06-24ae93c9/">jianying-headless：剪映的原生无头模式与Agent Skill</a><span class="meta">2026-09-22 · GitHub</span></li><li><a href="/daily/2026-09-20/05-bcf09af4/">Minecraft代理项目：Astra规划器与JEV控制器</a><span class="meta">2026-09-20 · GitHub</span></li><li><a href="/daily/2026-09-19/06-2bfc6059/">typesafe-mcp：把 Typesafe AI 的 Jev 模型接入代理的 MCP 连接器</a><span class="meta">2026-09-19 · GitHub</span></li><li><a href="/daily/2026-09-17/06-d0a38892/">typesafe-mario：用结构化仿真器状态玩超级马里奥的智能体</a><span class="meta">2026-09-17 · GitHub</span></li></ul><p class="more"><a href="/daily/tags.html">按标签浏览 →</a></p><p class="more"><a href="/daily/archive.html">全部往期 →</a></p></section></aside></div><footer><span>AI 日报 · 保持好奇，动手验证</span><a href="/daily/atom.xml">RSS 订阅 ↗</a></footer></div></body></html>
