@@ -1,0 +1,63 @@
+{
+  "date": "2026-09-27",
+  "generated_at": "2026-09-27T14:30:31.822498+08:00",
+  "articles": [
+    {
+      "title": "dzhng/jevgrep",
+      "url": "https://github.com/dzhng/jevgrep",
+      "source": "GitHub",
+      "published": "2026-09-26T04:06:56Z",
+      "excerpt": "[[IMG1]] jevgrep [[IMG2]] [[IMG3]] [[IMG4]] Find code by asking what it does. Coding agents spend part of every unfamiliar task finding the right files. Jevgrep gives them a place to start: ask a repository question, and jg returns relevant files, reading leads, and verbatim source excerpts in one stdout response. It uses Jev to judge relevance across folders, files, and declarations. Your coding agent then implements and tests the change. npm install -g @dzhng/jevgrep jg auth jg skill jg\" How are telemetry events recorded and sent? \" ./my-project Requires Node.js 22+, macOS or Linux, and a key for Vercel AI Gateway, TypeSafe, or OpenRouter. No separate Python, Bun, or ripgrep installation is required to use jg. Provider selection requires 0.3.0 or newer. Upgrade an older installation with npm install --global @dzhng/jevgrep@latest. Install the agent skill — required for agent setup Inst",
+      "category": "AI 编程实践",
+      "score": 2.45,
+      "evidence_kind": "article",
+      "title_zh": "按功能描述找代码：jevgrep CLI",
+      "summary": "jevgrep 是一个面向编程代理的命令行工具，核心思路是用自然语言描述代码功能，再由 Jev 检索引擎在代码库中定位相关文件并提取源码上下文。它面向 Claude Code、Codex 等编程代理场景，作为外部检索层弥补模型对项目结构的不熟悉。★237，TypeScript 实现。",
+      "why": "它把以意图搜代码的思路做成了 CLI，能直接挂接到编程代理的工作流中。",
+      "question": "Jev 相比 ripgrep 这类纯文本检索，是靠语义嵌入还是额外索引来提升召回？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "jevgrep",
+        "Claude Code",
+        "Codex",
+        "代码检索",
+        "CLI"
+      ],
+      "translation": "# dzhng/jevgrep\n\n[[IMG1]]\n\n# jevgrep\n\n[[IMG2]]\n\n[[IMG3]]\n\n[[IMG4]]\n\n通过询问代码的功能来查找代码。\n\n编程代理（coding agent）在每个不熟悉的任务里，都要花一部分时间来定位正确的文件。\n\nJevgrep 给它们一个起点。你向代码仓库提问，jg 在一次标准输出（stdout）响应里，返回相关文件、阅读线索，还有逐字的源代码片段。\n\n它用 Jev 来判断跨文件夹、文件和声明（declaration）的相关性。接下来的实现和测试，由你的编程代理接手。\n\n```bash\nnpm install -g @dzhng/jevgrep\njg auth\njg skill\n```\n\n```bash\njg \"How are telemetry events recorded and sent?\"\n```\n\n```bash\n./my-project\n```\n\n需要 Node.js 22+、macOS 或 Linux，外加一个 Vercel AI Gateway、TypeSafe 或 OpenRouter 的密钥。\n\n用 jg 不需要单独装 Python、Bun 或 ripgrep。\n\n提供商（provider）选择需要 0.3.0 或更新版本。旧版用 `npm install --global @dzhng/jevgrep@latest` 升级。\n\n# 安装代理技能（代理设置所必需）\n\n只装命令行工具（CLI）不够，你的编程代理不会被教会怎么用。\n\n还得在代理工作的项目里把技能装上：\n\n```bash\njg skill\n```\n\n安装程序会检测你用的编程代理（Claude Code、Codex、OpenCode 等），然后问装到哪里。加 `--global` 是用户级安装，加 `--yes` 是无人值守。这个技能会告诉代理什么时候该调 jg、怎么用返回的上下文，以及什么时候该用自己的常规工具补缺口。所需上下文心里有数的时候，它会跳过重复的检索。当前的仓库技能会先检查 jg 在不在，不在就顺手把 CLI 装上；认证还是得用你选定的那家提供商的密钥。技能安装程序本身不会替你配凭据。\n\n`jg skill` 底层调用的是 skills CLI，需要 npm/npx 加网络访问。CLI 没装也行，直接跑那个安装程序：\n\n```bash\nnpx skills add dzhng/jevgrep --skill jevgrep\n```\n\n0.1.0 里，`jg skill` 只会把自带的技能打印出来；这一版请改用 `npx skills`。\n\n# 升级\n\n目前没有 `jg upgrade` 命令。CLI 用 npm 升级：\n\n```bash\nnpm install -g @dzhng/jevgrep@latest\njg --version\n```\n\n已安装的技能单独更新，重新跑一次 `jg skill` 就行。更新 npm 包不会覆盖项目里的技能文件。认证相关细节见包的使用指南。\n\n# 从一个问题出发，带着源码离开\n\n知道自己要理解什么行为，却不知道它藏在哪，那就用 jg：\n\n```bash\njg \"Where is authentication checked before a request reaches a handler?\"\n```\n\n```bash\njg \"How are database connections created, pooled, and closed?\"\n```\n\n```bash\n./src\n```\n\n```bash\njg \"Which tests cover retry behavior when a request times out?\"\n```\n\nJevgrep 会探查仓库层级，再沿符合条件的分支往下走。它先用内容预览筛文件，再挑出有用的源码单元和它们周围的上下文。即便没法有把握地返回片段，它也会保留符合条件的文件位置，不会硬把每次搜索塞进一个固定的前两名。\n\n摘要排在最前，接着是文件位置、阅读线索，以及带行号的精选源码。Python 和 TypeScript/JavaScript 支持声明解析，其他语言的文本走后备方案。这份输出是给代理用的证据，不是现成的答案，也不保证每个相关文件都翻到了。\n\n可以看一份录好的输出示例。\n\n如果你已经知道确切的符号或路径，那直接读文件，或者跑一次 rg（ripgrep）搜索就够了。Jevgrep 最拿手的是那种横跨多个陌生文件的问题。\n\n# 我们的测量结果\n\n在一次十任务的 SWE-bench 复现里，编程代理成本降了约 40%。\n\nSol（一种评估工具，译注：与 jevgrep 同作者的相关评估工具）的完整成本从 $7.62 降到 $4.52，含失败任务，不含 Jev 的开销。\n\n用 jg 时解题率是 7/10，保存下来的基线（baseline）是 8/10。成本是省了，可质量也跟着掉了一档，不能据此说 jg 的解题质量持平或更好。\n\n同一套修正后的运行时，更早一次跑过，那次解出 6/10，成本 $5.54。两次跑互相独立；基线只跑过一次，之后一直被复用在比对里，最终结果也没有合并到一起。两次都没过最初的质量门槛。样本是调过的 Python 子集，用 Sol 评估，所以别拿它去推断普遍能省多少、能跑多快，或者别的编程代理会怎么样。\n\n完整结果和配对的轨迹分析里包含精确成本、失败任务，以及单独观察到的 Jev 费用。方法论见评估指南。\n\n# 源代码、凭据与本地状态\n\n搜索会把符合条件的源代码内容，通过认证时选定的那家提供商，发给 Jev。默认的文件系统过滤会尊重忽略文件（ignore files），把隐藏文件、依赖与构建产物、二进制文件，以及明显的凭据文件排除掉。这些过滤规则并不能担保所有敏感信息都已移除；选搜索根目录的时候，挑一个你愿意送出去的。\n\n`jg auth` 会问你的提供商，然后把它的密钥存到权限只给所有者的配置文件里。\n\n再跑一次 auth 会替换原有设置；搜索时一律用已保存的提供商。\n\n`jg doctor` 用合成输入（synthetic input）做检查。旧版只存了密钥但没记提供商的，依然按 Vercel 密钥处理。通过环境变量设置的凭据和端点覆盖不再生效；以前要是靠这些方式跑的，请重新跑一次 `jg auth`。\n\n评估答案默认会在本地缓存。CLI 把输出直接写到标准输出，不生成报告文件。缓存控制、搜索覆盖、未完成结果的行为，请用 `jg --help`。\n\n# 开发\n\n仓库用 TypeScript、Bun workspaces 和 Turborepo。从一个 checkout 开始：\n\n```bash\nbun install --frozen-lockfile\nbun run dev --help\nbun run verify\n```\n\n验证包括对已安装的 Node-only 包跑 Docker 测试。检索、解析、缓存与失败处理背后的设计思路，可以从架构与实现记录开始翻起。\n\n发布指南讲了怎么通过 tag 触发 npm 发布，以及如何核对发出去的包是否完全一致。\n\nMIT。\n\n插图与生成提示。",
+      "translation_kind": "full",
+      "translation_source": "article",
+      "images": [
+        "img/1.png"
+      ]
+    },
+    {
+      "title": "feitangyuan/onetake",
+      "url": "https://github.com/feitangyuan/onetake",
+      "source": "GitHub",
+      "published": "2026-09-26T05:35:17Z",
+      "excerpt": "A Claude Agent Skill that makes product launch films, teasers and feature demos where every beat grows out of the one before — one continuous take, not a stack of scenes. 一镜到底的连贯动效。 做产品发布片、预告片、功能演示：每一个画面都从上一个画面里长出来，是一整条连续的镜头，而不是一张张轮流出场的\"PPT\"。 [[IMG1]] [[IMG2]] [[IMG3]] [[IMG4]] From onetake's own launch film. A prompt bar opens into the ad it asked for; the next prompt collapses into a line that shoots across the desk and opens into a festival screen. No cut. Full film with sound →English中文说明English The problem: motion that falls apart Most motion videos an AI makes today — and most template tools — come out loose. Title card, fade, UI shot, fade, feature card, fade, logo. Each shot can look fine and the whole still reads like a slideshow, because nothing connects one beat to the next: scenes replace each other. What onetake does differently: every beat is carried onetake treats the boun",
+      "category": "Agent 开发",
+      "score": 0.48,
+      "evidence_kind": "article",
+      "title_zh": "一镜到底的运动影片：onetake Claude Skill",
+      "summary": "onetake 是一个 Claude Agent Skill，专注生成不切镜头的连续动画影片：每一帧画面从前一帧过渡而来，整段保持同一虚拟机位，画面衔接由连续性判定 oracle 评估。它适合产品发布片和功能演示场景，能产出连贯的运动图形。★305，Python 实现。",
+      "why": "它把连贯性作为一等约束交给 oracle 打分，而不是依赖抽卡式的随机生成。",
+      "question": "那个 oracle 是用同一模型自评，还是另外训练的判别器？",
+      "summary_kind": "ai_excerpt",
+      "tags": [
+        "Claude Skill",
+        "一镜到底",
+        "运动图形",
+        "发布视频",
+        "Python"
+      ],
+      "translation": "# feitangyuan/onetake\n\n一个 Claude Agent Skill，用来制作产品发布片、预告片和功能演示。每一个节拍（beat）都从上一个节拍里长出来，是一整条连续的镜头，而不是堆叠起来的场景。\n\n一镜到底的连贯动效。\n\n做产品发布片、预告片、功能演示。每一个画面都从上一个画面里长出来，是一整条连续的镜头，而不是一张张轮流出场的 PPT。\n\n[[IMG1]]\n\n[[IMG2]]\n\n[[IMG3]]\n\n[[IMG4]]\n\n来自 onetake 自己的发布片。一条提示栏（prompt bar）展开成它请求生成的广告；下一条提示塌缩成一条线，扫过桌面后展开为一块银幕。无剪辑。\n\n## 散架的动效\n\n如今 AI 生成的大多数动效视频，还有大多数模板工具，做出来都是松散的。标题卡，渐隐，UI（用户界面）镜头，渐隐，功能卡，渐隐，Logo。单个镜头看着都没毛病，但合在一起读起来还是幻灯片，因为这一拍和下一拍之间没有任何东西在传递，场景只是彼此替换。\n\n## 每个节拍都承过去\n\nonetake 把两个节拍之间的边界当成真正要设计的东西。在每一个边界处，屏幕上都会有一块东西活下来，可见地变成下一个节拍。提示栏展开成应用窗口，窗口重新排布成手机，一根横条塌缩成一条线，那条线扫过桌面后变成下一支片子的第一条网格线。一张卡片长成一页，舞台从角色身上打开，摄影机穿过一张卡片，直到那张卡片本身就成了下一个场景。结尾处，所有角色折入品牌锁定组合（lockup）；在发布片里，方块光标一笔写下名字。\n\n### 一台摄影机把整条片子串起来\n\n它从不剪辑。永远比主体提前一拍跟随，甩向下一个元素将要落点的位置，像手持摄影师一样漂浮。被撞击时会摇晃，然后纹丝不动地稳持，因为停顿才是让动作落地的关键。\n\n## 连续性是测出来的，不是盼出来的\n\n每一支片子在被人看之前，都会被一个 oracle（自动判定程序）先过一遍。\n\n`probe.py` 记录每一帧在显示什么，找出每个边界，然后追问有什么东西跨过去了。节拍之间只是替换、毫无承接的片子，会被直接判失败。\n\n| 影片 | 判定 | 连续性（承转分数） |\n| --- | --- | --- |\n| 早期发布片 v1，节奏完美，仍是幻灯片 | 拒绝 | 0.00 |\n| 同一支片 v2 | 拒绝 | 0.40 |\n| 同一支片 v3，每一拍都从前一拍长出 | 通过 | 0.75 |\n| onetake 发布片 | 通过 | 0.83 |\n\n同一套 oracle 也会判失败。节奏均匀，所有镜头时长一样。没有停顿。音频被截断。高速动作缺运动模糊。主体跑出画面。这些情况全都过不了。\n\n## 为什么看起来像成品\n\n### 真实 UI，原样重建\n\n产品的界面从截图里用 HTML（超文本标记语言）重建出来，落在摄影机所在的平面上。所以摄影机可以任意缩放地飞进去。不是屏幕录像。\n\n### 被测量的动作\n\n约 38 个动作（springs 弹性、entrances 入场、carries 承转、contact 接触、sims 模拟、camera 摄影机、fluid grounds 流体地面），每一个都是时间的纯函数，速度曲线是被测出来的，绝不是手搓的缓动。",
+      "translation_kind": "full",
+      "translation_source": "article",
+      "images": []
+    }
+  ],
+  "errors": [
+    "Hacker News·LLM"
+  ]
+}
