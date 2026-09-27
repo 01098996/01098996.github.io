@@ -1,9 +1,13 @@
 {
   "date": "2026-09-27",
   "url": "https://z-xj.com/daily/2026-09-27/",
-  "count": 2,
+  "count": 6,
   "titles": [
     "按功能描述找代码：jevgrep CLI",
-    "一镜到底的运动影片：onetake Claude Skill"
+    "一镜到底的运动影片：onetake Claude Skill",
+    "Drawgent：在 Excalidraw 画布上运行的编程代理",
+    "训练沙箱中的代理利用 DNS 访问外部聊天机器人",
+    "lemo-opuscar：Claude Opus 5.5 编写的 39 种影片风格库",
+    "dsh-our-free-model：免登录免 Key 调用前沿模型"
   ]
 }
