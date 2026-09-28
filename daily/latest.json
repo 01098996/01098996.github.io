@@ -1,11 +1,10 @@
 {
-  "date": "2026-09-28",
-  "url": "https://z-xj.com/daily/2026-09-28/",
-  "count": 4,
+  "date": "2026-09-29",
+  "url": "https://z-xj.com/daily/2026-09-29/",
+  "count": 3,
   "titles": [
-    "2026年LLM进展回顾：编码代理与沙箱安全成焦点",
-    "agent-office：3D虚拟办公室管理Claude Code团队",
-    "openchatx-mcp：把ChatGPT变成本地代理运行时",
-    "system1-agents：System 1决策模型驱动浏览器与机器人"
+    "Holo4：面向通用计算机操作任务的智能体模型系列",
+    "awesome-claude-video-skills：让编码智能体生成视频的开源技能合集",
+    "logo-design-skill：面向多智能体的 Logo 设计技能包"
   ]
 }
