@@ -1,13 +1,11 @@
 {
-  "date": "2026-09-27",
-  "url": "https://z-xj.com/daily/2026-09-27/",
-  "count": 6,
+  "date": "2026-09-28",
+  "url": "https://z-xj.com/daily/2026-09-28/",
+  "count": 4,
   "titles": [
-    "按功能描述找代码：jevgrep CLI",
-    "一镜到底的运动影片：onetake Claude Skill",
-    "Drawgent：在 Excalidraw 画布上运行的编程代理",
-    "训练沙箱中的代理利用 DNS 访问外部聊天机器人",
-    "lemo-opuscar：Claude Opus 5.5 编写的 39 种影片风格库",
-    "dsh-our-free-model：免登录免 Key 调用前沿模型"
+    "2026年LLM进展回顾：编码代理与沙箱安全成焦点",
+    "agent-office：3D虚拟办公室管理Claude Code团队",
+    "openchatx-mcp：把ChatGPT变成本地代理运行时",
+    "system1-agents：System 1决策模型驱动浏览器与机器人"
   ]
 }
