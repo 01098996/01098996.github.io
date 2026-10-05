@@ -40,7 +40,7 @@ jobs:
         timeout-minutes: 4
         env:
           DAILY_SITE_URL: ${{ vars.DAILY_SITE_URL }}
-        run: python -u scripts/daily.py${{ (github.event_name == 'schedule' || inputs.force) && ' --force' || '' }}${{ github.event_name == 'push' && ' --hourly' || '' }}
+        run: python -u scripts/daily.py${{ github.event_name == 'push' && ' --publish-only' || ' --force' }}
       - name: Preserve edition and deduplication history
         run: |
           git config user.name 'AI Daily'

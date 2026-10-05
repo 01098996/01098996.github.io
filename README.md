@@ -4,7 +4,7 @@
 
 ## 云端每小时查新
 
-复用已有 `.github/workflows/daily-topup.yml`（Actions 名称 **AI Hourly**），cron 为 `23 * * * *`：UTC 每小时 **:23**，北京时间同样每小时 **:23**。保留 `.github/workflows/daily.yml` 的每日任务，UTC **01:07** / 北京时间 **09:07**，并在 master push 后验证、采集和部署。调度与运行都在 GitHub，电脑关机后仍可执行；没有本机或额外 ChatGPT 定时器。
+复用已有 `.github/workflows/daily-topup.yml`（Actions 名称 **AI Hourly**），cron 为 `23 * * * *`：UTC 每小时 **:23**，北京时间同样每小时 **:23**。保留 `.github/workflows/daily.yml` 的每日任务，UTC **01:07** / 北京时间 **09:07**，master push 后只验证、渲染已批准正文并部署，不进行 RSS 采集。调度与运行都在 GitHub，电脑关机后仍可执行；没有本机或额外 ChatGPT 定时器。
 
 GitHub Actions 的定时任务可能延迟或被丢弃，不保证准点。公共仓库长期无活动时 GitHub 也可能暂停定时工作流。可在 Actions → AI Hourly → Run workflow 手动执行。Pages 的 Source 应沿用 GitHub Actions；不要改域名或密钥。
 
@@ -12,9 +12,9 @@ GitHub Actions 的定时任务可能延迟或被丢弃，不保证准点。公�
 
 - 使用 11 个已有公开 RSS/Atom 源（Simon Willison、Hugging Face、OpenAI、Hacker News、量子位、Weaviate、Google Research、Microsoft Research、Armin Ronacher、Hamel Husain、Latent Space），加 GitHub 公开新项目搜索。每个来源每轮一次请求，无伪装浏览器、反爬重试、付费墙访问或全文抓取。
 - 近 7 天且有明确日期的条目才参与筛选。优先模型、工具、Agent、编程、评测和应用，允许具体产品发布；拒绝融资、收购、招聘和泛泛的 AI 讨论。没有足够的标题/摘要证据就跳过。
-- 每小时最多追加 **2** 条，每日任务最多追加 **4** 条，当日合计最多 **12** 条。到达上限后仍每小时检索但不继续追加；无合适新内容就保持原发布数据，不凑数、不制造空日报。
+- 每小时最多新增 **2** 条候选、每日采集最多新增 **4** 条，草稿队列每日最多 **24** 条。正式文章当日最多 **12** 篇。无合适新内容或没有通过正文门禁的稿件时不新增发布。
 - **发布门禁已关闭规则卡片自动发布：RSS 结果仅存于 `scripts/discovery/` 草稿。正文由编辑阶段核实和撰写，达标后才允许发布。**
-- **不调用模型 API，不使用付费服务，不新增凭据。** 用来源中的名称、主题与日期，配合预设中文分析和验证问题生成短解读。它是透明的主题导读，不是逐篇深度摘要或全文翻译；英文原标题保留，中文标题加主题说明。历史译文和图片保留，新条目不搬运正文或图片。
+- **不调用模型 API，不使用付费服务，不新增凭据。** 采集器用名称、主题与日期形成编辑候选，预设文字只作为草稿线索，不再公开新发。正式正文必须经编辑任务阅读全文、核对主要事实和日期后原创撰写。历史译文和图片保留，新条目不搬运正文或图片。
 - 页面区分「来源事实」和「短解读（分析）」。日期来自公开 Feed 的发布时间或更新时间；GitHub 项目使用创建时间，明确不当作产品发布日期。事件发生时间没有独立确认。不会编造博主亲测经历或个人观点。
 - 来源内容只作为数据。原文 URL 由代码生成并经过协议校验，HTML 输出转义。模型/工具关键词只是主题线索，不能当作性能承诺。RSS 可能错标时间、延迟或遗漏消息；全网新闻覆盖和事件级跨站语义去重没有保证。
 
@@ -28,15 +28,45 @@ GitHub Actions 的定时任务可能延迟或被丢弃，不保证准点。公�
 
 生产渲染只修改当天文章和全局索引，不重写历史文章。打包排除脚本、私有目录和原始 JSON；Pages 工件中的 `/daily/deployment.json` 记录实际 source commit 与 Actions run URL，便于核对公开部署。Workflow 使用既有权限，保留已有密钥和变量，新的采集步骤只读 `DAILY_SITE_URL`。
 
+## 编辑任务的单文件写入契约（version 1）
+
+编辑任务唯一写入路径：**`scripts/editorial-inbox.json`**。它不修改定时工作流、采集草稿或 `daily/data`，也不调用站外模型 API。可以通过已有 GitHub create/update_file 提交 UTF-8 JSON；更新时使用刚读到的 content SHA，遇到并发冲突重新读取，不强制覆盖。
+
+顶层为 `{"version":1,"articles":[...]}`。每次保留待处理的少量文章或追加本轮一篇。来源 URL 是幂等身份；已发布且正文相同的输入不会再次生成文章。已处理行可从收件箱移除，已发文章不受影响。
+
+每篇字段：
+
+| 字段 | 要求 |
+| --- | --- |
+| `approved` | 编辑核对完成后才设为 `true`；未完成保持 `false` |
+| `source_url`, `source_title` | 主来源的完整 HTTPS 原文 URL 与原题 |
+| `source_published_at` | 从原文/可信订阅核对的 ISO 时间，含时区；不能用抓取时间代替 |
+| `publication_date` | 本期收录日期 `YYYY-MM-DD`，按北京时间；不等于来源发布日期 |
+| `title_zh`, `summary`, `category`, `tags` | 中文标题、简短导语、分类与标签数组，保留事实归属 |
+| `body_markdown` | 800–6000 字符、至少 600 个中文字；正常目标约 800–1500 中文字，以内容密度决定 |
+| `sources` | 至少一个主来源；每项含 `url`, `title`, `publisher`, `kind:"primary"`, `published_at`。文档没有发布日期则该项为 `null`；主来源日期必须与 `source_published_at` 完全相同 |
+| `reviewed_at` | 本轮完成事实核对的 ISO 时间，含时区 |
+| `authoring_note` | 说明公开资料整理、哪些是分析、例子是否假设、没有亲测的边界 |
+| `update_existing` | 默认不覆盖已有 URL；修订既有文章须 `true`，且使用原本 `publication_date`，保留原 URL 和序号 |
+
+正文需有五个 `##` 二级章节：**事实与来源、技术机制、例子与用途、限制与不确定性、开发者启示**，每节至少 60 字符有效文字。讲清具体事实、机制、一个用例以及限制，避免重复模板；不能拿长度凑数、抄全文或虚构个人亲测。关键事实应在原始来源中能定位，发布方的性能说法须归属发布方，推断单独说明；无合格内容就不设置批准。
+
+**机器门禁检查结构，不会自动证明事实正确或文笔足够好。** 编辑阶段必须完成实质核对。无批准、短卡片、缺章节、占位文字、重复段落、未来日期、超过七天的主来源、无主来源或日期不一致，都只保留在收件箱，不发布、不覆盖旧文章。
+
+编辑提交到 master 会触发现有 AI Daily push 流程的 `daily.py --publish-only`：校验收件箱 → 按原 URL 追加或明确修订 → 生成页面与全局索引 → 提交生成产物 → Pages 部署。采集 cron 只写 `scripts/discovery/`；发布者只读编辑收件箱，二者不会竞争编辑文件。公共 `/daily/deployment.json` 标明实际源码提交与运行 URL。须核对 CI、部署和公开正文后才算本轮完成。
+
+若本机离线后仍要自动撰写正文，应由云端每小时编辑任务使用现有公开检索与推理能力，核对并写收件箱。**仓库本身没有免费的通用正文写作模型；在编辑任务建立前，每小时只采集草稿，不再自动发短卡片。** 复用已有云端任务并与采集分工，不新增重复发布调度。
+
 ## 手动运行
 
 ```sh
 python3 -u scripts/daily.py --hourly
 python3 -u scripts/daily.py --force
+python3 -u scripts/daily.py --publish-only
 python3 -u scripts/daily.py --hourly --candidates /tmp/ai-candidates.json
 ```
 
-`--hourly` 追加最多两条；`--force` 追加最多四条，也不会替换已发表文章；候选模式不发布。`--render-only` 显式全量重建历史页面，请仅在确实需要重建时使用。
+`--hourly` 只新增最多两条草稿；`--force` 只新增最多四条草稿；候选模式不发布。`--render-only` 显式全量重建历史页面，请仅在确实需要重建时使用。
 
 ## 微信推送（发布后自动）
 

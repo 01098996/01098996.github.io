@@ -266,16 +266,20 @@ def run(force=False, hourly=False, candidates=None):
     history = [json.loads(p.read_text()) for p in data.glob('????-??-??.json')]
     seen = sorted({identity(a['url']) for issue in history for a in issue['articles']})
     titles = sorted({title_key(a['title']) for issue in history for a in issue['articles']})
+    draft_path = daily.ROOT/'scripts/discovery'/f'{now.date()}.json'
+    saved = json.loads(draft_path.read_text()).get('articles',[]) if draft_path.exists() else []
+    seen = sorted(set(seen)|{identity(a['url']) for a in saved})
+    titles = sorted(set(titles)|{title_key(a['title']) for a in saved})
     remaining = max(0, daily.MAX_ARTICLES - len(existing))
     # Scan hourly even after the daily cap; avoid writing or calling any model.
     state = {'now': now.isoformat(), 'seen': seen, 'titles': titles,
-             'limit': min(PER_RUN if hourly else 4, remaining) or 1}
+             'limit': PER_RUN if hourly else 4}
     result = scan(state)
     known = set(seen)
     chosen = []
     for article in result['articles']:
         key = identity(article['url'])
-        if key and key not in known and len(chosen) < remaining:
+        if key and key not in known and len(chosen) < state['limit']:
             chosen.append(article); known.add(key)
     if candidates:
         atomic_json(candidates, chosen)
@@ -285,7 +289,6 @@ def run(force=False, hourly=False, candidates=None):
     # non-public draft file until an editor provides verified original body text.
     draft = daily.ROOT / 'scripts/discovery' / f'{now.date()}.json'
     draft.parent.mkdir(parents=True, exist_ok=True)
-    saved = json.loads(draft.read_text()).get('articles', []) if draft.exists() else []
     queued = daily.merge_edition(saved, chosen, 24)
     if queued != saved:
         atomic_json(draft, {'date':str(now.date()), 'articles':queued})
@@ -295,7 +298,7 @@ def run(force=False, hourly=False, candidates=None):
     message = f'AI discovery: {result["successes"]}/{len(SOURCES)+1} sources, {result["entries"]} dated entries; {draft_count} candidates for editorial drafts; no feed cards published.'
     print(message)
     if not chosen:
-        print('No qualifying unseen item (or daily cap reached); published data kept unchanged.')
+        print('No unverified feed card published. Only --publish-only can promote an approved original body.')
     summary = os.environ.get('GITHUB_STEP_SUMMARY')
     if summary:
         with open(summary, 'a', encoding='utf-8') as handle:

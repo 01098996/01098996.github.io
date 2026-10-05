@@ -505,7 +505,13 @@ def article_page(issue,a,n,prev=None,next=None,related=None):
     head=f'''<section class="intro"><p class="eyebrow">AI DAILY / {esc(date)}</p><h1>{esc(title)}</h1><p class="original">{esc(a['title'])}</p><div class="meta"><span class="tag">{esc(a['category'])}</span><span>{esc(a['source'])} · {esc(a['published'][:10])}</span></div>{f'<div class="tags">{"".join(f"<a class=\"tag-pill\" href=\"/daily/tags.html#{urllib.parse.quote(t)}\">{esc(t)}</a>" for t in a.get("tags",[]))}</div>' if a.get('tags') else ''}</section>'''
     kind=a.get('translation_kind'); source=a.get('translation_source','article')
     brief=a.get('content_kind')=='brief'
-    if brief:
+    authored=a.get('content_kind')=='article'
+    if authored:
+        body='<p class="muted">原创中文正文 · 基于公开原文核对与分析</p><section class="translation">'+render_translation(a['body_markdown'])+'</section>'
+        body+='<p class="notice">'+esc(a.get('authoring_note',''))+'</p>'
+        body+='<p class="muted">本期收录日：'+esc(date)+'；主来源发布日期：'+esc(a['published'][:10])+'。收录日不等于发布日期。</p>'
+        body+='<aside class="about"><h2>核对来源</h2><ul>'+''.join('<li><a href="'+esc(s['url'])+'" rel="noopener noreferrer">'+esc(s['publisher']+' · '+s['title'])+'</a></li>' for s in a.get('sources',[]))+'</ul></aside>'
+    elif brief:
         reviewed=a.get('evidence_kind')=='public_article_review'
         label='中文短解读 · 已核对公开原文关键段落' if reviewed else '简讯卡片 · 待补充经核实的正文'
         body='<p class="muted">'+label+'</p><section class="translation">'+render_translation(a.get('reading',''))+'</section>'
@@ -524,13 +530,13 @@ def article_page(issue,a,n,prev=None,next=None,related=None):
     else:
         body='<p class="notice">正文暂未获取，请直接阅读原文。</p>'
     notes=''
-    if (a.get('summary') and not brief) or a.get('why') or a.get('question'):
+    if (a.get('summary') and not brief and not authored) or a.get('why') or a.get('question'):
         notes='<aside class="about"><h2>编辑导读</h2>'
-        if a.get('summary') and not brief: notes+=f'<p>{esc(a["summary"])}</p>'
+        if a.get('summary') and not brief and not authored: notes+=f'<p>{esc(a["summary"])}</p>'
         if a.get('why'): notes+=f'<p><strong>为什么读</strong>{esc(a["why"])}</p>'
         if a.get('question'): notes+=f'<p><strong>带着问题读</strong>{esc(a["question"])}</p>'
         notes+='</aside>'
-    attribution='来源内容版权归原作者所有；本页提供主题解读，事实请核对原文。' if brief else '译文由 AI 生成，版权归原作者所有，内容以原文为准。'
+    attribution='来源内容版权归原作者所有；本页为原创中文解读，事实与分析在正文中区分。' if authored else '来源内容版权归原作者所有；本页提供主题解读，事实请核对原文。' if brief else '译文由 AI 生成，版权归原作者所有，内容以原文为准。'
     tail=f'''<aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="{esc(a['url'])}" rel="noopener noreferrer">{esc(a['title'])} ↗</a></p>{f'<p>Discussion：<a href="{esc(a["discussion"])}" rel="noopener noreferrer">Hacker News 讨论区 ↗</a></p>' if a.get('discussion') else ''}<p>{attribution}<a href="/daily/{esc(date)}/">返回本期 →</a></p></aside>'''
     nav=('<nav class="postnav" aria-label="上下篇">'
          + (f'<a class="prev" href="{esc(prev["url"])}"><span class="dir">← 上一篇</span>{esc(prev["title"])}</a>' if prev else '<span></span>')
@@ -561,8 +567,9 @@ def cards(issue):
         if a.get('why'): extras+=f'<p class="note"><strong>为什么读</strong>{esc(a["why"])}</p>'
         if a.get('question'): extras+=f'<p class="note"><strong>带着问题读</strong>{esc(a["question"])}</p>'
         brief=a.get('content_kind')=='brief'
-        label='简讯卡片（待补充正文）' if brief else '全文译文已落盘' if translated and a.get('translation_source','article')=='article' else '摘要译文已落盘' if translated else '中文导读' if summarized else '来源片段节选'
-        read_label='阅读解读' if brief else '阅读译文'
+        authored=a.get('content_kind')=='article'
+        label='原创中文正文' if authored else '简讯卡片（待补充正文）' if brief else '全文译文已落盘' if translated and a.get('translation_source','article')=='article' else '摘要译文已落盘' if translated else '中文导读' if summarized else '来源片段节选'
+        read_label='阅读全文' if authored else '阅读解读' if brief else '阅读译文'
         out.append(f'''<article class="article"><div class="number">{n:02d}</div><div class="article-body"><div class="meta"><span class="tag">{esc(a['category'])}</span><span>{esc(a['source'])} · {esc(a['published'][:10])}</span></div><h2><a href="{local}">{esc(a.get('title_zh',a['title']))}</a></h2>{f'<p class="original">{esc(a["title"])}</p>' if a.get('title_zh') else ''}{body}{extras}<div class="article-foot"><small>{label}</small><a class="read" href="{local}">{read_label} →</a></div></div></article>''')
     return ''.join(out)
 
@@ -651,8 +658,11 @@ def notify(issue):
     with urllib.request.urlopen(req,timeout=20) as r: r.read()
 
 def main():
-    parser=argparse.ArgumentParser(); parser.add_argument('--render-only',action='store_true'); parser.add_argument('--force',action='store_true'); parser.add_argument('--hourly',action='store_true'); parser.add_argument('--candidates',type=Path); args=parser.parse_args()
+    parser=argparse.ArgumentParser(); parser.add_argument('--render-only',action='store_true'); parser.add_argument('--force',action='store_true'); parser.add_argument('--hourly',action='store_true'); parser.add_argument('--publish-only',action='store_true'); parser.add_argument('--candidates',type=Path); args=parser.parse_args()
     if args.render_only: render(); return
+    if args.publish_only:
+        from editorial import publish
+        publish(); return
     from briefs import run
     run(force=args.force,hourly=args.hourly,candidates=args.candidates)
 if __name__=='__main__': main()
