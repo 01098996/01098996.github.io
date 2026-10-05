@@ -4,7 +4,9 @@
 
 ## 云端每小时查新
 
-复用已有 `.github/workflows/daily-topup.yml`（Actions 名称 **AI Hourly**），cron 为 `23 * * * *`：UTC 每小时 **:23**，北京时间同样每小时 **:23**。保留 `.github/workflows/daily.yml` 的每日任务，UTC **01:07** / 北京时间 **09:07**，master push 后只验证、渲染已批准正文并部署，不进行 RSS 采集。调度与运行都在 GitHub，电脑关机后仍可执行；没有本机或额外 ChatGPT 定时器。
+复用已有 `.github/workflows/daily-topup.yml`（Actions 名称 **AI Hourly**），cron 为 `23 * * * *`：UTC 每小时 **:23**，北京时间同样每小时 **:23**。保留 `.github/workflows/daily.yml` 的每日任务，UTC **01:07** / 北京时间 **09:07**。GitHub cron 只负责采集草稿；master push 后只验证、渲染已批准正文并部署，不进行 RSS 采集。
+
+**dot 云端每小时编辑任务已建立并启用**，负责阅读公开原文、核对事实和日期、撰写原创正文，并按下方契约更新编辑收件箱；提交后复用现有 Actions 发布。采集、编辑和部署均在云端运行，电脑关机后仍可执行。**首次自然定时触发尚未验证**，不能将手动运行成功当作自然触发已验证。
 
 GitHub Actions 的定时任务可能延迟或被丢弃，不保证准点。公共仓库长期无活动时 GitHub 也可能暂停定时工作流。可在 Actions → AI Hourly → Run workflow 手动执行。Pages 的 Source 应沿用 GitHub Actions；不要改域名或密钥。
 
@@ -55,7 +57,7 @@ GitHub Actions 的定时任务可能延迟或被丢弃，不保证准点。公�
 
 编辑提交到 master 会触发现有 AI Daily push 流程的 `daily.py --publish-only`：校验收件箱 → 按原 URL 追加或明确修订 → 生成页面与全局索引 → 提交生成产物 → Pages 部署。采集 cron 只写 `scripts/discovery/`；发布者只读编辑收件箱，二者不会竞争编辑文件。公共 `/daily/deployment.json` 标明实际源码提交与运行 URL。须核对 CI、部署和公开正文后才算本轮完成。
 
-若本机离线后仍要自动撰写正文，应由云端每小时编辑任务使用现有公开检索与推理能力，核对并写收件箱。**仓库本身没有免费的通用正文写作模型；在编辑任务建立前，每小时只采集草稿，不再自动发短卡片。** 复用已有云端任务并与采集分工，不新增重复发布调度。
+已接入的 dot 云端每小时编辑任务使用现有公开检索与推理能力，读取本节契约、阅读全文并核对来源，再撰写原创正文。它唯一写入 `scripts/editorial-inbox.json`，无合格内容则跳过，提交后核对 CI、Pages 部署和公开文章。GitHub cron 继续只采集草稿，不自动发短卡片；编辑任务复用现有发布流程，不新增重复发布调度。**首次自然定时触发尚未验证。**
 
 ## 手动运行
 
