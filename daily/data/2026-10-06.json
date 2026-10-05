@@ -1,6 +1,6 @@
 {
   "date": "2026-10-06",
-  "generated_at": "2026-10-06T03:15:30.390574+08:00",
+  "generated_at": "2026-10-06T05:45:36.246345+08:00",
   "articles": [
     {
       "title": "Qwen3.8 27B addition in words",
@@ -180,6 +180,54 @@
       "evidence_kind": "primary_source_review",
       "excerpt": "",
       "editorial_revision": "f5551549844d2e0453a5ad45abf23725b7913a6443fd404d44bef269cc4ae6fb"
+    },
+    {
+      "title": "We're going to need default hard budget caps on pretty much everything",
+      "title_zh": "AI Agent 的预算开关：额度告警之后，还需要哪些控制",
+      "url": "https://simonwillison.net/2026/Oct/3/default-hard-budget-caps",
+      "source": "Simon Willison",
+      "published": "2026-10-03T23:34:02+00:00",
+      "date_kind": "feed_published",
+      "category": "Agent 开发",
+      "summary": "Agent 能不断发起付费工作，预算控制需要覆盖调用前检查、并发预留和停用后的费用。本文结合最新云商文档，用一个假设额度账本说明告警、支出限制和应用内控制的不同边界。",
+      "body_markdown": "## 事实与来源\n\nSimon Willison 在 10 月 3 日的文章里提出，按量收费的 API 和云服务应默认提供硬预算上限。理由很具体：编程 Agent 可以迅速搭起服务，也可能让 API 调用、计算和存储开支持续增长。他在文中同时补充，AWS 和 Google Cloud 已开始提供支出限制功能，并非所有平台都只有邮件告警。\n\n真正需要核对的是限制覆盖什么、何时生效，以及停下后还会产生哪些费用。下面结合当前 Google Cloud 官方文档，讨论一种应用内预算设计；示例属于工程方案，没有接入账户、实测费用或验证生产效果。\n\n## 技术机制\n\n预算告警负责通知人，限流约束调用速度，累计预算则关心一段时间内还能发起多少工作。这三个控制不能互相替代：调用速度不高，也可能长时间积累费用；收到提醒时，已经发出的任务也未必结束。Google 的文档明确区分只发通知的 alerts-only budget 和会暂停特定服务新用量的 Spend Caps。\n\n应用侧可以在每次付费调用前增加额度检查。调度器同时记录“已结算用量”和“已预留、尚未结算的用量”，先预留再发请求，完成后核对实际使用。这里的预留需要对应可执行的单次上限，例如最大生成量或最大任务时长；只让模型口头答应少花钱，无法成为可靠控制。\n\n## 例子与用途\n\n假设一个研究 Agent 使用 100 个内部额度单位，目前已结算 60，另有运行中的任务预留了 30，剩余可用量就是 10。此时新任务预计需要 15，应先暂停或缩小任务，不能只看到“已用 60”就继续放行。这些单位仅用来解释状态管理，不是任何平台报价。\n\n多个工作进程还会带来竞争。如果两个进程都读到剩余 10，各自批准一个需要 8 的任务，就超出了内部预算。预留必须经过原子更新或集中调度；失败重试也应有独立次数和额度边界。请求超时后，不宜立刻当作零费用退回全部预留，应保留状态等待确认，避免重复发起同一批工作。\n\n## 限制与不确定性\n\n截至本次阅读，Google Cloud Spend Caps 仍标为预览功能，按单个项目、单个符合条件的服务配置月度预算。官方明确说，执行限制并非瞬时，报告延迟导致的超额仍正常计费；已在途请求会完成，持久计算或存储资源的固定费用也可能继续产生。因此，设置一个数字并不等于整个账户账单绝不会越线。\n\n应用内记账同样有边界：它只能控制经过该入口的调用，估算错误、价格变化、其他访问路径和未记录的资源都会造成偏差。恢复也要谨慎。Google 文档提示，同一月内手动解除已触发的限制后，除非提高目标金额，该限制不会再次触发；恢复服务需要连同后续保护状态一起确认。\n\n## 开发者启示\n\n一个可检验的起点，是列出 Agent 能产生费用的全部动作，并分别注明负责人、计量单位、单次上限和停止方式。短时 API 调用、长任务和常驻资源需要不同处理；停止派发新任务、取消在途工作、释放资源也应分开设计，避免一次粗暴停用破坏正在进行的正常业务。\n\n验收可以覆盖并发预留、连续重试、计量延迟、额度耗尽及恢复后的再次调用。重点观察系统是否真正拒绝新工作、是否保留未结算记录，而不只是发出一封邮件。将应用层控制与服务商现有能力共同使用，并明确谁有权恢复，比把“预算已设置”当成任务完成更可靠。",
+      "tags": [
+        "Agent 预算",
+        "支出限制",
+        "并发控制",
+        "云成本",
+        "可靠性"
+      ],
+      "sources": [
+        {
+          "url": "https://simonwillison.net/2026/Oct/3/default-hard-budget-caps",
+          "title": "We're going to need default hard budget caps on pretty much everything",
+          "publisher": "Simon Willison",
+          "kind": "primary",
+          "published_at": "2026-10-03T23:34:02+00:00"
+        },
+        {
+          "url": "https://docs.cloud.google.com/billing/docs/how-to/budgets",
+          "title": "Create, edit, or delete budgets and budget alerts",
+          "publisher": "Google Cloud",
+          "kind": "primary",
+          "published_at": null
+        },
+        {
+          "url": "https://docs.cloud.google.com/billing/docs/how-to/budgets-spend-caps",
+          "title": "Manage spend cap budgets",
+          "publisher": "Google Cloud",
+          "kind": "primary",
+          "published_at": null
+        }
+      ],
+      "reviewed_at": "2026-10-06T04:14:25+08:00",
+      "authoring_note": "根据作者公开文章及Google Cloud官方文档撰写的原创中文分析；主来源发布时间已核对Atom订阅。额度账本与研究Agent均为假设设计，未接入账户、运行费用实验或更改云服务设置。服务商功能范围按核对时文档描述，应用层预留不构成最终账单上限承诺。",
+      "content_kind": "article",
+      "summary_kind": "source_review",
+      "evidence_kind": "primary_source_review",
+      "excerpt": "",
+      "editorial_revision": "60b802d1a365be41939a829ba27ed5f60ebc7f6203c6c74d1e96852cdf620e65"
     }
   ],
   "errors": []

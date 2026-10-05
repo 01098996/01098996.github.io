@@ -1,10 +1,11 @@
 {
   "date": "2026-10-06",
   "url": "https://z-xj.com/daily/2026-10-06/",
-  "count": 3,
+  "count": 4,
   "titles": [
     "格式过关，答案仍可能算错：Qwen 本地加法实验给评测的提醒",
     "AstaBrief 的小模型报告写作：引用质量与生成流程如何一起优化",
-    "Olmo-core 3：把专家留在 GPU 上，MoE 训练如何减少搬运"
+    "Olmo-core 3：把专家留在 GPU 上，MoE 训练如何减少搬运",
+    "AI Agent 的预算开关：额度告警之后，还需要哪些控制"
   ]
 }
