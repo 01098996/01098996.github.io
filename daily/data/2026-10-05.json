@@ -159,7 +159,7 @@
       ],
       "content_kind": "brief",
       "summary_kind": "rule_based_brief",
-      "evidence_kind": "public_feed_metadata"
+      "evidence_kind": "public_article_review"
     }
   ],
   "errors": []

@@ -513,7 +513,7 @@ def article_page(issue,a,n,prev=None,next=None,related=None):
         body+='<aside class="about"><h2>核对来源</h2><ul>'+''.join('<li><a href="'+esc(s['url'])+'" rel="noopener noreferrer">'+esc(s['publisher']+' · '+s['title'])+'</a></li>' for s in a.get('sources',[]))+'</ul></aside>'
     elif brief:
         reviewed=a.get('evidence_kind')=='public_article_review'
-        label='中文短解读 · 已核对公开原文关键段落' if reviewed else '简讯卡片 · 待补充经核实的正文'
+        label='简讯卡片 · 已核对来源，待补充正文' if reviewed else '简讯卡片 · 待补充经核实的正文'
         body='<p class="muted">'+label+'</p><section class="translation">'+render_translation(a.get('reading',''))+'</section>'
         scope='已核对公开原文关键段落，本页提供中文短解读。' if reviewed else '仅依据标题、订阅摘要或项目元数据整理，未阅读全文；分析为主题规则生成的阅读建议。'
         body+='<p class="notice">'+scope+'分析不代表作者观点，效果需自行验证。事件发生时间未独立确认，完整信息请阅读原文。</p>'
