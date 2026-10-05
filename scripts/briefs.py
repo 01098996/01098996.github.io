@@ -31,7 +31,7 @@ RULES = [
     ('AI 编程实践', r'coding.agent|claude.code|\bcodex\b|vibe.cod|ai.assisted|代码生成|编程助手|编程智能体',
      '编程助手', '工具能否帮上忙，取决于它在现有项目里如何定位文件、执行检查并呈现改动。可以用一个小修复任务比较完成时间和人工复核量。',
      '来源是否给出了可复现的仓库、执行权限和验证步骤？'),
-    ('Agent 开发', r'\bagents?\b|agentic|multi.agent|智能体|多智能体',
+    ('Agent 开发', r'(?<![a-z])agents?(?![a-z])|agentic|multi.agent|智能体|多智能体',
      '智能体工作流', '可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。',
      '任务中断后能否恢复？工具权限与失败重试边界写清楚了吗？'),
     ('工具与应用', r'\bmcp\b|model.context.protocol|工具调用|tool.call|computer.use|浏览器自动化',
@@ -73,6 +73,35 @@ TITLE_FACTS = [
     (r'agent.*memory|memory.*agent', '原标题涉及智能体的记忆管理。'),
     (r'prompt.injection|提示注入', '原标题讨论提示注入。'),
 ]
+# Specific title topics override incidental model mentions in feed descriptions.
+# Facts here are limited to what the title says. Analysis remains an explicitly
+# labelled editorial suggestion, rather than the source author's conclusion.
+TITLE_PROFILES = [
+    (r'model guide|guide for.*gpt', '进阶工作流', '模型选型指南',
+     '原标题是一份模型使用指南。',
+     '这类指南适合用来检查模型选择、指令和长任务执行方式是否配套。可挑一个现有工作流逐项对照，并记录成功率和耗时，避免只更换模型名称而忽略执行条件。',
+     '指南给出的配置是否适用于当前任务？更换配置前后，任务完成率和耗时怎样变化？'),
+    (r'auto(?:matic)?[ -]eval', '评测与可靠性', '自动评测工具',
+     '原标题涉及自动评测工具。',
+     '自动生成评测最需要检查的是评分规则本身。建议先人工看真实失败案例，再比较自动评分与人工判断；把不同错误混成一个通过率，可能掩盖具体失败原因。',
+     '评分规则可以检查吗？用户能否逐例纠正评分，并把不同错误拆开评测？'),
+    (r'(?=.*(?:tts|text.to.speech|voice.cloning))(?=.*(?:leaderboard|evaluation|benchmark))', '语音评测', '语音生成评测',
+     '原标题涉及多语言语音合成或声音克隆的评测与榜单。',
+     '语音评测需要同时观察文字读对没有、音色是否相似，以及不同语言下的稳定性。一个总分可能掩盖具体语言或说话人的差异，选型时应核对分项和音频样例。',
+     '榜单覆盖哪些语言？语音合成与声音克隆是否分别评分，是否有可试听样例？'),
+    (r'model.routing|模型路由|x-router', '工具与应用', '模型路由',
+     '原标题涉及根据任务选择或调度模型的路由技术。',
+     '模型路由的观察点是把哪些任务交给哪个模型，以及选错后怎样回退。来源标题中的节省比例属于来源陈述，需要连同任务质量、基线和计算口径核对；Token 下降也不能直接代替费用比较。',
+     '节省比例的基线与任务范围是什么？是否同时报告质量变化和路由失误的回退机制？'),
+    (r'(?=.*(?:\bai\b|人工智能|模型|智能体))(?=.*(?:biology|生物))', 'AI 应用', '生物科研中的 AI',
+     '原标题涉及人工智能在生物科研中的系统或应用。',
+     '这个方向值得观察计算建议如何进入实验、实验结果又如何反馈给系统。核对可追溯的假设与实验验证，比只看模型生成的解释更有帮助；还要区分研究用途与临床用途。',
+     '系统提出的假设怎样验证？是否公开了实验流程，并明确限定使用范围？'),
+    (r'(introduc|announc|发布|推出).*(gpt|claude|gemini|qwen|deepseek|llama)', '模型进展', '模型发布',
+     '原标题是一则具体模型的发布消息。',
+     '发布消息可先拆成三个检查项：在哪些入口可用、针对哪类任务、与现有版本怎样比较。能力和速度描述属于发布方陈述，实际选择还要核对开放条件与同任务对照结果。',
+     '文档是否说明开放入口和限制？同任务下的质量、耗时与费用如何比较？'),
+]
 
 
 def identity(url):
@@ -103,28 +132,30 @@ def classify(article, now):
     # lead, require a concrete signal in the title, and never rename it after an
     # incidental model mentioned in the feed.
     evidence = title + ' ' + article.get('excerpt', '')[:1200]
+    profile = next((p for p in TITLE_PROFILES if re.search(p[0], title, re.I)), None)
     matches = [rule for rule in RULES if re.search(rule[1], evidence, re.I)]
-    if not matches:
+    if not matches and not profile:
         return None
     # General AI chatter is insufficient; require a specific theme or practical
     # signal. HN link metadata alone is not evidence of an article's content.
     specific = [rule for rule in matches if rule != RULES[-1]]
     title_matches = [rule for rule in specific if re.search(rule[1], title, re.I)]
-    if not specific or not EVENT.search(title) or len(evidence) < 80:
+    if (not specific and not profile) or not EVENT.search(title) or len(evidence) < 80:
         return None
-    if not title_matches and article['source'] not in {'Hugging Face', 'OpenAI', 'Google Research', 'Microsoft Research'}:
+    if not title_matches and not profile and article['source'] not in {'Hugging Face', 'OpenAI', 'Google Research', 'Microsoft Research'}:
         return None
     if article['source'].startswith('Hacker News') and not article.get('excerpt'):
         return None
     # A named model in an eval/tool article is context, not its main category.
     priority = [RULES[i] for i in (0, 2, 4, 5, 1, 3)]
-    rule = next((r for r in priority if r in title_matches), specific[0])
+    rule = next((r for r in priority if r in title_matches), specific[0] if specific else RULES[-1])
+    if profile: rule = (profile[1], profile[0], profile[2], profile[4], profile[5])
     names = list(dict.fromkeys(m.group() for m in NAMES.finditer(title)))[:3]
     details = [label for pattern, label in DETAILS if re.search(pattern, evidence, re.I)][:5]
     score = min(len(specific), 3) + min(len(details), 3) + (5 if title_matches else 0) + max(0, 7 - age)
     if article['source'] in {'Hugging Face', 'OpenAI', 'Google Research', 'Microsoft Research'}:
         score += 2
-    return dict(article, category=rule[0], score=score, _rule=rule, _names=names, _details=details)
+    return dict(article, category=rule[0], score=score, _rule=rule, _names=names, _details=details, _profile=profile)
 
 
 def editorial_note(article, now):
@@ -135,6 +166,7 @@ def editorial_note(article, now):
     topics = '、'.join(details) or rule[2]
     title_facts = ''.join(text for pattern, text in TITLE_FACTS
                           if re.search(pattern, article['title'], re.I))
+    if article.get('_profile'): title_facts = article['_profile'][3]
     date_kind = article.get('date_kind', 'feed_published')
     date_label = {'project_created': '项目创建时间', 'source_updated': '订阅更新时间'}.get(date_kind, '来源发布时间')
     fact = f'公开来源为 {article["source"]}，{date_label}为 {article["published"]}。{title_facts}标题与订阅信息涉及{topics}。'
@@ -249,13 +281,18 @@ def run(force=False, hourly=False, candidates=None):
         atomic_json(candidates, chosen)
         print('Candidates:', len(chosen))
         return
-    if chosen:
-        issue = {'date': str(now.date()), 'generated_at': dt.datetime.now(daily.TZ).isoformat(),
-                 'articles': daily.merge_edition(existing, chosen, daily.MAX_ARTICLES),
-                 'errors': result['errors']}
-        atomic_json(target, issue)
+    # Feed classification is discovery, not an authored blog post. Keep it in a
+    # non-public draft file until an editor provides verified original body text.
+    draft = daily.ROOT / 'scripts/discovery' / f'{now.date()}.json'
+    draft.parent.mkdir(parents=True, exist_ok=True)
+    saved = json.loads(draft.read_text()).get('articles', []) if draft.exists() else []
+    queued = daily.merge_edition(saved, chosen, 24)
+    if queued != saved:
+        atomic_json(draft, {'date':str(now.date()), 'articles':queued})
+    draft_count = len(chosen)
+    chosen = []  # Publication gate: never promote feed templates to blog posts.
     daily.render(updated_date=str(now.date()))
-    message = f'AI discovery: {result["successes"]}/{len(SOURCES)+1} sources, {result["entries"]} dated entries; {len(chosen)} new, {len(existing)+len(chosen)} in today’s edition.'
+    message = f'AI discovery: {result["successes"]}/{len(SOURCES)+1} sources, {result["entries"]} dated entries; {draft_count} candidates for editorial drafts; no feed cards published.'
     print(message)
     if not chosen:
         print('No qualifying unseen item (or daily cap reached); published data kept unchanged.')

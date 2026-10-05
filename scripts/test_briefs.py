@@ -53,7 +53,7 @@ class BriefTests(unittest.TestCase):
         self.assertNotIn('images', note)
         page = daily.article_page({'date':'2026-10-05'}, note, 1)
         cards = daily.cards({'date':'2026-10-05','articles':[note]})
-        for text in ('中文短解读', '项目创建时间', '短解读（分析）', '未阅读全文', row['url']):
+        for text in ('简讯卡片', '项目创建时间', '短解读（分析）', '未阅读全文', row['url']):
             self.assertIn(text, page)
         self.assertNotIn('全文中文翻译', page)
         self.assertNotIn(row['excerpt'], page)
@@ -98,8 +98,11 @@ class BriefTests(unittest.TestCase):
                 briefs.run(hourly=True)
             issue = json.loads(target.read_text())
             self.assertEqual(issue['articles'][0], existing['articles'][0])
-            self.assertEqual(len(issue['articles']), 2)
-            self.assertEqual(json.loads((data.parent/'latest.json').read_text())['count'], 2)
+            self.assertEqual(len(issue['articles']), 1)
+            self.assertEqual(target.read_bytes(), before)
+            draft=json.loads((Path(directory)/'scripts/discovery'/(day+'.json')).read_text())
+            self.assertEqual(len(draft['articles']), 1)
+            self.assertEqual(json.loads((data.parent/'latest.json').read_text())['count'], 1)
             self.assertIn('https://example.com/new', (data.parent/day/daily.art_slug(existing['articles'][0]['url'],1)/'index.html').read_text())
             self.assertEqual(old_page.read_text(), 'Do not edit')
 

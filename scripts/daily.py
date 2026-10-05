@@ -506,9 +506,12 @@ def article_page(issue,a,n,prev=None,next=None,related=None):
     kind=a.get('translation_kind'); source=a.get('translation_source','article')
     brief=a.get('content_kind')=='brief'
     if brief:
-        label='中文短解读 · 根据公开订阅信息自动整理'
+        reviewed=a.get('evidence_kind')=='public_article_review'
+        label='中文短解读 · 已核对公开原文关键段落' if reviewed else '简讯卡片 · 待补充经核实的正文'
         body='<p class="muted">'+label+'</p><section class="translation">'+render_translation(a.get('reading',''))+'</section>'
-        body+='<p class="notice">仅依据标题、订阅摘要或项目元数据整理，未阅读全文。分析不代表作者观点，效果需自行验证。事件发生时间未独立确认，完整信息请阅读原文。</p>'
+        scope='已核对公开原文关键段落，本页提供中文短解读。' if reviewed else '仅依据标题、订阅摘要或项目元数据整理，未阅读全文；分析为主题规则生成的阅读建议。'
+        body+='<p class="notice">'+scope+'分析不代表作者观点，效果需自行验证。事件发生时间未独立确认，完整信息请阅读原文。</p>'
+        body+='<p class="muted">本期收录日：'+esc(date)+'；来源日期：'+esc(a['published'][:10])+'。近 7 天未收录内容，收录日不等于发布日期。</p>'
     elif a.get('translation'):
         if kind=='original': label='原文正文'
         elif kind=='partial': label='节选中文翻译（原文较长）· AI 生成'
@@ -558,7 +561,7 @@ def cards(issue):
         if a.get('why'): extras+=f'<p class="note"><strong>为什么读</strong>{esc(a["why"])}</p>'
         if a.get('question'): extras+=f'<p class="note"><strong>带着问题读</strong>{esc(a["question"])}</p>'
         brief=a.get('content_kind')=='brief'
-        label='中文短解读' if brief else '全文译文已落盘' if translated and a.get('translation_source','article')=='article' else '摘要译文已落盘' if translated else '中文导读' if summarized else '来源片段节选'
+        label='简讯卡片（待补充正文）' if brief else '全文译文已落盘' if translated and a.get('translation_source','article')=='article' else '摘要译文已落盘' if translated else '中文导读' if summarized else '来源片段节选'
         read_label='阅读解读' if brief else '阅读译文'
         out.append(f'''<article class="article"><div class="number">{n:02d}</div><div class="article-body"><div class="meta"><span class="tag">{esc(a['category'])}</span><span>{esc(a['source'])} · {esc(a['published'][:10])}</span></div><h2><a href="{local}">{esc(a.get('title_zh',a['title']))}</a></h2>{f'<p class="original">{esc(a["title"])}</p>' if a.get('title_zh') else ''}{body}{extras}<div class="article-foot"><small>{label}</small><a class="read" href="{local}">{read_label} →</a></div></div></article>''')
     return ''.join(out)
@@ -566,7 +569,7 @@ def cards(issue):
 def issue_body(issue,latest=False):
     articles=issue['articles']; date=issue['date']
     empty='<section class="empty"><h2>今天没有需要补充的新文章</h2><p>本轮没有筛到未推荐过的相关内容，可以看看往期。</p></section>' if not articles else ''
-    return f'''<section class="intro"><p class="eyebrow">AI DAILY / {esc(date)}</p><h1>{'AI 日报' if latest else esc(date)+' 日报'}</h1><p class="lede">模型、工具、Agent 开发与 AI 应用</p><div class="edition"><span>{len(articles)} 篇精选 · 近 7 天 · 已去重</span><a href="/daily/archive.html">查看往期 →</a></div></section>{cards(issue)}{empty}<aside class="about"><h2>关于这份日报</h2><p>每小时查新，每天北京时间 09:07 另有每日采集。优先模型、工具、Agent、代码、评测和应用，每篇精选有独立页面与来源链接。新内容采用中文短解读，标明来源事实和分析；来源日期不等于事件发生时间。历史译文保留。没有合适的新文章时不凑数。GitHub Actions 可能延迟，不保证准点。</p><p>在微信中收藏本页，即可持续阅读。<a href="/daily/{esc(date)}/">本期固定链接 ↗</a></p></aside>'''
+    return f'''<section class="intro"><p class="eyebrow">AI DAILY / {esc(date)}</p><h1>{'AI 日报' if latest else esc(date)+' 日报'}</h1><p class="lede">模型、工具、Agent 开发与 AI 应用</p><div class="edition"><span>{len(articles)} 篇精选 · 近 7 天 · 已去重</span><a href="/daily/archive.html">查看往期 →</a></div></section>{cards(issue)}{empty}<aside class="about"><h2>关于这份日报</h2><p>每小时采集编辑草稿，每天北京时间 09:07 另有每日采集。优先模型、工具、Agent、代码、评测和应用，每篇精选有独立页面与来源链接。新文章须有经核实的原创正文；未达标只存草稿。已发简讯明确标注其性质；来源日期不等于事件发生时间。历史译文保留。没有合适的新文章时不凑数。GitHub Actions 可能延迟，不保证准点。</p><p>在微信中收藏本页，即可持续阅读。<a href="/daily/{esc(date)}/">本期固定链接 ↗</a></p></aside>'''
 
 def tags_page(seq):
     groups={}

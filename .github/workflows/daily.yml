@@ -46,6 +46,7 @@ jobs:
           git config user.name 'AI Daily'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add daily sitemap.xml
+          if [ -d scripts/discovery ]; then git add scripts/discovery; fi
           if ! git diff --cached --quiet; then
             git commit -m "Publish AI daily edition"
             git push origin HEAD:master # Fast-forward only; never overwrite concurrent changes
