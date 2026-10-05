@@ -95,6 +95,71 @@
       "reviewed_at": "2026-10-06T01:09:51+08:00",
       "authoring_note": "依据作者公开文章、实验说明及配对报告撰写的原创中文解读；主来源精确时间与作者 Atom 订阅核对。统计归属原作者，原始报告和代码标注为 AI 生成。游戏积分案例是假设场景，工程建议属于分析；没有运行模型、复现实验或进行性能亲测。",
       "update_existing": false
+    },
+    {
+      "approved": true,
+      "source_url": "https://huggingface.co/blog/allenai/astabrief",
+      "source_title": "Open-sourcing AstaBrief, the fast report-generation model in Asta",
+      "source_published_at": "2026-10-02T15:19:50.340+00:00",
+      "publication_date": "2026-10-06",
+      "title_zh": "AstaBrief 的小模型报告写作：引用质量与生成流程如何一起优化",
+      "summary": "Ai2 用专门的数据筛选与单次正文生成流程训练 AstaBrief。本文对照官方模型卡、数据卡和代码，讲清39.5K最终SFT样本、3.5倍端到端提速，以及引用、提示词和复用材料的边界。",
+      "category": "进阶工作流",
+      "tags": [
+        "AstaBrief",
+        "科研报告",
+        "引用质量",
+        "SFT",
+        "DPO"
+      ],
+      "body_markdown": "## 事实与来源\n\nAi2 在 10 月 2 日公布 AstaBrief，一个基于 Qwen3-8B、专门把研究问题与检索到的论文片段整理成带引用报告的模型。官方称，Asta 完整流程中，Fast mode 平均耗时 51.1 秒，Thinking mode 为 178.5 秒，约快 3.5 倍。这个数字来自发布方的系统测试，本文没有运行模型或复测速度。\n\n值得开发者研究的，是它把训练数据和生成流程一起调整。模型仍需要外部提供相关资料，不能把下载权重理解为获得完整的文献搜索系统；“一次生成正文”也不等于整个产品只调用一次模型。\n\n## 技术机制\n\n训练先做监督微调，让模型学习问题、参考片段与报告之间的对应关系，再用离线 DPO 学习报告对之间的偏好。SFT 数据卡补充了博客容易略过的细节：47K 是中间候选集，去掉引用密度低于 0.25 的报告后，留下约 39.5K 条。引用密度衡量有至少一条引用的陈述占比，它本身不证明引用内容正确。\n\nDPO 数据集包含 6,622 对偏好样本，保留两个评判模型意见一致的报告对。生成端则把问题和参考资料交给模型，直接写完整正文，省去原先的片段摘要、聚类与逐节生成。公开实现仍保留单独的标题生成和输出解析，因此接入时要分别检查正文生成、后处理及引用映射。\n\n## 例子与用途\n\n假设一个编译器团队要比较论文中几种循环优化方法。检索阶段应给每个证据片段分配稳定编号，同时保留处理器、测试程序和编译选项。报告可以按适用条件组织方法差异，让读者从结论回到支持它的片段。这是本文提出的应用方案，并非 AstaBrief 在该场景下的实测结果。\n\n例如，一篇论文只在特定芯片和测试集上报告加速，成稿就应保留这些条件。如果模型把它写成“该方法普遍更快”，即使末尾附上正确论文，论断范围也已经变大。验收可以选取关键比较句，逐条检查实验条件是否被省略、多个来源是否真正讨论同一设置，以及相反结果有没有被遗漏。\n\n## 限制与不确定性\n\nAi2 明确说，大部分训练和评测在 2025 年完成，没有重新对比当前最强模型。模型卡也显示指标并非全面上涨：在所列 CS2 测试中，引用精度从基础模型的 76.2 提升到 90.5，回答相关性指标却从 90.6 降到 89.0。不同指标回答不同问题，不能只挑平均分宣布替代所有大模型。\n\n官方推荐提示词还有两个接入细节：它把当前年份写成 2025，并允许把来自模型自身知识的内容标为 LLM Memory。因此，输出并非严格限定于给定文献。若产品要求每个事实都能追溯到输入资料，就需要明确处理这类内容，并对提示词修改后的表现重新评测。\n\n## 开发者启示\n\n可以先拿一批有明确检索范围的问题，固定参考片段，比较现有系统与这种单次正文生成方式。除耗时外，分别检查问题覆盖、引用是否支持论断、关键结论是否漏引，以及是否夸大证据。将检索失败和写作失败分开记录，才能判断该改资料选择、提示词还是训练样本。\n\n复用公开材料还要区分对象：模型权重标为 Apache 2.0，SFT 与 DPO 数据集标为 CC BY-NC 4.0，数据卡另提示第三方模型输出条款。部署权重与拿数据继续训练不能混为一谈。更稳妥的起点，是先做小范围验证，保留原始证据和人工复核，再决定哪些报告适合自动交付。",
+      "reviewed_at": "2026-10-06T02:10:29+08:00",
+      "authoring_note": "根据公开原文、模型卡、SFT与DPO数据卡、推荐提示词和当前公开实现撰写的原创中文分析；主来源日期以页面JSON-LD并对照RSS核实。速度和评测数字归属Ai2，未复跑模型。编译器团队用例为假设场景，验收和部署建议属于分析，不构成实测效果或许可证法律意见。",
+      "update_existing": false,
+      "sources": [
+        {
+          "url": "https://huggingface.co/blog/allenai/astabrief",
+          "title": "Open-sourcing AstaBrief, the fast report-generation model in Asta",
+          "publisher": "Ai2",
+          "kind": "primary",
+          "published_at": "2026-10-02T15:19:50.340+00:00"
+        },
+        {
+          "url": "https://huggingface.co/allenai/AstaBrief_8B",
+          "title": "AstaBrief-8B model card",
+          "publisher": "Ai2",
+          "kind": "primary",
+          "published_at": null
+        },
+        {
+          "url": "https://huggingface.co/datasets/allenai/AstaBrief_SFT_Mix",
+          "title": "AstaBrief SFT Data",
+          "publisher": "Ai2",
+          "kind": "primary",
+          "published_at": null
+        },
+        {
+          "url": "https://huggingface.co/datasets/allenai/AstaBrief_DPO_Mix",
+          "title": "AstaBrief DPO Data",
+          "publisher": "Ai2",
+          "kind": "primary",
+          "published_at": null
+        },
+        {
+          "url": "https://huggingface.co/datasets/allenai/AstaBrief_prompts/blob/main/sft_prompt.txt",
+          "title": "AstaBrief recommended SFT prompt",
+          "publisher": "Ai2",
+          "kind": "primary",
+          "published_at": null
+        },
+        {
+          "url": "https://github.com/allenai/ai2-scholarqa-lib/blob/main/api/scholarqa/lite/scholar_qa_lite.py",
+          "title": "ScholarQALite report generation implementation",
+          "publisher": "Ai2",
+          "kind": "primary",
+          "published_at": null
+        }
+      ]
     }
   ]
 }
