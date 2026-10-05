@@ -1,6 +1,6 @@
 {
   "date": "2026-10-06",
-  "generated_at": "2026-10-06T05:45:36.246345+08:00",
+  "generated_at": "2026-10-06T06:15:48.405261+08:00",
   "articles": [
     {
       "title": "Qwen3.8 27B addition in words",
@@ -228,6 +228,54 @@
       "evidence_kind": "primary_source_review",
       "excerpt": "",
       "editorial_revision": "60b802d1a365be41939a829ba27ed5f60ebc7f6203c6c74d1e96852cdf620e65"
+    },
+    {
+      "title": "The Agent Said It Was Done. The Database Disagreed.",
+      "title_zh": "ThinkingBox：用数据库终态检查 Agent 到底做成了什么",
+      "url": "https://huggingface.co/blog/microsoft/thinkingbox",
+      "source": "Microsoft / Hugging Face",
+      "published": "2026-10-03T22:56:48.455000+00:00",
+      "date_kind": "feed_published",
+      "category": "评测与可靠性",
+      "summary": "ThinkingBox 把Agent留下的记录和副作用纳入验收，并重复运行相同任务。本文对照原始论文与代码文档，解释正常结束为何不代表业务完成，以及这种评测没有覆盖的沟通与真实场景差异。",
+      "body_markdown": "## 事实与来源\n\n微软与 Hugging Face 在 10 月 3 日介绍 ThinkingBox：让 Agent 在隔离的业务环境中操作，再检查它留下的数据库状态与副作用。公开基准包含 507 个合成工作流，每个任务重复运行 20 次。它关心的完成标准，包括记录是否改对，以及有没有产生多余变更。\n\n作者报告，在覆盖 12 个模型的 121,680 次有效试验中，79,853 次未通过可执行检查；这些失败里，67.24% 仍正常结束、调用过修改状态的工具，且最终工具响应没有明确报错。这是该研究的结果，不是所有生产 Agent 的通用失败率，本文也没有复跑基准。\n\n## 技术机制\n\n每个任务固定初始数据、用户目标、业务政策、可用 MCP 工具和验收条件。一次尝试使用独立会话，从干净状态开始；结束后，评测器提取实际变化，再和预期结果比较。Agent 可以采用不同的查询顺序或从错误中恢复，评分不要求复制一条指定操作轨迹。\n\n预期状态和检查逻辑留在评测侧，不能让 Agent 直接看到答案。正确结果之外，检查还要覆盖缺失和额外副作用。对于无法对应数据库字段的沟通要求，部分任务另加回答检查。公开仓库还支持对保存的测试上下文重新运行断言，不需要再次调用模型，方便区分执行结果与检查逻辑。\n\n## 例子与用途\n\n假设内部维修流程要求：设备暂时无法修好时，把已有工单交给维修组、保持待处理，并保留原设备关联。Agent 可能成功调用更新接口，随后宣称事情已经办好，但误把状态设成已解决。只检查接口返回成功或最后一句话，会漏掉这项错误。\n\n这个假设可以拆成几个验收点：目标工单的负责组正确，状态仍待处理，设备关联未变，没有重复创建第二张工单，也没有修改其他记录。为每项保留前后状态差异，失败时就能定位问题。例子是本文的工程推演，不是 ThinkingBox 已发表任务的逐项复现；真实验收条件仍要由业务政策决定。\n\n## 限制与不确定性\n\n重复指标也要读准。单次成功率描述全部尝试中的成功比例；二十次至少成功一次衡量能否偶尔解决；观测到的二十次全对，则强调这批记录中的一致性。它们不能混为一个分数，二十次全对也不保证今后永远正确。本文没有采用价格估算或排行榜来替读者选模型。\n\n论文说明，477 个任务只检查后端状态，只有另外 30 个附加回答要求。因此，记录改对却向用户说错结果，仍可能被计为成功。此外，任务是合成重建，每题只有一个预定终态；模拟用户保持合作。多个合理结局、用户改主意和含糊需求，不能由这些结果充分代表。\n\n## 开发者启示\n\n对会写入业务系统的 Agent，可以先选一个边界清楚的流程，把“必须改变”和“必须保持不变”的字段分别写成断言。再保存初始快照、完整工具结果、结束状态和失败原因，避免只留下聊天记录。需要复测时重置环境，让上一次运行的记录和缓存不影响下一次。\n\n还要单独检查对用户的说明：哪些已完成、哪些仍等待，以及是否正确披露限制。先用离线沙箱找到常见错误，再小范围验证只读回查与人工复核流程；不能把研究里的事后评分直接当成生产事务保护。这个思路的价值，是让“已完成”有可检查的证据，同时保留对沟通质量和真实业务差异的警惕。",
+      "tags": [
+        "ThinkingBox",
+        "Agent 评测",
+        "数据库终态",
+        "MCP",
+        "副作用检查"
+      ],
+      "sources": [
+        {
+          "url": "https://huggingface.co/blog/microsoft/thinkingbox",
+          "title": "The Agent Said It Was Done. The Database Disagreed.",
+          "publisher": "Microsoft / Hugging Face",
+          "kind": "primary",
+          "published_at": "2026-10-03T22:56:48.455+00:00"
+        },
+        {
+          "url": "https://arxiv.org/html/2608.19741v4",
+          "title": "One Success Isn’t Reliability: Thinkingbox, a Sandbox and Benchmark for Agents in Stateful Business Workflows",
+          "publisher": "ThinkingBox research authors",
+          "kind": "primary",
+          "published_at": null
+        },
+        {
+          "url": "https://github.com/microsoft/thinkingbox-data",
+          "title": "ThinkingBox-Bench executable dataset and tool-server documentation",
+          "publisher": "Microsoft",
+          "kind": "primary",
+          "published_at": null
+        }
+      ],
+      "reviewed_at": "2026-10-06T06:14:47+08:00",
+      "authoring_note": "依据原始公告全文、论文v4相关方法和限制章节、官方可执行数据仓库文档撰写的原创中文分析；公告精确时间以JSON-LD并对照RSS核实。统计为作者报告，未运行模型或复现基准。设备维修案例是假设推演，生产验收建议属于分析，未宣称已测得改进幅度。",
+      "content_kind": "article",
+      "summary_kind": "source_review",
+      "evidence_kind": "primary_source_review",
+      "excerpt": "",
+      "editorial_revision": "ef5a846eaefdaef256bffaea802d040e2aca3ea1a3fd6601971a5d385466a723"
     }
   ],
   "errors": []
