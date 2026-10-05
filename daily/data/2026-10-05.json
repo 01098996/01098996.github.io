@@ -1,6 +1,6 @@
 {
   "date": "2026-10-05",
-  "generated_at": "2026-10-05T23:31:32.642863+08:00",
+  "generated_at": "2026-10-05T23:32:45.482456+08:00",
   "articles": [
     {
       "title": "A model guide for the GPT-6 family",
@@ -92,9 +92,47 @@
       "content_kind": "brief",
       "summary_kind": "rule_based_brief",
       "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Open TTS Leaderboard: Scalable Evaluation for Multilingual Text-to-Speech and Voice Cloning",
+      "title_zh": "评测与可靠性｜Open TTS Leaderboard: Scalable Evaluation for Multilingual Text-to-Speech and Voice Cloning",
+      "url": "https://huggingface.co/blog/open-tts-leaderboard",
+      "source": "Hugging Face",
+      "published": "2026-09-30T00:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-05T23:32:37.936961+08:00",
+      "category": "评测与可靠性",
+      "excerpt": "",
+      "summary": "Hugging Face相关内容涉及评测与可靠性。评测结论依赖测试集和执行条件。将失败样例、重复运行的波动与成本一起看，才能判断一个改进是否适合真实任务。",
+      "reading": "## 来源事实\n\n公开来源为 Hugging Face，来源发布时间为 2026-09-30T00:00:00+00:00。标题与订阅信息涉及评测与可靠性。\n\n## 短解读（分析）\n\n评测结论依赖测试集和执行条件。将失败样例、重复运行的波动与成本一起看，才能判断一个改进是否适合真实任务。",
+      "question": "测试集、对照条件和失败样例是否公开？结论适用于什么任务？",
+      "tags": [
+        "评测与可靠性"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Introducing Quine: An AI research system designed for the complexity of biology",
+      "title_zh": "模型能力与使用方式｜Introducing Quine: An AI research system designed for the complexity of biology",
+      "url": "https://www.microsoft.com/en-us/research/blog/introducing-quine-an-ai-research-system-designed-for-the-complexity-of-biology",
+      "source": "Microsoft Research",
+      "published": "2026-09-29T14:00:02+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-05T23:32:37.936961+08:00",
+      "category": "模型进展",
+      "excerpt": "",
+      "summary": "Microsoft Research相关内容涉及模型能力与使用方式。模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "reading": "## 来源事实\n\n公开来源为 Microsoft Research，来源发布时间为 2026-09-29T14:00:02+00:00。标题与订阅信息涉及模型能力与使用方式。\n\n## 短解读（分析）\n\n模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "question": "版本、开放方式与评测条件是否明确？结果能否在同一任务上比较？",
+      "tags": [
+        "模型进展"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
     }
   ],
-  "errors": [
-    "Hacker News"
-  ]
+  "errors": []
 }

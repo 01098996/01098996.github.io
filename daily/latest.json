@@ -1,11 +1,13 @@
 {
   "date": "2026-10-05",
   "url": "https://z-xj.com/daily/2026-10-05/",
-  "count": 4,
+  "count": 6,
   "titles": [
     "模型能力与使用方式｜A model guide for the GPT-6 family",
     "评测与可靠性｜Claude’s new auto eval tool",
     "模型能力与使用方式｜Introducing GPT-6.1 Sol",
-    "openJiuwen X-Router自演进模型路由技术首发，昇腾亲和，Agent越跑越省，实测减少50+%Token消耗"
+    "openJiuwen X-Router自演进模型路由技术首发，昇腾亲和，Agent越跑越省，实测减少50+%Token消耗",
+    "评测与可靠性｜Open TTS Leaderboard: Scalable Evaluation for Multilingual Text-to-Speech and Voice Cloning",
+    "模型能力与使用方式｜Introducing Quine: An AI research system designed for the complexity of biology"
   ]
 }
