@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-05",
+  "generated_at": "2026-10-05T23:27:32.614517+08:00",
+  "articles": [
+    {
+      "title": "A model guide for the GPT-6 family",
+      "title_zh": "模型能力与使用方式｜A model guide for the GPT-6 family",
+      "url": "https://openai.com/index/practical-guide-building-gpt-6",
+      "source": "OpenAI",
+      "published": "2026-10-02T16:15:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-05T23:27:23.306932+08:00",
+      "category": "模型进展",
+      "excerpt": "",
+      "summary": "原标题是一份模型使用指南。GPT-6相关内容涉及技能扩展、推理、工作流。模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "reading": "## 来源事实\n\n公开来源为 OpenAI，来源发布时间为 2026-10-02T16:15:00+00:00。原标题是一份模型使用指南。标题与订阅信息涉及技能扩展、推理、工作流。\n\n## 短解读（分析）\n\n模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "question": "版本、开放方式与评测条件是否明确？结果能否在同一任务上比较？",
+      "tags": [
+        "GPT-6",
+        "技能扩展",
+        "推理",
+        "工作流",
+        "模型进展"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Claude’s new auto eval tool",
+      "title_zh": "评测与可靠性｜Claude’s new auto eval tool",
+      "url": "https://hamel.dev/blog/posts/claude-auto-evals",
+      "source": "Hamel Husain",
+      "published": "2026-09-30T07:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-05T23:27:23.306932+08:00",
+      "category": "评测与可靠性",
+      "excerpt": "",
+      "summary": "原标题提到自动评测工具。Claude相关内容涉及Claude Code、评测、API。评测结论依赖测试集和执行条件。将失败样例、重复运行的波动与成本一起看，才能判断一个改进是否适合真实任务。",
+      "reading": "## 来源事实\n\n公开来源为 Hamel Husain，来源发布时间为 2026-09-30T07:00:00+00:00。原标题提到自动评测工具。标题与订阅信息涉及Claude Code、评测、API。\n\n## 短解读（分析）\n\n评测结论依赖测试集和执行条件。将失败样例、重复运行的波动与成本一起看，才能判断一个改进是否适合真实任务。",
+      "question": "测试集、对照条件和失败样例是否公开？结论适用于什么任务？",
+      "tags": [
+        "Claude",
+        "Claude Code",
+        "评测",
+        "API",
+        "评测与可靠性"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    }
+  ],
+  "errors": [
+    "量子位"
+  ]
+}

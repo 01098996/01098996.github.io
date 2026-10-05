@@ -1,7 +1,7 @@
-name: AI Daily Top-up
+name: AI Hourly
 on:
   schedule:
-    - cron: '7 10 * * *' # 18:07 Asia/Shanghai; top up the day's edition
+    - cron: '23 * * * *' # Every hour at :23 UTC / Asia/Shanghai; delays are possible
   workflow_dispatch:
 permissions:
   contents: write
@@ -12,6 +12,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   topup:
+    if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment:
@@ -21,28 +22,26 @@ jobs:
       - uses: actions/checkout@v4
         with:
           lfs: true
+          ref: master # Queued jobs read current history after obtaining the shared lock
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: pip install -r scripts/requirements.txt
       - name: Verify daily pipeline
         run: python -m unittest discover -s scripts -p 'test_*.py'
-      - name: Top up today's edition with new articles
+      - name: Find interesting new AI items within a fixed budget
+        timeout-minutes: 4
         env:
-          DAILY_LLM_API_KEY: ${{ secrets.DAILY_LLM_API_KEY }}
-          DAILY_LLM_ENDPOINT: ${{ vars.DAILY_LLM_ENDPOINT }}
-          DAILY_LLM_MODEL: ${{ vars.DAILY_LLM_MODEL }}
           DAILY_SITE_URL: ${{ vars.DAILY_SITE_URL }}
-          WECHAT_PUSH_KEY: ${{ secrets.WECHAT_PUSH_KEY }}
-        run: python scripts/daily.py --force
+        run: python -u scripts/daily.py --hourly
       - name: Preserve edition and deduplication history
         run: |
           git config user.name 'AI Daily'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add daily
+          git add daily sitemap.xml
           if ! git diff --cached --quiet; then
-            git commit -m "Top up AI daily edition"
-            git push origin HEAD:master
+            git commit -m "Publish hourly AI notes"
+            git push origin HEAD:master # Fast-forward only; never overwrite concurrent changes
           fi
       - uses: actions/configure-pages@v5
       - name: Package only public website files

@@ -1,15 +1,9 @@
 {
-  "date": "2026-09-30",
-  "url": "https://z-xj.com/daily/2026-09-30/",
-  "count": 8,
+  "date": "2026-10-05",
+  "url": "https://z-xj.com/daily/2026-10-05/",
+  "count": 2,
   "titles": [
-    "Claude Code 的下一程：与 Anthropic 的 Thariq 共谈产品演进与代理安全",
-    "周报：Claude Opus 5.5 领跑 SimpleBench，GPT-6 与 Gemini 3.8 Flash 同周亮相",
-    "ProvenanceGuard：面向 MCP 代理的来源感知事实性核查",
-    "building-with-typesafe-jev：教编码代理使用 Jev 的非官方技能包",
-    "Jeeves：在决策前先思考的小型 Jev 类模型",
-    "openJiuwen iCode：面向 AI 时代的轻量可扩展离线开发与代理平台",
-    "AWS 官方示例：语音 AI 代理工作室",
-    "seiso：面向 AI 与人类共同阅读的 Markdown 文档规范与 linter"
+    "模型能力与使用方式｜A model guide for the GPT-6 family",
+    "评测与可靠性｜Claude’s new auto eval tool"
   ]
 }

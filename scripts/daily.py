@@ -114,9 +114,9 @@ def fetch_github_new():
         desc=' '.join((it.get('description') or '').split())
         topics=' '.join('#'+t for t in (it.get('topics') or [])[:6])
         excerpt=f"{desc} [★{it.get('stargazers_count',0)} {it.get('language') or ''} {topics}]".strip()
+        if not dateparse(it.get('created_at') or ''): continue
         articles.append(dict(title=it['full_name'],url=canonical(it['html_url']),source='GitHub',
-            published=(it.get('created_at') or '') or dt.datetime.now(dt.timezone.utc).isoformat(),
-            excerpt=excerpt[:5500]))
+            published=it['created_at'],date_kind='project_created',excerpt=excerpt[:5500]))
     return [a for a in articles if a['url'] and a['excerpt']]
 
 def fetch(source):
@@ -137,13 +137,14 @@ def fetch(source):
         published=dateparse(fields.get('published') or fields.get('pubDate') or fields.get('updated',''))
         if not link or not published: continue
         excerpt=plain(fields.get('encoded') or fields.get('content') or fields.get('description') or fields.get('summary',''))
-        articles.append(dict(title=plain(fields.get('title','')),url=link,source=name,published=published.isoformat(),excerpt=excerpt[:5500]))
+        date_kind='feed_published' if fields.get('published') or fields.get('pubDate') else 'source_updated'
+        articles.append(dict(title=plain(fields.get('title','')),url=link,source=name,published=published.isoformat(),date_kind=date_kind,excerpt=excerpt[:5500]))
     if not articles: raise ValueError('Feed has no dated articles')
     return articles
 
 def untangle_hn(a):
     """hnrss entries: <link> is the article URL; description only carries metadata."""
-    if a['source']!='Hacker News': return a
+    if not a['source'].startswith('Hacker News'): return a
     m=re.search(r'Comments URL:\s*(\S+)',a.get('excerpt',''))
     if m: a['discussion']=canonical(m.group(1)) or a['url']
     a['excerpt']=''
@@ -503,7 +504,12 @@ def article_page(issue,a,n,prev=None,next=None,related=None):
     date=issue['date']; local='/daily/'+date+'/'+art_slug(a['url'],n)+'/'; title=a.get('title_zh') or a['title']
     head=f'''<section class="intro"><p class="eyebrow">AI DAILY / {esc(date)}</p><h1>{esc(title)}</h1><p class="original">{esc(a['title'])}</p><div class="meta"><span class="tag">{esc(a['category'])}</span><span>{esc(a['source'])} · {esc(a['published'][:10])}</span></div>{f'<div class="tags">{"".join(f"<a class=\"tag-pill\" href=\"/daily/tags.html#{urllib.parse.quote(t)}\">{esc(t)}</a>" for t in a.get("tags",[]))}</div>' if a.get('tags') else ''}</section>'''
     kind=a.get('translation_kind'); source=a.get('translation_source','article')
-    if a.get('translation'):
+    brief=a.get('content_kind')=='brief'
+    if brief:
+        label='中文短解读 · 根据公开订阅信息自动整理'
+        body='<p class="muted">'+label+'</p><section class="translation">'+render_translation(a.get('reading',''))+'</section>'
+        body+='<p class="notice">仅依据标题、订阅摘要或项目元数据整理，未阅读全文。分析不代表作者观点，效果需自行验证。事件发生时间未独立确认，完整信息请阅读原文。</p>'
+    elif a.get('translation'):
         if kind=='original': label='原文正文'
         elif kind=='partial': label='节选中文翻译（原文较长）· AI 生成'
         elif source=='feed': label='中文翻译 · AI 生成，仅供学习交流'
@@ -515,13 +521,14 @@ def article_page(issue,a,n,prev=None,next=None,related=None):
     else:
         body='<p class="notice">正文暂未获取，请直接阅读原文。</p>'
     notes=''
-    if a.get('summary') or a.get('why') or a.get('question'):
+    if (a.get('summary') and not brief) or a.get('why') or a.get('question'):
         notes='<aside class="about"><h2>编辑导读</h2>'
-        if a.get('summary'): notes+=f'<p>{esc(a["summary"])}</p>'
+        if a.get('summary') and not brief: notes+=f'<p>{esc(a["summary"])}</p>'
         if a.get('why'): notes+=f'<p><strong>为什么读</strong>{esc(a["why"])}</p>'
         if a.get('question'): notes+=f'<p><strong>带着问题读</strong>{esc(a["question"])}</p>'
         notes+='</aside>'
-    tail=f'''<aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="{esc(a['url'])}" rel="noopener noreferrer">{esc(a['title'])} ↗</a></p>{f'<p>Discussion：<a href="{esc(a["discussion"])}" rel="noopener noreferrer">Hacker News 讨论区 ↗</a></p>' if a.get('discussion') else ''}<p>译文由 AI 生成，版权归原作者所有，内容以原文为准。<a href="{local}">返回本期 →</a></p></aside>'''
+    attribution='来源内容版权归原作者所有；本页提供主题解读，事实请核对原文。' if brief else '译文由 AI 生成，版权归原作者所有，内容以原文为准。'
+    tail=f'''<aside class="about origin"><h2>原文链接</h2><p class="origin-link"><a href="{esc(a['url'])}" rel="noopener noreferrer">{esc(a['title'])} ↗</a></p>{f'<p>Discussion：<a href="{esc(a["discussion"])}" rel="noopener noreferrer">Hacker News 讨论区 ↗</a></p>' if a.get('discussion') else ''}<p>{attribution}<a href="/daily/{esc(date)}/">返回本期 →</a></p></aside>'''
     nav=('<nav class="postnav" aria-label="上下篇">'
          + (f'<a class="prev" href="{esc(prev["url"])}"><span class="dir">← 上一篇</span>{esc(prev["title"])}</a>' if prev else '<span></span>')
          + (f'<a class="next" href="{esc(next["url"])}"><span class="dir">下一篇 →</span>{esc(next["title"])}</a>' if next else '<span></span>')
@@ -550,14 +557,16 @@ def cards(issue):
         extras=''
         if a.get('why'): extras+=f'<p class="note"><strong>为什么读</strong>{esc(a["why"])}</p>'
         if a.get('question'): extras+=f'<p class="note"><strong>带着问题读</strong>{esc(a["question"])}</p>'
-        label='全文译文已落盘' if translated and a.get('translation_source','article')=='article' else '摘要译文已落盘' if translated else '中文导读' if summarized else '来源片段节选'
-        out.append(f'''<article class="article"><div class="number">{n:02d}</div><div class="article-body"><div class="meta"><span class="tag">{esc(a['category'])}</span><span>{esc(a['source'])} · {esc(a['published'][:10])}</span></div><h2><a href="{local}">{esc(a.get('title_zh',a['title']))}</a></h2>{f'<p class="original">{esc(a["title"])}</p>' if a.get('title_zh') else ''}{body}{extras}<div class="article-foot"><small>{label}</small><a class="read" href="{local}">阅读译文 →</a></div></div></article>''')
+        brief=a.get('content_kind')=='brief'
+        label='中文短解读' if brief else '全文译文已落盘' if translated and a.get('translation_source','article')=='article' else '摘要译文已落盘' if translated else '中文导读' if summarized else '来源片段节选'
+        read_label='阅读解读' if brief else '阅读译文'
+        out.append(f'''<article class="article"><div class="number">{n:02d}</div><div class="article-body"><div class="meta"><span class="tag">{esc(a['category'])}</span><span>{esc(a['source'])} · {esc(a['published'][:10])}</span></div><h2><a href="{local}">{esc(a.get('title_zh',a['title']))}</a></h2>{f'<p class="original">{esc(a["title"])}</p>' if a.get('title_zh') else ''}{body}{extras}<div class="article-foot"><small>{label}</small><a class="read" href="{local}">{read_label} →</a></div></div></article>''')
     return ''.join(out)
 
 def issue_body(issue,latest=False):
     articles=issue['articles']; date=issue['date']
     empty='<section class="empty"><h2>今天没有需要补充的新文章</h2><p>本轮没有筛到未推荐过的相关内容，可以看看往期。</p></section>' if not articles else ''
-    return f'''<section class="intro"><p class="eyebrow">AI DAILY / {esc(date)}</p><h1>{'AI 日报' if latest else esc(date)+' 日报'}</h1><p class="lede">Agent 开发与 AI 进阶实践</p><div class="edition"><span>{len(articles)} 篇精选 · 近 7 天 · 已去重</span><a href="/daily/archive.html">查看往期 →</a></div></section>{cards(issue)}{empty}<aside class="about"><h2>关于这份日报</h2><p>每天北京时间 09:00 后更新，优先实践、代码、评测和方法论。每篇精选都会落盘为独立的文章页：英文文章附带全文中文翻译，文末保留原文链接。译文由 AI 生成，仅供学习交流，以原文为准。没有合适的新文章时不凑数。</p><p>在微信中收藏本页，即可持续阅读。<a href="/daily/{esc(date)}/">本期固定链接 ↗</a></p></aside>'''
+    return f'''<section class="intro"><p class="eyebrow">AI DAILY / {esc(date)}</p><h1>{'AI 日报' if latest else esc(date)+' 日报'}</h1><p class="lede">模型、工具、Agent 开发与 AI 应用</p><div class="edition"><span>{len(articles)} 篇精选 · 近 7 天 · 已去重</span><a href="/daily/archive.html">查看往期 →</a></div></section>{cards(issue)}{empty}<aside class="about"><h2>关于这份日报</h2><p>每小时查新，每天北京时间 09:07 另有每日采集。优先模型、工具、Agent、代码、评测和应用，每篇精选有独立页面与来源链接。新内容采用中文短解读，标明来源事实和分析；来源日期不等于事件发生时间。历史译文保留。没有合适的新文章时不凑数。GitHub Actions 可能延迟，不保证准点。</p><p>在微信中收藏本页，即可持续阅读。<a href="/daily/{esc(date)}/">本期固定链接 ↗</a></p></aside>'''
 
 def tags_page(seq):
     groups={}
@@ -571,20 +580,23 @@ def tags_page(seq):
     if not groups: body+='<section class="empty"><h2>还没有标签</h2></section>'
     return shell('标签 · AI 日报',body)
 
-def render():
+def render(updated_date=None):
     daily=ROOT/'daily'; issues=[json.loads(p.read_text()) for p in sorted((daily/'data').glob('????-??-??.json'),reverse=True)]
     if not issues: return
     seq=[]
     for issue in reversed(issues):
         for n,a in enumerate(issue['articles'],1): seq.append((issue['date'],n,a))
+        if updated_date is None or issue['date']==updated_date:
+            folder=daily/issue['date']; folder.mkdir(exist_ok=True)
+            (folder/'index.html').write_text(shell(issue['date']+' AI 日报',issue_body(issue)))
     for idx,(date,n,a) in enumerate(seq):
+        if updated_date is not None and date!=updated_date: continue
         prev=None; nxt=None
         if idx>0:
             pd,pn,pa=seq[idx-1]; prev={'url':'/daily/'+pd+'/'+art_slug(pa['url'],pn)+'/','title':pa.get('title_zh') or pa['title']}
         if idx<len(seq)-1:
             nd,nn,na=seq[idx+1]; nxt={'url':'/daily/'+nd+'/'+art_slug(na['url'],nn)+'/','title':na.get('title_zh') or na['title']}
         folder=daily/date; folder.mkdir(exist_ok=True)
-        (folder/'index.html').write_text(shell(date+' AI 日报',issue_body(next(i for i in issues if i['date']==date))))
         adir=folder/art_slug(a['url'],n); adir.mkdir(exist_ok=True)
         (adir/'index.html').write_text(article_page(next(i for i in issues if i['date']==date),a,n,prev,nxt,related_for(seq,idx)))
     (daily/'index.html').write_text(shell('AI 日报',issue_body(issues[0],True)))
@@ -611,7 +623,11 @@ def render():
 def merge_edition(existing,new,max_articles):
     """Top-up today's edition: keep published articles, append new ones."""
     have={a['url'] for a in existing}
-    return (existing+[a for a in new if a['url'] not in have])[:max_articles]
+    merged=list(existing)
+    for a in new:
+        if len(merged)>=max_articles: break
+        if a['url'] not in have: merged.append(a); have.add(a['url'])
+    return merged
 
 def notify(issue):
     """Push the published edition to personal WeChat via ServerChan or PushPlus."""
@@ -632,47 +648,8 @@ def notify(issue):
     with urllib.request.urlopen(req,timeout=20) as r: r.read()
 
 def main():
-    parser=argparse.ArgumentParser(); parser.add_argument('--render-only',action='store_true'); parser.add_argument('--force',action='store_true'); parser.add_argument('--candidates',type=Path); args=parser.parse_args()
+    parser=argparse.ArgumentParser(); parser.add_argument('--render-only',action='store_true'); parser.add_argument('--force',action='store_true'); parser.add_argument('--hourly',action='store_true'); parser.add_argument('--candidates',type=Path); args=parser.parse_args()
     if args.render_only: render(); return
-    now=dt.datetime.now(TZ); target=ROOT/'daily/data'/f'{now.date()}.json'
-    if target.exists() and not args.force: print('Today already published; keeping edition unchanged.'); render(); return
-    existing=json.loads(target.read_text()).get('articles',[]) if (target.exists() and args.force) else []
-    seen=set()
-    for p in (ROOT/'daily/data').glob('*.json'):
-        seen.update(a['url'] for a in json.loads(p.read_text())['articles'])
-    collected=[]; errors=[]
-    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
-        futures={pool.submit(fetch,s):s[0] for s in SOURCES}
-        futures[pool.submit(fetch_github_new)]='GitHub 新项目'
-        for f in concurrent.futures.as_completed(futures):
-            try: collected.extend(f.result())
-            except Exception as e: errors.append(futures[f]); print('Source unavailable:',futures[f],type(e).__name__,file=sys.stderr)
-    collected=[untangle_hn(a) for a in collected]
-    if len(errors)==len(SOURCES): raise RuntimeError('All feeds failed; preserving previous edition')
-    chosen=select(collected,seen,now)
-    if args.candidates:
-        args.candidates.write_text(json.dumps(chosen,ensure_ascii=False,indent=2)); print('Candidates:',len(chosen)); return
-    if chosen:
-        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool: chosen=list(pool.map(enrich,chosen))
-        chosen=[a for a in chosen if depth_ok(a)]
-        chosen=sorted(chosen,key=lambda a:-a['score'])
-        chosen=[a for a in chosen if a['url'] not in {x['url'] for x in existing}][:max(0,MAX_ARTICLES-len(existing))]
-        print('After depth gate:',len(chosen),'new articles (edition has',len(existing),')')
-        try: summarize(chosen)
-        except Exception as e: print('Chinese summary unavailable:',type(e).__name__,str(e)[:120],file=sys.stderr)
-        translate(chosen)
-    for a in chosen:
-        text=a.pop('_fulltext','')
-        lead=' '.join(text.split())[:900] if text else ' '.join(a.get('excerpt','').split())[:900]
-        a['excerpt']=lead
-    date=str(now.date())
-    merged=merge_edition(existing,chosen,MAX_ARTICLES)
-    new_urls={a['url'] for a in chosen}
-    for i,a in enumerate(merged,1):
-        if a['url'] in new_urls: download_images(a,date,i)
-    issue={'date':date,'generated_at':now.isoformat(),'articles':merged,'errors':errors}
-    target.write_text(json.dumps(issue,ensure_ascii=False,indent=2)+'\n'); render()
-    print('Published',target.name,len(merged),'articles (',len(chosen),'new )')
-    try: notify(issue)
-    except Exception as e: print('WeChat push unavailable:',type(e).__name__,file=sys.stderr)
+    from briefs import run
+    run(force=args.force,hourly=args.hourly,candidates=args.candidates)
 if __name__=='__main__': main()

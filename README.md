@@ -1,40 +1,45 @@
 # 面向Google编程 · AI 日报
 
-原有 Hexo 静态博客保留，新增 `/daily/` 专栏：每天精选文章，**逐篇落盘为独立页面**，英文文章附带**全文中文翻译**，文末保留**原文链接**，并支持推送到个人微信。不安装、不依赖 OpenClaw。
+保留原有 Hexo 静态博客和历史日报。在 `/daily/` 按北京时间日期汇总公开 AI 信息，每条新精选生成独立页面，提供中文主题短解读和原文链接。
 
-## 每日发布
+## 云端每小时查新
 
-`.github/workflows/daily.yml` 每天北京时间 **09:07** 抓取文章、抓取全文、翻译、生成页面并通过 GitHub Pages 发布。GitHub 定时执行可能延迟，不保证准点。首次部署须在 **Settings → Pages → Source** 选择 **GitHub Actions**。也可在 Actions → AI Daily → Run workflow 手动运行。
+复用已有 `.github/workflows/daily-topup.yml`（Actions 名称 **AI Hourly**），cron 为 `23 * * * *`：UTC 每小时 **:23**，北京时间同样每小时 **:23**。保留 `.github/workflows/daily.yml` 的每日任务，UTC **01:07** / 北京时间 **09:07**，并在 master push 后验证、采集和部署。调度与运行都在 GitHub，电脑关机后仍可执行；没有本机或额外 ChatGPT 定时器。
 
-- 来源：Simon Willison、Hugging Face、OpenAI、Hacker News（100+ 分热帖，自动指向原文）、Chip Huyen、Eugene Yan、Interconnects、Lilian Weng、Weaviate、Google DeepMind、Sebastian Raschka、Julia Evans、Armin Ronacher、Latent Space、Hamel Husain、Matt Rickard、Google Research，共 20 个 RSS/Atom 源。
-- 内容过滤：公告式短讯（Introducing/Announcing/release notes 等）直接拒收；标题与正文带深度信号的（hands-on、review、benchmark、tips、how we…）优先；抓完全文后不足 2000 字符的淘汰——宁缺毋滥。
-- 每期最多 **10** 篇，每个来源最多 2 篇；无新增内容时明确显示空状态。
-- 来源失败只记录在 CI 构建日志中，不在页面上展示；全部失败则终止更新并保留旧日报。
-- 当天重跑不覆盖已发布内容（本地重建可用 `daily.py --force` 重新生成当天）。历史 JSON 是去重依据，勿删除。
+GitHub Actions 的定时任务可能延迟或被丢弃，不保证准点。公共仓库长期无活动时 GitHub 也可能暂停定时工作流。可在 Actions → AI Hourly → Run workflow 手动执行。Pages 的 Source 应沿用 GitHub Actions；不要改域名或密钥。
 
-## 每篇文章一个独立页面
+## 采集与内容边界
 
-- 每篇精选生成 `daily/<日期>/<序号>-<哈希>/index.html`，本期页面中的标题直接链到本地页面。
-- 抓取正文只提取 `article`/`main` 区域，剔除脚本、表单和评论，最长 20000 字符。
-- 英文文章经过**两道工序**：先逐篇忠实翻译为简体中文（代码、命令、专有名词保留原样），再按「数字生命卡兹克」文风做润色 pass——消灭翻译腔和 AI 味（禁用套话、翻译腔标点，长短句节奏、聊天感），但事实、结构、代码严格不动。超过 20000 字符的只翻译节选并在页面标注；中文文章保留原文。
-- 原文链接由代码以固定格式拼装在文末，不经过模型；正文中模型不输出任何链接。
-- 抓取正文时保留文章配图（跳过 logo/图标，每篇最多 4 张，单张上限 4MB），下载后本地压缩（JPEG 质量 0.95 / WEBP q90 / PNG optimize，最长边 2000px，压不小则保留原图），存放于文章页目录并在译文中原位引用；图片文件用 **Git LFS** 管理。
-- 每篇文章页有跨期刊的**上一篇 / 下一篇**导航，按时间顺序串联整个专栏。
-- 翻译失败或未配置模型时，页面回退为原文节选 + 明确提示，并始终保留原文链接。
-- 译文仅供学习交流，页面标注版权归原作者所有、以原文为准。
+- 使用 11 个已有公开 RSS/Atom 源（Simon Willison、Hugging Face、OpenAI、Hacker News、量子位、Weaviate、Google Research、Microsoft Research、Armin Ronacher、Hamel Husain、Latent Space），加 GitHub 公开新项目搜索。每个来源每轮一次请求，无伪装浏览器、反爬重试、付费墙访问或全文抓取。
+- 近 7 天且有明确日期的条目才参与筛选。优先模型、工具、Agent、编程、评测和应用，允许具体产品发布；拒绝融资、收购、招聘和泛泛的 AI 讨论。没有足够的标题/摘要证据就跳过。
+- 每小时最多追加 **2** 条，每日任务最多追加 **4** 条，当日合计最多 **12** 条。到达上限后仍每小时检索但不继续追加；无合适新内容就保持原发布数据，不凑数、不制造空日报。
+- **不调用模型 API，不使用付费服务，不新增凭据。** 用来源中的名称、主题与日期，配合预设中文分析和验证问题生成短解读。它是透明的主题导读，不是逐篇深度摘要或全文翻译；英文原标题保留，中文标题加主题说明。历史译文和图片保留，新条目不搬运正文或图片。
+- 页面区分「来源事实」和「短解读（分析）」。日期来自公开 Feed 的发布时间或更新时间；GitHub 项目使用创建时间，明确不当作产品发布日期。事件发生时间没有独立确认。不会编造博主亲测经历或个人观点。
+- 来源内容只作为数据。原文 URL 由代码生成并经过协议校验，HTML 输出转义。模型/工具关键词只是主题线索，不能当作性能承诺。RSS 可能错标时间、延迟或遗漏消息；全网新闻覆盖和事件级跨站语义去重没有保证。
 
-### 翻译与导读（必须配置才能生成译文）
+## 预算、去重与发布一致性
 
-| 配置位置 | 名称 | 内容 |
-| --- | --- | --- |
-| Actions Secret | `DAILY_LLM_API_KEY` | 模型 API 密钥 |
-| Actions Variable | `DAILY_LLM_ENDPOINT` | 完整 HTTPS chat/completions 接口地址（OpenAI 兼容） |
-| Actions Variable | `DAILY_LLM_MODEL` | 服务支持的模型名称 |
-| Actions Variable | `DAILY_SITE_URL` | 网站根地址，无末尾斜线（如 `https://z-xj.com`） |
+`scripts/briefs.py` 将联网采集放在独立进程，**150 秒硬预算**。每完成一个来源就写原子检查点，超时回收已有有效结果。单源失败记日志；全部失败或没有有效检查点则失败退出，保留历史和当天旧数据。采集步骤另有 4 分钟限额，整个工作流保留 20 分钟限额，为提交和部署留时间。
+
+历史 `daily/data/*.json` 是去重依据，URL 去除追踪参数、片段和尾斜线后跨日期去重，同时过滤重复标题。当天只追加，不覆盖已有文章或改变旧序号。JSON 原子写入；无新增时 JSON 保持原字节。失败的构建不会覆盖线上网站。
+
+两个已有工作流继续共享 `ai-daily-pages` 并发组，`cancel-in-progress: false`。取得锁后 checkout 当前 master，读取最新去重历史。提交同时包括 `daily/` 和 `sitemap.xml`；push 仅快进，遇到外部并发修改会停止，下一轮从新历史重试，不强推或覆盖。GitHub 并发组最多保留一个 pending run，排队任务仍可能被后来的任务替换。
+
+生产渲染只修改当天文章和全局索引，不重写历史文章。打包排除脚本、私有目录和原始 JSON；Pages 工件中的 `/daily/deployment.json` 记录实际 source commit 与 Actions run URL，便于核对公开部署。Workflow 使用既有权限，保留已有密钥和变量，新的采集步骤只读 `DAILY_SITE_URL`。
+
+## 手动运行
+
+```sh
+python3 -u scripts/daily.py --hourly
+python3 -u scripts/daily.py --force
+python3 -u scripts/daily.py --hourly --candidates /tmp/ai-candidates.json
+```
+
+`--hourly` 追加最多两条；`--force` 追加最多四条，也不会替换已发表文章；候选模式不发布。`--render-only` 显式全量重建历史页面，请仅在确实需要重建时使用。
 
 ## 微信推送（发布后自动）
 
-日报发布成功后，会把本期标题列表和链接推送到你的个人微信。支持两个服务，任选其一：
+旧代码保留了 Server酱/PushPlus 集成，但新的定时发布流程不发送微信通知，也不读取推送凭据。以下为已有服务的配置参考：
 
 | 服务 | 获取方式 | 配置 |
 | --- | --- | --- |

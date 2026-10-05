@@ -1,5 +1,5 @@
 """Stage public static assets only. Never publish scripts, private state or source excerpts."""
-import os, shutil
+import json, os, shutil, subprocess
 from pathlib import Path
 root=Path(__file__).resolve().parents[1]
 target=root/'_site'
@@ -20,4 +20,11 @@ for item in root.iterdir():
 for html_file in target.rglob('*.html'):
     html_file.write_text(inject_analytics(html_file.read_text(encoding='utf-8')),encoding='utf-8')
 (target/'.nojekyll').touch()
+if os.environ.get('GITHUB_RUN_ID'):
+    # Public deployment evidence identifies the exact committed source snapshot.
+    revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
+    (target/'daily'/'deployment.json').write_text(json.dumps({
+        'source_commit':revision,
+        'run_url':'https://github.com/'+os.environ['GITHUB_REPOSITORY']+'/actions/runs/'+os.environ['GITHUB_RUN_ID'],
+    },indent=2)+'\n',encoding='utf-8')
 print('Analytics snippet injected' if ANALYTICS else 'No ANALYTICS_SNIPPET set; pages left untouched')
