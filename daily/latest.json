@@ -1,9 +1,10 @@
 {
   "date": "2026-10-08",
   "url": "https://z-xj.com/daily/2026-10-08/",
-  "count": 2,
+  "count": 3,
   "titles": [
     "Google PDFM：把地点向量接入预测模型，先核对时间与适用范围",
-    "Liquid AI open d1：一次前向计算做分类，端侧应用该怎样验收"
+    "Liquid AI open d1：一次前向计算做分类，端侧应用该怎样验收",
+    "Falcon OCR Arabic：小模型读懂文档，还要过字段与版式两道关"
   ]
 }
