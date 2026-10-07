@@ -1,4 +1,42 @@
 {
   "version": 1,
-  "articles": []
+  "articles": [
+    {
+      "approved": true,
+      "source_url": "https://research.google/blog/open-and-emergent-problems-in-agentic-privacy-and-security-a-contextual-angle/",
+      "source_title": "Open and Emergent Problems in Agentic Privacy and Security: A Contextual Angle",
+      "source_published_at": "2026-10-05T21:08:00+00:00",
+      "publication_date": "2026-10-07",
+      "title_zh": "Agent 隐私的场景边界：Google 新报告如何拆解“该不该发”",
+      "summary": "Google Research 10月5日的文章将 Agent 隐私放回具体的信息流与社会场景。本文结合原始报告，解释情境策略引擎的提议、会议助手的假设用例，以及动态规则和用户确认仍待解决的难点。",
+      "category": "Agent 开发",
+      "tags": [
+        "情境完整性",
+        "Agent 隐私",
+        "信息流",
+        "动态策略",
+        "多代理安全"
+      ],
+      "body_markdown": "## 事实与来源\n\nGoogle Research 在 2026 年 10 月 5 日发文介绍一份关于 Agent 隐私与安全的研讨会报告。它讨论一个实际问题：Agent 为完成任务而获得资料和工具后，怎样判断每次使用或转发是否合适。报告来自 2025 年末 CAPS 研讨会及后续讨论，提出的是研究议程，并非宣布一套已经部署、验证有效的防护产品。\n\n文章采用“情境完整性”（Contextual Integrity）视角，把隐私放在具体信息流中考察。这里的情境是工作、购物、社交等社会场景，不是模型的上下文窗口；判断重点是信息在什么关系和规则下流动，而不只是能否读取它。\n\n## 技术机制\n\n报告用五项描述信息流：发送者、接收者、信息所涉及的人、信息类型，以及传递条件。例如，同一份日程可以供助手寻找空档，但向不同收件人发送时，允许披露的内容可能不同。把这些要素分开，才能发现“工具有发送权限”和“这次内容适合发送”之间的缺口。\n\n报告示意的策略引擎包含动态生成规则与运行时执行两部分：结合当前任务和场景形成可检查的限制，再在动作执行前判断允许、拒绝、修改或交给用户决定。新工具、任务变化和代理之间的委派，都可能要求重新检查规则。这是架构提议，尚不能据此宣称提示注入或越权问题已经解决。\n\n## 例子与用途\n\n假设一个会议助手获准读取日历，为内部研讨会寻找时间。它可以把可用时段交给参会人，但日历中私人事件的标题、备注和参与者未必属于这次安排所需信息。输出检查应针对将要发送的实际字段，而不能因为读取日历已获准，就默认整份内容都能转发。\n\n如果后来加入外部嘉宾，接收者和场景发生变化，就应重新核对披露范围。另一个负责发送邀请的 Agent 也需要收到明确限制，而不仅是一句“替我安排好”。这是本文构造的用例，不是报告中的实验结果；具体哪些数据可发，仍需依据用户授权和适用规则，而非由模型猜测社交习惯。\n\n## 限制与不确定性\n\n把自然语言目标变成机器规则仍有难点：规则可能遗漏用户意图，不同角色的要求可能冲突，网页或工具输出还可能夹带试图改变规则的内容。如果生成规则的环节本身被误导，增加一个策略引擎也不自动带来可靠保障。报告将这些问题列为待研究方向，没有给出通用成功率承诺。\n\n用户确认同样不能简单取消。频繁、含糊的弹窗容易让人机械点击，但让系统自行猜测也会引入风险。报告探索与风险、场景和用户理解相匹配的控制方式，并倡议用动态多代理环境评测长期交互。“Agent Gym”在这里是方向，不应被写成已经可下载的完整测试平台。\n\n## 开发者启示\n\n一个小规模起点，是选定单一工作流，为每种外发动作记录目的、接收者、数据字段和依据；把权限较窄的执行工具与生成内容的模型分开，并检查最后实际提交的参数。规则来源、修改过程与执行结果都应留有记录，便于发现限制在哪一步丢失，而不是只保存模型的解释。\n\n测试可以改变收件人、任务目的和委派路径，观察原本允许的信息是否会被错误沿用。遇到关键不确定性时，应在传输前明确询问，并保留用户撤回或调整范围的入口。以上是工程建议，尚未在具体系统中实测；它补充的是对场景和信息流的检查，不能代替隔离、身份验证与既有安全控制。",
+      "reviewed_at": "2026-10-07T20:06:51+08:00",
+      "authoring_note": "基于Google Research官方博客全文、官方技术报告相关章节撰写的原创中文分析；博客精确时间来自官方RSS，不等同报告首次公开时间。会议助手是本文假设场景，落地和测试建议属于推演；未部署策略引擎、运行评测或宣称已证明防护效果。",
+      "update_existing": false,
+      "sources": [
+        {
+          "url": "https://research.google/blog/open-and-emergent-problems-in-agentic-privacy-and-security-a-contextual-angle/",
+          "title": "Open and Emergent Problems in Agentic Privacy and Security: A Contextual Angle",
+          "publisher": "Google Research",
+          "kind": "primary",
+          "published_at": "2026-10-05T21:08:00+00:00"
+        },
+        {
+          "url": "https://storage.googleapis.com/gweb-research2023-media/pubtools/1047874.pdf",
+          "title": "Open and Emergent Problems in Agentic Privacy and Security: A Contextual Angle — workshop report",
+          "publisher": "CAPS workshop report authors / Google Research",
+          "kind": "primary",
+          "published_at": null
+        }
+      ]
+    }
+  ]
 }
