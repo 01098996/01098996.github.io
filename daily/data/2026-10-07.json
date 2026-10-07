@@ -1,6 +1,6 @@
 {
   "date": "2026-10-07",
-  "generated_at": "2026-10-07T20:08:31.368794+08:00",
+  "generated_at": "2026-10-07T21:13:09.723487+08:00",
   "articles": [
     {
       "title": "Open and Emergent Problems in Agentic Privacy and Security: A Contextual Angle",
@@ -42,6 +42,54 @@
       "evidence_kind": "primary_source_review",
       "excerpt": "",
       "editorial_revision": "ddc0c3f93deaaf333f10aab7f024ea70fbebbdb1008f01ec801050320eb77f2e"
+    },
+    {
+      "title": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
+      "title_zh": "EmbeddingGemma 2：本地检索如何在向量体积和精度之间取舍",
+      "url": "https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2",
+      "source": "Google / Google DeepMind",
+      "published": "2026-10-06T16:00:00+00:00",
+      "date_kind": "feed_published",
+      "category": "检索与本地模型",
+      "summary": "Google发布的EmbeddingGemma 2支持按需加载模态编码器、缩短检索向量。本文用十万条代码片段的存储算例，解释768维与256维的取舍，并核对前缀、归一化和数值精度等接入细节。",
+      "body_markdown": "## 事实与来源\n\nGoogle 于2026年10月6日发布 EmbeddingGemma 2，把文本、代码、图片、音频和视频映射到统一的向量空间，用于语义检索、分类和聚类。官方发布页及模型卡标示总参数约7.4亿，采用 Apache 2.0 许可证，提供开放权重。\n\n对本地应用开发者，值得关注的是两种可调成本：按需要加载不同模态的编码器，以及选择输出向量的长度。本文依据发布原文、模型卡和推理文档分析接入方式，未运行模型或复现性能测试。\n\n## 技术机制\n\n检索时，模型把查询和候选内容分别编码成向量，再按相似度找出相关条目。文本部分约2.7亿参数，视觉和音频编码器分别约1.7亿、3亿；只处理代码或文字时可以不加载后两者。官方文档提醒，Sentence Transformers 的默认初始化会加载完整模型，需要显式关闭不用的编码器。\n\n输出原生为768维。Matryoshka Representation Learning 让向量前部也能保留可用的语义表示，支持取前512、256或128维。截短之后须重新做L2归一化，查询和语料也必须使用同一维度。省掉的是每条向量的存储与比较开销，不代表模型参数量随输出维度同比下降。\n\n## 例子与用途\n\n假设要给一个代码库做离线自然语言检索，先把文件按函数或逻辑段切成十万个片段，保留文件名、位置和原文。查询通过 prompt_name 选择官方提供的 CodeRetrieval 任务前缀；入库代码则按文档格式携带文件名或标题，让查询与候选分别承担各自角色。这是接入示例，尚未在该代码库上验证效果。\n\n若每个分量按四字节存储，十万条768维向量的纯数值载荷约307.2 MB；改成256维则约102.4 MB，均按十进制计算。这个算例不包含索引结构、原始代码、元数据和运行模型的内存。开发者可以先比较两种维度的检索结果，再判断节省约204.8 MB是否值得接受召回变化。\n\n## 限制与不确定性\n\n压缩会损失信息。Google模型卡的全精度评测中，MTEB Code得分从768维的78.68降到256维的76.18，128维进一步降到71.41；多模态任务也有不同程度下降。这些是发布方报告，不能直接推算量化模型在某个中文项目上的效果。\n\n发布页还给出 Pixel 11 Pro上量化文本权重约191 MB的内存口径，它不是整个搜索应用的峰值内存承诺。更小的向量也不会自动解决切分不当、版本过期或检索内容错误。向量相似度表示相对接近程度，不能把0.7直接解释成答案有70%的正确率。\n\n## 开发者启示\n\n建议先准备一组带有正确代码位置的真实查询，并加入名称相似但功能不同的干扰片段。分别测量768维与256维的前十条结果召回、查询延迟和峰值内存，再决定是否尝试128维。应把模型版本、任务前缀、输出维度和归一化方式作为索引配置保存，变更时检查查询端与已存向量是否仍可比较。\n\n数值类型也是接入检查项：在 Sentence Transformers 的常规浮点推理中，官方要求使用 bfloat16 或 float32，警告 float16 可能产生 NaN 或悄然损坏的向量。上线前可检查向量是否有限、长度是否一致，以及少量固定查询的排序是否稳定。以上是建议的验证流程，并非本文已经测得的结果；本地部署的收益最终要由目标设备和真实数据共同验证。",
+      "tags": [
+        "EmbeddingGemma 2",
+        "语义检索",
+        "端侧AI",
+        "向量压缩",
+        "代码检索"
+      ],
+      "sources": [
+        {
+          "url": "https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2",
+          "title": "EmbeddingGemma 2: an open, lightweight multimodal embedding model",
+          "publisher": "Google / Google DeepMind",
+          "kind": "primary",
+          "published_at": "2026-10-06T16:00:00+00:00"
+        },
+        {
+          "url": "https://ai.google.dev/gemma/docs/embeddinggemma/model_card_2",
+          "title": "EmbeddingGemma 2 model card",
+          "publisher": "Google AI for Developers",
+          "kind": "primary",
+          "published_at": null
+        },
+        {
+          "url": "https://ai.google.dev/gemma/docs/embeddinggemma/inference-embeddinggemma-with-sentence-transformers",
+          "title": "Generating Embeddings with EmbeddingGemma 2 and Sentence Transformers",
+          "publisher": "Google AI for Developers",
+          "kind": "primary",
+          "published_at": null
+        }
+      ],
+      "reviewed_at": "2026-10-07T21:11:50+08:00",
+      "authoring_note": "基于Google发布原文、官方模型卡及推理文档的原创中文分析。发布时间由原文JSON-LD与官方RSS交叉核对；性能及资源数据归属Google。十万代码片段与容量计算为假设算例，测试流程为工程建议；未安装、运行模型或声称亲测效果。",
+      "content_kind": "article",
+      "summary_kind": "source_review",
+      "evidence_kind": "primary_source_review",
+      "excerpt": "",
+      "editorial_revision": "c3ba8d7f68c5c1b6b4079626fed2b652db0777f6eb0029b0ae84216279a8a19a"
     }
   ],
   "errors": []
