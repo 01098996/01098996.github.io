@@ -81,6 +81,71 @@
           "published_at": null
         }
       ]
+    },
+    {
+      "approved": true,
+      "source_url": "https://simonwillison.net/2026/Oct/6/datasette-parseable-opentelemetry/",
+      "source_title": "Using Parseable with Datasette for OpenTelemetry traces",
+      "source_published_at": "2026-10-06T19:07:31+00:00",
+      "publication_date": "2026-10-07",
+      "title_zh": "Codex辅助接入OpenTelemetry：用Datasette与Parseable定位慢请求",
+      "summary": "Simon Willison用Codex探索了本地追踪接入。本文结合原始笔记和官方文档，解释SDK初始化、JSON导出兼容，以及怎样区分SQL线程等待与实际执行，并给出AI辅助开发的验收思路。",
+      "category": "AI辅助工程",
+      "tags": [
+        "Codex",
+        "OpenTelemetry",
+        "Datasette",
+        "Parseable",
+        "可观察性"
+      ],
+      "body_markdown": "## 事实与来源\n\nSimon Willison在2026年10月6日记录了一次AI辅助集成实践：让Codex探索怎样运行Parseable并接收Datasette的OpenTelemetry数据，再由他写下可复现笔记。示例使用Parseable OSS 3.2.4与Datasette 1.0a41，在本机查看请求及其SQL操作的时间线。\n\n新鲜的是这次接入实践。Datasette的相关功能已于9月24日发布，不能说成两个产品刚刚新增的AI能力。对使用编程助手搭建数据服务的人，这个案例的价值在于给交付补上运行证据，判断请求经过哪些步骤、时间花在哪里。本文基于原文和官方文档分析，未运行这套环境。\n\n## 技术机制\n\nOpenTelemetry用span表示一个操作，记录起止时间、属性及关联关系，多个span组成trace。在这个例子里，Datasette产生HTTP和数据库操作的span，SDK收集并交给导出器，Parseable负责接收、存储和展示。照原文配置时，应由opentelemetry-instrument启动Datasette，先完成SDK初始化；只加环境变量后直接启动服务并不等价。\n\n传输格式也要匹配。作者选择otlp_json_http导出器，将JSON经HTTP送到本地Parseable，并用X-P-Stream请求头选择数据集。Parseable文档把Protocol Buffers接入标为Cloud与Enterprise功能，因此不能把“都支持OTLP”理解成导出器可随意互换。原例只导出traces，关闭了metrics和logs。\n\n## 例子与用途\n\n假设AI助手做完一个资料查询页面，浏览器能打开，但部分请求很慢。按Datasette文档，db.query记录一次查询连同等待SQL线程的耗时，子span db.query.execute记录线程内的读取执行。若前者约640毫秒、后者40毫秒，就应先调查约600毫秒的线程等待，而不是立即让模型重写SQL。这组数字是本文构造的例子，不是作者的测试结果。\n\n反过来，如果耗时主要集中在执行span，再结合查询文本和数据库执行计划调查索引或扫描量，会更有针对性。父span已包含子操作时间，不能把两者简单相加当作总耗时。让编程助手围绕这种具体证据修改代码，也方便比较修改前后的同一请求路径。\n\n## 限制与不确定性\n\n看到trace只能说明被记录的操作发生过，不能证明业务返回值正确，也不能还原LLM的思考过程。非阻塞写入还可能在请求结束后继续：Datasette将其等待、执行记录为通过link关联的独立根span，不能要求所有写入都留在HTTP请求的子树中。\n\n本地示例也没有覆盖生产部署。原文使用演示认证配置；实际接入应检查访问边界及采集字段。Datasette虽然不记录绑定参数值，却可能记录含字面值的SQL文本，所以“参数没上报”不能当成数据已完全脱敏。本文未评估这套组合的吞吐、资源开销或大规模稳定性。\n\n## 开发者启示\n\n一个可操作的验收顺序是：先给服务明确命名，发出可辨认的请求，确认后端出现相应trace，再检查HTTP与SQL操作的关联、状态及时间。SDK默认批量处理会约每五秒发送一次数据，刚点击后没有记录不一定是接入失败；服务名漏设时，也可能只是被归到unknown_service下。\n\n随后再准备正常、受控失败和并发请求，分别验证业务结果与遥测表现。把版本、启动方式、导出格式和验收请求留在项目说明中，要求AI助手交付能复查的命令与记录。上述流程是工程建议；真正有效的改进应通过同负载、同数据的前后对照确认，而不能只凭一张漂亮时间线下结论。",
+      "reviewed_at": "2026-10-07T23:16:10+08:00",
+      "authoring_note": "依据Simon Willison原始博文、本人接入笔记及Datasette/Parseable/OpenTelemetry官方文档撰写的原创分析。接入经历归属原作者，本文未安装或运行示例；640/40毫秒为假设数字，调优与验收步骤为工程建议，不表示已验证性能或生产可靠性。",
+      "update_existing": false,
+      "sources": [
+        {
+          "url": "https://simonwillison.net/2026/Oct/6/datasette-parseable-opentelemetry/",
+          "title": "Using Parseable with Datasette for OpenTelemetry traces",
+          "publisher": "Simon Willison",
+          "kind": "primary",
+          "published_at": "2026-10-06T19:07:31+00:00"
+        },
+        {
+          "url": "https://til.simonwillison.net/datasette/datasette-parseable-opentelemetry",
+          "title": "Using Parseable with Datasette for OpenTelemetry traces — implementation note",
+          "publisher": "Simon Willison",
+          "kind": "primary",
+          "published_at": "2026-10-06T12:07:31-07:00"
+        },
+        {
+          "url": "https://docs.datasette.io/en/latest/internals.html",
+          "title": "Datasette internals: OpenTelemetry",
+          "publisher": "Datasette",
+          "kind": "primary",
+          "published_at": null
+        },
+        {
+          "url": "https://docs.datasette.io/en/latest/changelog.html",
+          "title": "Datasette changelog — 1.0a41",
+          "publisher": "Datasette",
+          "kind": "primary",
+          "published_at": null
+        },
+        {
+          "url": "https://www.parseable.com/docs/ingest-data/otel/traces",
+          "title": "OpenTelemetry traces ingestion",
+          "publisher": "Parseable",
+          "kind": "primary",
+          "published_at": null
+        },
+        {
+          "url": "https://opentelemetry.io/docs/concepts/signals/traces/",
+          "title": "Traces",
+          "publisher": "OpenTelemetry",
+          "kind": "primary",
+          "published_at": null
+        }
+      ]
     }
   ]
 }
