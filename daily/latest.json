@@ -1,11 +1,8 @@
 {
-  "date": "2026-10-07",
-  "url": "https://z-xj.com/daily/2026-10-07/",
-  "count": 4,
+  "date": "2026-10-08",
+  "url": "https://z-xj.com/daily/2026-10-08/",
+  "count": 1,
   "titles": [
-    "Agent 隐私的场景边界：Google 新报告如何拆解“该不该发”",
-    "EmbeddingGemma 2：本地检索如何在向量体积和精度之间取舍",
-    "Nemotron的专门化训练：解题数据为何还要包含验证与改写",
-    "Codex辅助接入OpenTelemetry：用Datasette与Parseable定位慢请求"
+    "Google PDFM：把地点向量接入预测模型，先核对时间与适用范围"
   ]
 }
