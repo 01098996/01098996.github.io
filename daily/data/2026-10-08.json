@@ -1,6 +1,6 @@
 {
   "date": "2026-10-08",
-  "generated_at": "2026-10-08T12:08:15.068379+08:00",
+  "generated_at": "2026-10-08T13:12:47.247111+08:00",
   "articles": [
     {
       "title": "Unlocking Earth AI’s planetary geospatial foundation models for global public health",
@@ -303,6 +303,61 @@
       "evidence_kind": "primary_source_review",
       "excerpt": "",
       "editorial_revision": "cbad9f21dd663b95f6c3b8b04e8dba83d682ce7b4345cfdd669c0c0a417439e8"
+    },
+    {
+      "title": "OpenHands in September: Scoped Agents, Isolated Runtimes, Persistent Workflows",
+      "title_zh": "OpenHands并行开发：独立容器之外，还要检查权限、挂载与提交",
+      "url": "https://hub.openhands.dev/blog/new-in-agent-canvas-september-2026",
+      "source": "OpenHands",
+      "published": "2026-10-07T00:00:00+00:00",
+      "date_kind": "feed_published",
+      "category": "Agent开发与工程",
+      "summary": "OpenHands九月更新把Agent角色、会话运行环境和持续评审接在一起。本文核对默认权限与共享挂载的边界，并用假设的并行修复流程说明如何验收。",
+      "body_markdown": "## 事实与来源\n\nOpenHands于2026年10月7日发布九月更新总结，回顾Agent Canvas从1.17.0到1.24.0的变化：自动化可选择Agent Profile，会话可使用独立Docker运行环境，问题分流、开发和评审之间也增加了延续工作状态的安排。文章发布时间不等于这些功能同时上线的日期，本文属于近七天资料补选。\n\n值得关注的是一个容易被演示掩盖的问题：多个Agent并行写代码时，工具权限、磁盘文件和评审版本分别由谁控制？本文结合官方配置文档分析这些边界，未安装服务或验证隔离效果。\n\n## 技术机制\n\nAgent Profile把角色与可用能力关联起来。官方文档提供已保存秘密的全部、无、指定名称三种范围，执行检查由Agent Server负责；前端只保存选择。如果后端不声明对应能力，选择器会隐藏，范围仍不受限制。因此，看见一个名为“只读评审员”的配置，并不足以确认它真正只能读取。\n\n独立Docker会话模式则处理执行环境：外层服务保留在宿主机，每个会话在需要时启动自己的容器。文档列出非root运行、移除Linux capabilities、禁止提权以及资源限制等措施。不过工作区通过绑定挂载连接宿主目录，容器中的工具可以读写该目录；多个会话若指向同一宿主工作区，仍然共享文件。\n\n## 例子与用途\n\n假设团队让两个Agent同时修复不同问题，再由第三个Agent检查变更。可以给每项开发任务分配独立的仓库工作副本，记录各自分支和提交；评审任务只取得对应差异及必要测试资料。这样，任务甲安装依赖或改写文件时，较容易避免干扰任务乙。这是本文构造的方案，并非官方性能测试。\n\n评审结果还应绑定具体提交。若开发者在评审过程中继续推送，新代码不能自动继承旧代码的通过结论。官方月报提到评审模板在启动前检查PR的准确head commit；工程上还可在展示结果时重新核对提交，并明确标出过期反馈。这里的后续检查是本文建议。\n\n## 限制与不确定性\n\n容器边界与业务授权需要分别验证。绑定挂载、宿主服务访问和授予Agent的工具都会影响它实际能触及什么；仅启用Docker不能证明外部报告中的恶意指令无法造成危害。也不能把单独的容器误写成完全独立的文件副本，更不能据此跳过对运行不可信代码的审查。\n\n配置默认值同样值得检查。官方说明，既有Profile的秘密范围默认为全部；没有设置MCP服务器引用时，会获得全部已配置服务器的工具。升级版本、换后端或新增工具后，旧配置的实际能力应重新验收。本文没有做攻击测试，也不对某套生产部署的安全性作保证。\n\n## 开发者启示\n\n可以先做一个小型验收清单：角色能调用哪些工具，容器挂载哪些目录，评审针对哪个提交，失败后由谁接手。用无敏感内容的测试仓库，安排两个任务分别写入不同标记，再检查是否互相可见；让只读角色尝试一项应被拒绝的写操作，核对拒绝发生在执行层，而非只靠提示词劝阻。\n\n对于长期自动化，还应保存任务与会话的对应关系，避免同一问题反复创建互不知情的执行者。重试前读取最新问题和仓库状态，确认旧动作是否已完成；恢复上下文时也重新检查权限和目标提交。上述步骤是设计建议。OpenHands这轮更新提供了可组合的控制点，真正落地仍需要把它们变成可重复检查的行为。",
+      "tags": [
+        "OpenHands",
+        "Agent Canvas",
+        "容器隔离",
+        "权限控制",
+        "代码评审"
+      ],
+      "sources": [
+        {
+          "url": "https://hub.openhands.dev/blog/new-in-agent-canvas-september-2026",
+          "title": "OpenHands in September: Scoped Agents, Isolated Runtimes, Persistent Workflows",
+          "publisher": "OpenHands",
+          "kind": "primary",
+          "published_at": "2026-10-07T00:00:00.000Z"
+        },
+        {
+          "url": "https://docs.openhands.dev/openhands/usage/agent-canvas/agent-profiles",
+          "title": "Agent Profiles",
+          "publisher": "OpenHands Docs",
+          "kind": "primary",
+          "published_at": null
+        },
+        {
+          "url": "https://docs.openhands.dev/openhands/usage/agent-canvas/backend-setup/docker-execution",
+          "title": "Run Each Conversation in Its Own Docker Container",
+          "publisher": "OpenHands Docs",
+          "kind": "primary",
+          "published_at": null
+        },
+        {
+          "url": "https://docs.openhands.dev/openhands/usage/agent-canvas/release-notes/v1.20.0",
+          "title": "Agent Canvas 1.20.0 release notes",
+          "publisher": "OpenHands Docs",
+          "kind": "primary",
+          "published_at": null
+        }
+      ],
+      "reviewed_at": "2026-10-08T05:11:26+00:00",
+      "authoring_note": "依据OpenHands月报全文与官方配置、版本说明的原创分析。主来源时间取原页JSON-LD，属于近7天补选；月报日期与各功能发布日期分开。并行修复案例为假设，验收步骤属于工程建议。未安装运行、处理凭据或进行隔离与攻击测试。",
+      "content_kind": "article",
+      "summary_kind": "source_review",
+      "evidence_kind": "primary_source_review",
+      "excerpt": "",
+      "editorial_revision": "a42b591db94393f1a17d112e4aa522d8cea0b3e5e5dd86752dfecbede06b239c"
     }
   ],
   "errors": []
