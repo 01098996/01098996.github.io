@@ -146,50 +146,6 @@
           "published_at": null
         }
       ]
-    },
-    {
-      "approved": true,
-      "source_url": "https://simonwillison.net/2026/Oct/7/claude-haiku-5-5/",
-      "source_title": "Claude Haiku 5.5",
-      "source_published_at": "2026-10-07T20:56:21+00:00",
-      "publication_date": "2026-10-08",
-      "title_zh": "Haiku 5.5迁移：低单价之外，解析、推理预算和延迟都要重测",
-      "summary": "从Simon Willison的绘图记录切入，结合官方Messages API迁移指南，解释分词变化、响应块解析和预算耗尽为何会影响小模型接入，并给出代码评审摘要的假设验收流程。",
-      "category": "模型接入与工程",
-      "tags": [
-        "Claude Haiku",
-        "API迁移",
-        "推理预算",
-        "模型评估",
-        "成本控制"
-      ],
-      "body_markdown": "## 事实与来源\n\nSimon Willison于10月7日发表Haiku 5.5的使用记录：同一个SVG绘图任务，low推理档耗时7秒，max档耗时5分9秒。这是作者展示的单次样例，不是稳定延迟统计，却提醒开发者：小模型价格降低，不代表所有配置都适合即时交互。\n\nAnthropic同日发布Haiku 5.5，定位包括摘要、分类和窄范围子任务。官方价目按提示长度分档：不超过十万token时，每百万输入、输出token分别为0.10和0.50美元；超过后分别为0.50和2.50美元。本文结合作者记录、官方发布页与迁移指南讨论接入，未调用模型或复测表现。\n\n## 技术机制\n\n对直接调用Messages API的应用，这次升级改变的不只是模型名称。迁移指南说明，新分词器对相同文字通常产生更多token，应重新计数，不能直接沿用旧模型的长度和费用估算。原先靠删减少量字符控制预算的办法，也需要重新检查，因为应用真正面对的是新模型的计量结果。\n\n原先使用enabled加budget_tokens的请求需改为adaptive，并用effort调节；旧写法会报错。响应还可能先返回thinking块，程序应按type寻找文字或工具调用，不能假设第一块就是答案。推理也占max_tokens，额度太小时可能在正文出现前耗尽。因此，解析逻辑、停止原因和预算设置需要一起验收。\n\n## 例子与用途\n\n假设一个代码评审助手，把差异文件交给小模型生成“改动摘要、潜在风险、待检查项”，再由主流程汇总。可以先把小模型限定为只读分析，要求每项风险对应具体文件和代码位置；它不直接合并代码，也不把猜测写成已确认缺陷。这是本文构造的设计示例。\n\n迁移时先固定一组输入，覆盖小补丁、长文件、删除代码和信息不足的情况。分别记录输出是否完整、引用是否准确、等待时间及实际用量，再比较不同effort设置。若任务要求的最终摘要没有返回，应标记为未完成，而不是让空字符串通过检查。提高预算或重新执行之前，还应设置总次数和总开销上限。\n\n## 限制与不确定性\n\n作者的绘图例子不能证明max档在代码评审中更好，也不能用两次等待时间计算普遍提速比。官方性能和价格定位来自发布方；真实费用还取决于新分词结果、输入长度、推理输出与重试次数。对接近十万token分档线的任务，尤其需要按实际请求重新估算，不能只比较单价。\n\n迁移指南还要求移除旧采样参数，并替换最后一条assistant预填内容。分类可考虑枚举工具参数，格式输出则使用平台支持的结构化能力。这里的格式约束只能减少解析歧义，不能证明分类正确。不同托管平台的功能支持也有差别，不能把Claude API的请求原样视为处处通用。\n\n## 开发者启示\n\n先确定应用的验收边界，再决定模型配置。例如摘要任务可以检查是否遗漏删除项，风险列表可以要求证据定位；含糊输入允许返回“资料不足”。把这些规则做成独立测试，比观察几个流畅样例更有价值。低价模型适合尝试承担更多小任务，但任务数量扩大后，人工复核和重试也可能成为主要成本。\n\n上线前可保留旧流程作对照，用相同样本逐项迁移请求参数、响应解析和预算控制。记录模型标识、effort、停止原因与错误类别，避免只汇总成功调用。最后比较的是完成一项合格结果需要的总时间与总成本，而非每百万token的标价。以上是工程建议，尚未在具体产品中验证。",
-      "sources": [
-        {
-          "url": "https://simonwillison.net/2026/Oct/7/claude-haiku-5-5/",
-          "title": "Claude Haiku 5.5",
-          "publisher": "Simon Willison",
-          "kind": "primary",
-          "published_at": "2026-10-07T20:56:21+00:00"
-        },
-        {
-          "url": "https://www.anthropic.com/claude-haiku-5-5",
-          "title": "Introducing Claude Haiku 5.5",
-          "publisher": "Anthropic",
-          "kind": "primary",
-          "published_at": null
-        },
-        {
-          "url": "https://platform.claude.com/docs/en/models/haiku-5-5/migration-guide",
-          "title": "Claude Haiku 5.5 migration guide",
-          "publisher": "Anthropic Claude Platform Docs",
-          "kind": "primary",
-          "published_at": null
-        }
-      ],
-      "reviewed_at": "2026-10-08T03:05:00+00:00",
-      "authoring_note": "依据作者全文、官方发布页与Messages API迁移指南的原创分析；主来源精确发布时间由作者Atom核对。单次耗时归属Simon Willison，价格与接口行为归属官方；代码评审例子是假设，验收流程为工程建议。未调用模型或复测，不采用作者关于完全不能关闭推理的说法；官方发布页只确认10月7日，未补造其精确时刻。",
-      "update_existing": false
     }
   ]
 }
