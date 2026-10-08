@@ -1,11 +1,12 @@
 {
   "date": "2026-10-08",
   "url": "https://z-xj.com/daily/2026-10-08/",
-  "count": 4,
+  "count": 5,
   "titles": [
     "Google PDFM：把地点向量接入预测模型，先核对时间与适用范围",
     "Liquid AI open d1：一次前向计算做分类，端侧应用该怎样验收",
     "Falcon OCR Arabic：小模型读懂文档，还要过字段与版式两道关",
-    "AutoSynthData：把Agent失败变成练习，验证器也要接受测试"
+    "AutoSynthData：把Agent失败变成练习，验证器也要接受测试",
+    "Haiku 5.5迁移：低单价之外，解析、推理预算和延迟都要重测"
   ]
 }
