@@ -1,6 +1,6 @@
 {
   "date": "2026-10-08",
-  "generated_at": "2026-10-08T03:31:16.694261+08:00",
+  "generated_at": "2026-10-08T10:07:40.393412+08:00",
   "articles": [
     {
       "title": "Unlocking Earth AI’s planetary geospatial foundation models for global public health",
@@ -159,6 +159,54 @@
       "evidence_kind": "primary_source_review",
       "excerpt": "",
       "editorial_revision": "e187f5e4280d41490de64f5fb461a28d2c54cba41ee8aba06683b166b087be29"
+    },
+    {
+      "title": "AutoSynthData: Generating Training Data for Enterprise Agents",
+      "title_zh": "AutoSynthData：把Agent失败变成练习，验证器也要接受测试",
+      "url": "https://huggingface.co/blog/ServiceNow-AI/autosynthdata",
+      "source": "ServiceNow CoreAI",
+      "published": "2026-10-02T04:01:31.290000+00:00",
+      "date_kind": "feed_published",
+      "category": "Agent训练与数据工程",
+      "summary": "ServiceNow提出围绕模型能力缺口生成训练任务。本文用假设工单场景解释正反验证、合法多解与独立测试，区分公开基准、合成训练集和SFT实验的边界。",
+      "body_markdown": "## 事实与来源\n\nServiceNow CoreAI于2026年10月2日介绍AutoSynthData：根据目标模型的失败，生成适合它下一轮学习的企业Agent任务。它把训练样本看成系统约束、用户请求和验证器的组合，而非单纯的一问一答。本文为近七天资料补选，依据发布原文与EnterpriseOps-Gym数据说明整理，未运行生成或训练流程。\n\n这与给Agent增加一个工具不同：真正需要建设的是可重置、能执行、可判定结果的练习环境。开发团队若只收集“回答得不好”的对话，却没有保存初始状态和正确结果，就很难把失败变成稳定可用的训练信号。\n\n## 技术机制\n\n原文先把失败归纳为能力说明，再生成新任务；生成器不接收原评测题的完整提示、实体、轨迹与验证细节。候选样本既要让正确执行通过，也要让相关错误结果无法通过。扩增样本仍需重新验证，且不能继续充当下一代扩增的种子。这些约束针对的是数据漂移和验证器过松，而不是文案是否流畅。\n\nEnterpriseOps-Gym数据卡展示了任务提示、可用工具、数据库初始化和验证配置等字段。它的评测区分通过多少个验证条件与整项任务是否全部通过。因此，即便多数检查项变绿，遗漏一个必需动作仍可能让任务失败；训练数据也应保留这种差别。\n\n## 例子与用途\n\n下面是假设的工单练习，不是官方实验样例。某助手经常把“找到重复工单”误当成“完成关联”。可以准备一个隔离数据库，放入两张描述相近但属于不同设备的工单，以及一张真正重复的记录。要求助手只关联指定设备的重复项，并保留其他记录不变。\n\n验证器至少检查目标关联是否建立、关联对象是否正确、无关记录是否被改动。再制造三种负例：只留言说已处理、关联到错误设备、把所有相似工单都合并。如果这些负例也能通过，应修验证器，而非把它们交给模型学习。另一种合法工具调用顺序只要满足相同约束，就不应因偏离参考步骤被判错。\n\n## 限制与不确定性\n\n发布方在EnterpriseOps Gym的Hybrid与ITSM环境报告了监督微调收益，不能据此认定强化学习或生产流程同样有效。公开基准数据也不等于文中新增合成训练集已经发布。本文没有独立复现结果，不把来源中的生成时间换算成通用成本。\n\n能力说明来自评测反馈，仍可能使训练过度贴近同一环境。对此，团队可另外保留完全不参与选题和调参的测试任务，变换业务实体、工具组合与初始状态后再验收。这是本文建议。还要检查终态正确但过程越权的情况，不能仅凭最终数据库满足条件就忽略执行途中发生的错误。\n\n## 开发者启示\n\n不必一开始就追求数千条样本。可以先选一种反复出现的失败，写出十来个边界清楚的练习，记录每项任务的初始快照、授权范围、成功条件与预期拒绝的结果。先由人工检查请求是否合理，再回放参考方案；无法稳定重置和判分的样本，暂时不要进入训练集。\n\n扩量前还应统计失败来源：模型不会做、环境缺能力、题目有歧义，还是验证器写错。把后几类都算成模型不足，只会生成更多错误练习。真正值得沿用的工程思路，是让数据生产同时交付“题目为什么可做、答案为什么算对”的证据，并把训练后的收益放回独立任务上检验。以上是设计建议，未声称已经完成部署。",
+      "tags": [
+        "AutoSynthData",
+        "合成数据",
+        "Agent训练",
+        "验证器",
+        "评测"
+      ],
+      "sources": [
+        {
+          "url": "https://huggingface.co/blog/ServiceNow-AI/autosynthdata",
+          "title": "AutoSynthData: Generating Training Data for Enterprise Agents",
+          "publisher": "ServiceNow CoreAI",
+          "kind": "primary",
+          "published_at": "2026-10-02T04:01:31.290Z"
+        },
+        {
+          "url": "https://huggingface.co/datasets/ServiceNow-AI/EnterpriseOps-Gym",
+          "title": "EnterpriseOps-Gym dataset card",
+          "publisher": "ServiceNow AI",
+          "kind": "primary",
+          "published_at": null
+        },
+        {
+          "url": "https://github.com/ServiceNow/EnterpriseOps-Gym",
+          "title": "EnterpriseOps-Gym README: Scoring",
+          "publisher": "ServiceNow AI",
+          "kind": "primary",
+          "published_at": null
+        }
+      ],
+      "reviewed_at": "2026-10-08T02:06:40+00:00",
+      "authoring_note": "依据ServiceNow CoreAI原文全文与EnterpriseOps-Gym数据卡撰写的原创技术分析。主来源时间读取原页JSON-LD，本篇为近7天补选；工单流程为假设案例，验收与数据治理步骤为工程建议。未调用模型、下载数据集或运行训练，不将SFT结果推广到RL或生产环境。",
+      "content_kind": "article",
+      "summary_kind": "source_review",
+      "evidence_kind": "primary_source_review",
+      "excerpt": "",
+      "editorial_revision": "34e79e61e290fe3f3877efc8fee043f9dd38458e6c8cdecabb85b8c715d28368"
     }
   ],
   "errors": []
