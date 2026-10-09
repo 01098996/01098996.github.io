@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-10",
+  "articles": [
+    {
+      "title": "联想天禧自研代码智能体TianxiCode斩获SWE-bench-Live全球第一",
+      "title_zh": "联想天禧自研代码智能体TianxiCode斩获SWE-bench-Live全球第一",
+      "url": "https://www.qbitai.com/2026/10/502422.html",
+      "source": "量子位",
+      "published": "2026-10-09T08:53:08+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-10T00:17:29.025445+08:00",
+      "category": "Agent 开发",
+      "excerpt": "",
+      "summary": "量子位相关内容涉及智能体工作流。可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "reading": "## 来源事实\n\n公开来源为 量子位，来源发布时间为 2026-10-09T08:53:08+00:00。标题与订阅信息涉及智能体工作流。\n\n## 短解读（分析）\n\n可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "question": "任务中断后能否恢复？工具权限与失败重试边界写清楚了吗？",
+      "tags": [
+        "Agent 开发"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "清华具身模型登顶全球第一！突围GPT-6、英伟达，不靠外挂和额外数据",
+      "title_zh": "清华具身模型登顶全球第一！突围GPT-6、英伟达，不靠外挂和额外数据",
+      "url": "https://www.qbitai.com/2026/10/502125.html",
+      "source": "量子位",
+      "published": "2026-10-09T03:52:21+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-10T00:17:29.025445+08:00",
+      "category": "模型进展",
+      "excerpt": "",
+      "summary": "量子位相关内容涉及模型能力与使用方式。模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "reading": "## 来源事实\n\n公开来源为 量子位，来源发布时间为 2026-10-09T03:52:21+00:00。标题与订阅信息涉及模型能力与使用方式。\n\n## 短解读（分析）\n\n模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "question": "版本、开放方式与评测条件是否明确？结果能否在同一任务上比较？",
+      "tags": [
+        "模型进展"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    }
+  ]
+}
