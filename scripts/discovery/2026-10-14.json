@@ -1,0 +1,27 @@
+{
+  "date": "2026-10-14",
+  "articles": [
+    {
+      "title": "How Anthropic’s Dynamic Workflows Coordinate Claude Agents",
+      "title_zh": "智能体工作流｜How Anthropic’s Dynamic Workflows Coordinate Claude Agents",
+      "url": "https://www.latent.space/p/claude-dynamic-workflows",
+      "source": "Latent Space",
+      "published": "2026-10-12T18:18:17+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-14T03:20:22.624656+08:00",
+      "category": "Agent 开发",
+      "excerpt": "",
+      "summary": "Claude相关内容涉及工作流。可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "reading": "## 来源事实\n\n公开来源为 Latent Space，来源发布时间为 2026-10-12T18:18:17+00:00。标题与订阅信息涉及工作流。\n\n## 短解读（分析）\n\n可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "question": "任务中断后能否恢复？工具权限与失败重试边界写清楚了吗？",
+      "tags": [
+        "Claude",
+        "工作流",
+        "Agent 开发"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    }
+  ]
+}
