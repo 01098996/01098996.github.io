@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-16",
+  "articles": [
+    {
+      "title": "[AINews] AI Engineer NYC: Gemini 4 Argon, Vals AI Benchmarks",
+      "title_zh": "评测与可靠性｜[AINews] AI Engineer NYC: Gemini 4 Argon, Vals AI Benchmarks",
+      "url": "https://www.latent.space/p/ainews-ai-engineer-nyc-gemini-4-argon",
+      "source": "Latent Space",
+      "published": "2026-10-14T05:40:28+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-16T01:06:10.087291+08:00",
+      "category": "评测与可靠性",
+      "excerpt": "",
+      "summary": "Gemini 4相关内容涉及基准测试、工作流、API。评测结论依赖测试集和执行条件。将失败样例、重复运行的波动与成本一起看，才能判断一个改进是否适合真实任务。",
+      "reading": "## 来源事实\n\n公开来源为 Latent Space，来源发布时间为 2026-10-14T05:40:28+00:00。标题与订阅信息涉及基准测试、工作流、API。\n\n## 短解读（分析）\n\n评测结论依赖测试集和执行条件。将失败样例、重复运行的波动与成本一起看，才能判断一个改进是否适合真实任务。",
+      "question": "测试集、对照条件和失败样例是否公开？结论适用于什么任务？",
+      "tags": [
+        "Gemini 4",
+        "基准测试",
+        "工作流",
+        "API",
+        "评测与可靠性"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "响应速度比Claude Code快3倍，实现真正无限上下文！APUS AI开源Reflex Agent",
+      "title_zh": "响应速度比Claude Code快3倍，实现真正无限上下文！APUS AI开源Reflex Agent",
+      "url": "https://www.qbitai.com/2026/10/503165.html",
+      "source": "量子位",
+      "published": "2026-10-14T03:32:48+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-16T01:06:10.087291+08:00",
+      "category": "AI 编程实践",
+      "excerpt": "",
+      "summary": "原标题涉及开源内容。量子位相关内容涉及开源、Claude Code。工具能否帮上忙，取决于它在现有项目里如何定位文件、执行检查并呈现改动。可以用一个小修复任务比较完成时间和人工复核量。",
+      "reading": "## 来源事实\n\n公开来源为 量子位，来源发布时间为 2026-10-14T03:32:48+00:00。原标题涉及开源内容。标题与订阅信息涉及开源、Claude Code。\n\n## 短解读（分析）\n\n工具能否帮上忙，取决于它在现有项目里如何定位文件、执行检查并呈现改动。可以用一个小修复任务比较完成时间和人工复核量。",
+      "question": "来源是否给出了可复现的仓库、执行权限和验证步骤？",
+      "tags": [
+        "开源",
+        "Claude Code",
+        "AI 编程实践"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    }
+  ]
+}
