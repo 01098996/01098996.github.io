@@ -91,6 +91,26 @@
       "content_kind": "brief",
       "summary_kind": "rule_based_brief",
       "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "STEPX首款大模型原生智能体手机STEPX Neo正式发布",
+      "title_zh": "STEPX首款大模型原生智能体手机STEPX Neo正式发布",
+      "url": "https://www.qbitai.com/2026/10/503201.html",
+      "source": "量子位",
+      "published": "2026-10-14T06:45:38+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-16T07:06:47.858922+08:00",
+      "category": "Agent 开发",
+      "excerpt": "",
+      "summary": "量子位相关内容涉及智能体工作流。可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "reading": "## 来源事实\n\n公开来源为 量子位，来源发布时间为 2026-10-14T06:45:38+00:00。标题与订阅信息涉及智能体工作流。\n\n## 短解读（分析）\n\n可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "question": "任务中断后能否恢复？工具权限与失败重试边界写清楚了吗？",
+      "tags": [
+        "Agent 开发"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
     }
   ]
 }
