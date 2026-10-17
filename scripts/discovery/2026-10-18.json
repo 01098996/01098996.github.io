@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-18",
+  "articles": [
+    {
+      "title": "Grounding AI agents in biological reality: Building blocks for autonomous wet labs",
+      "title_zh": "智能体工作流｜Grounding AI agents in biological reality: Building blocks for autonomous wet labs",
+      "url": "https://research.google/blog/grounding-ai-agents-in-biological-reality-building-blocks-for-autonomous-wet-labs",
+      "source": "Google Research",
+      "published": "2026-10-16T18:11:34+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-18T01:16:08.433600+08:00",
+      "category": "Agent 开发",
+      "excerpt": "",
+      "summary": "Google Research相关内容涉及智能体工作流。可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "reading": "## 来源事实\n\n公开来源为 Google Research，来源发布时间为 2026-10-16T18:11:34+00:00。标题与订阅信息涉及智能体工作流。\n\n## 短解读（分析）\n\n可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "question": "任务中断后能否恢复？工具权限与失败重试边界写清楚了吗？",
+      "tags": [
+        "Agent 开发"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "[AINews] AI Engineer NYC: Gemini 4 Argon, Vals AI Benchmarks",
+      "title_zh": "评测与可靠性｜[AINews] AI Engineer NYC: Gemini 4 Argon, Vals AI Benchmarks",
+      "url": "https://www.latent.space/p/ainews-ai-engineer-nyc-gemini-4-argon",
+      "source": "Latent Space",
+      "published": "2026-10-14T05:40:28+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-18T01:16:08.433600+08:00",
+      "category": "评测与可靠性",
+      "excerpt": "",
+      "summary": "Gemini 4相关内容涉及基准测试、工作流、API。评测结论依赖测试集和执行条件。将失败样例、重复运行的波动与成本一起看，才能判断一个改进是否适合真实任务。",
+      "reading": "## 来源事实\n\n公开来源为 Latent Space，来源发布时间为 2026-10-14T05:40:28+00:00。标题与订阅信息涉及基准测试、工作流、API。\n\n## 短解读（分析）\n\n评测结论依赖测试集和执行条件。将失败样例、重复运行的波动与成本一起看，才能判断一个改进是否适合真实任务。",
+      "question": "测试集、对照条件和失败样例是否公开？结论适用于什么任务？",
+      "tags": [
+        "Gemini 4",
+        "基准测试",
+        "工作流",
+        "API",
+        "评测与可靠性"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    }
+  ]
+}
