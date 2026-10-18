@@ -44,6 +44,51 @@
       "content_kind": "brief",
       "summary_kind": "rule_based_brief",
       "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "yeyuxin777/baoyan-agent-benchmark",
+      "title_zh": "评测与可靠性｜yeyuxin777/baoyan-agent-benchmark",
+      "url": "https://github.com/yeyuxin777/baoyan-agent-benchmark",
+      "source": "GitHub",
+      "published": "2026-10-12T09:15:11Z",
+      "date_kind": "project_created",
+      "discovered_at": "2026-10-19T04:50:15.031682+08:00",
+      "category": "评测与可靠性",
+      "excerpt": "",
+      "summary": "GitHub相关内容涉及开源、基准测试、Python。评测结论依赖测试集和执行条件。将失败样例、重复运行的波动与成本一起看，才能判断一个改进是否适合真实任务。",
+      "reading": "## 来源事实\n\n公开来源为 GitHub，项目创建时间为 2026-10-12T09:15:11Z。标题与订阅信息涉及开源、基准测试、Python。这里的日期是 GitHub 项目创建日期，不能当作产品发布日期。\n\n## 短解读（分析）\n\n评测结论依赖测试集和执行条件。将失败样例、重复运行的波动与成本一起看，才能判断一个改进是否适合真实任务。",
+      "question": "测试集、对照条件和失败样例是否公开？结论适用于什么任务？",
+      "tags": [
+        "开源",
+        "基准测试",
+        "Python",
+        "评测与可靠性"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "How Anthropic’s Dynamic Workflows Coordinate Claude Agents (Updated with video!)",
+      "title_zh": "智能体工作流｜How Anthropic’s Dynamic Workflows Coordinate Claude Agents (Updated with video!)",
+      "url": "https://www.latent.space/p/claude-dynamic-workflows",
+      "source": "Latent Space",
+      "published": "2026-10-12T18:18:17+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-19T04:50:15.031682+08:00",
+      "category": "Agent 开发",
+      "excerpt": "",
+      "summary": "Claude相关内容涉及工作流。可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "reading": "## 来源事实\n\n公开来源为 Latent Space，来源发布时间为 2026-10-12T18:18:17+00:00。标题与订阅信息涉及工作流。\n\n## 短解读（分析）\n\n可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "question": "任务中断后能否恢复？工具权限与失败重试边界写清楚了吗？",
+      "tags": [
+        "Claude",
+        "工作流",
+        "Agent 开发"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
     }
   ]
 }
