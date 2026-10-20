@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-21",
+  "articles": [
+    {
+      "title": "How To Use Decision Models for Evals",
+      "title_zh": "评测与可靠性｜How To Use Decision Models for Evals",
+      "url": "https://hamel.dev/blog/posts/decision-model-evals",
+      "source": "Hamel Husain",
+      "published": "2026-10-20T07:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-21T03:20:07.906716+08:00",
+      "category": "评测与可靠性",
+      "excerpt": "",
+      "summary": "Hamel Husain相关内容涉及评测、API。评测结论依赖测试集和执行条件。将失败样例、重复运行的波动与成本一起看，才能判断一个改进是否适合真实任务。",
+      "reading": "## 来源事实\n\n公开来源为 Hamel Husain，来源发布时间为 2026-10-20T07:00:00+00:00。标题与订阅信息涉及评测、API。\n\n## 短解读（分析）\n\n评测结论依赖测试集和执行条件。将失败样例、重复运行的波动与成本一起看，才能判断一个改进是否适合真实任务。",
+      "question": "测试集、对照条件和失败样例是否公开？结论适用于什么任务？",
+      "tags": [
+        "评测",
+        "API",
+        "评测与可靠性"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Grounding AI agents in biological reality: Building blocks for autonomous wet labs",
+      "title_zh": "智能体工作流｜Grounding AI agents in biological reality: Building blocks for autonomous wet labs",
+      "url": "https://research.google/blog/grounding-ai-agents-in-biological-reality-building-blocks-for-autonomous-wet-labs",
+      "source": "Google Research",
+      "published": "2026-10-16T18:11:34+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-21T03:20:07.906716+08:00",
+      "category": "Agent 开发",
+      "excerpt": "",
+      "summary": "Google Research相关内容涉及智能体工作流。可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "reading": "## 来源事实\n\n公开来源为 Google Research，来源发布时间为 2026-10-16T18:11:34+00:00。标题与订阅信息涉及智能体工作流。\n\n## 短解读（分析）\n\n可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "question": "任务中断后能否恢复？工具权限与失败重试边界写清楚了吗？",
+      "tags": [
+        "Agent 开发"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    }
+  ]
+}
