@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-28",
+  "articles": [
+    {
+      "title": "Greptile takes bug detection beyond code review with GPT-6 Astra",
+      "title_zh": "模型能力与使用方式｜Greptile takes bug detection beyond code review with GPT-6 Astra",
+      "url": "https://openai.com/index/greptile-code-review-codex-astra",
+      "source": "OpenAI",
+      "published": "2026-10-26T22:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-28T04:07:29.402835+08:00",
+      "category": "模型进展",
+      "excerpt": "",
+      "summary": "GPT-6相关内容涉及Codex、工作流。模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "reading": "## 来源事实\n\n公开来源为 OpenAI，来源发布时间为 2026-10-26T22:00:00+00:00。标题与订阅信息涉及Codex、工作流。\n\n## 短解读（分析）\n\n模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "question": "版本、开放方式与评测条件是否明确？结果能否在同一任务上比较？",
+      "tags": [
+        "GPT-6",
+        "Codex",
+        "工作流",
+        "模型进展"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "钛动科技发布行业首个Pro-Agent, Navos Pro定义结果导向的AI for Work | TGC 2026科技增长大会",
+      "title_zh": "钛动科技发布行业首个Pro-Agent, Navos Pro定义结果导向的AI for Work | TGC 2026科技增长大会",
+      "url": "https://www.qbitai.com/2026/10/505580.html",
+      "source": "量子位",
+      "published": "2026-10-27T03:23:55+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-28T04:07:29.402835+08:00",
+      "category": "Agent 开发",
+      "excerpt": "",
+      "summary": "量子位相关内容涉及智能体工作流。可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "reading": "## 来源事实\n\n公开来源为 量子位，来源发布时间为 2026-10-27T03:23:55+00:00。标题与订阅信息涉及智能体工作流。\n\n## 短解读（分析）\n\n可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "question": "任务中断后能否恢复？工具权限与失败重试边界写清楚了吗？",
+      "tags": [
+        "Agent 开发"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    }
+  ]
+}
