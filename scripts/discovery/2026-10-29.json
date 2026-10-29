@@ -108,6 +108,28 @@
       "content_kind": "brief",
       "summary_kind": "rule_based_brief",
       "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "[AINews] Gemini 4 Carbon tops leaderboards, launches for cyber defenders",
+      "title_zh": "模型能力与使用方式｜[AINews] Gemini 4 Carbon tops leaderboards, launches for cyber defenders",
+      "url": "https://latent.space/p/ainews-gemini-4-carbon",
+      "source": "Latent Space",
+      "published": "2026-10-29T05:55:19+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-29T14:56:49.676142+08:00",
+      "category": "模型进展",
+      "excerpt": "",
+      "summary": "Gemini 4相关内容涉及上下文窗口。模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "reading": "## 来源事实\n\n公开来源为 Latent Space，来源发布时间为 2026-10-29T05:55:19+00:00。标题与订阅信息涉及上下文窗口。\n\n## 短解读（分析）\n\n模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "question": "版本、开放方式与评测条件是否明确？结果能否在同一任务上比较？",
+      "tags": [
+        "Gemini 4",
+        "上下文窗口",
+        "模型进展"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
     }
   ]
 }
