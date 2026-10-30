@@ -169,6 +169,28 @@
       "content_kind": "brief",
       "summary_kind": "rule_based_brief",
       "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "[AINews] Building AIE CODE: The top Coding Agent Conference",
+      "title_zh": "编程助手｜[AINews] Building AIE CODE: The top Coding Agent Conference",
+      "url": "https://latent.space/p/ainews-building-aie-code-the-top-coding-agent-conference",
+      "source": "Latent Space",
+      "published": "2026-10-30T08:24:29+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-30T16:42:44.471908+08:00",
+      "category": "AI 编程实践",
+      "excerpt": "",
+      "summary": "原标题涉及编程智能体。Latent Space相关内容涉及技能扩展、编程智能体。工具能否帮上忙，取决于它在现有项目里如何定位文件、执行检查并呈现改动。可以用一个小修复任务比较完成时间和人工复核量。",
+      "reading": "## 来源事实\n\n公开来源为 Latent Space，来源发布时间为 2026-10-30T08:24:29+00:00。原标题涉及编程智能体。标题与订阅信息涉及技能扩展、编程智能体。\n\n## 短解读（分析）\n\n工具能否帮上忙，取决于它在现有项目里如何定位文件、执行检查并呈现改动。可以用一个小修复任务比较完成时间和人工复核量。",
+      "question": "来源是否给出了可复现的仓库、执行权限和验证步骤？",
+      "tags": [
+        "技能扩展",
+        "编程智能体",
+        "AI 编程实践"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
     }
   ]
 }
