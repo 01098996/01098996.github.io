@@ -191,6 +191,28 @@
       "content_kind": "brief",
       "summary_kind": "rule_based_brief",
       "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "From synthetic enterprise data evaluations to real Microsoft Copilot AI confidence",
+      "title_zh": "评测与可靠性｜From synthetic enterprise data evaluations to real Microsoft Copilot AI confidence",
+      "url": "https://www.microsoft.com/en-us/research/blog/from-synthetic-enterprise-data-evaluations-to-real-microsoft-copilot-ai-confidence",
+      "source": "Microsoft Research",
+      "published": "2026-10-30T13:05:28+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-30T23:58:32.328181+08:00",
+      "category": "评测与可靠性",
+      "excerpt": "",
+      "summary": "Microsoft Research相关内容涉及基准测试、工作流。评测结论依赖测试集和执行条件。将失败样例、重复运行的波动与成本一起看，才能判断一个改进是否适合真实任务。",
+      "reading": "## 来源事实\n\n公开来源为 Microsoft Research，来源发布时间为 2026-10-30T13:05:28+00:00。标题与订阅信息涉及基准测试、工作流。\n\n## 短解读（分析）\n\n评测结论依赖测试集和执行条件。将失败样例、重复运行的波动与成本一起看，才能判断一个改进是否适合真实任务。",
+      "question": "测试集、对照条件和失败样例是否公开？结论适用于什么任务？",
+      "tags": [
+        "基准测试",
+        "工作流",
+        "评测与可靠性"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
     }
   ]
 }
