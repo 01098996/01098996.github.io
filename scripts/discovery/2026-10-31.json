@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-31",
+  "articles": [
+    {
+      "title": "From synthetic enterprise data evaluations to real Microsoft Copilot AI confidence",
+      "title_zh": "评测与可靠性｜From synthetic enterprise data evaluations to real Microsoft Copilot AI confidence",
+      "url": "https://www.microsoft.com/en-us/research/blog/from-synthetic-enterprise-data-evaluations-to-real-microsoft-copilot-ai-confidence",
+      "source": "Microsoft Research",
+      "published": "2026-10-30T13:05:28+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-31T04:51:10.654398+08:00",
+      "category": "评测与可靠性",
+      "excerpt": "",
+      "summary": "Microsoft Research相关内容涉及基准测试、工作流。评测结论依赖测试集和执行条件。将失败样例、重复运行的波动与成本一起看，才能判断一个改进是否适合真实任务。",
+      "reading": "## 来源事实\n\n公开来源为 Microsoft Research，来源发布时间为 2026-10-30T13:05:28+00:00。标题与订阅信息涉及基准测试、工作流。\n\n## 短解读（分析）\n\n评测结论依赖测试集和执行条件。将失败样例、重复运行的波动与成本一起看，才能判断一个改进是否适合真实任务。",
+      "question": "测试集、对照条件和失败样例是否公开？结论适用于什么任务？",
+      "tags": [
+        "基准测试",
+        "工作流",
+        "评测与可靠性"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Legora is building the agentic operating system for legal work",
+      "title_zh": "智能体工作流｜Legora is building the agentic operating system for legal work",
+      "url": "https://openai.com/index/legora",
+      "source": "OpenAI",
+      "published": "2026-10-28T09:30:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-31T04:51:10.654398+08:00",
+      "category": "Agent 开发",
+      "excerpt": "",
+      "summary": "OpenAI相关内容涉及Codex、工作流。可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "reading": "## 来源事实\n\n公开来源为 OpenAI，来源发布时间为 2026-10-28T09:30:00+00:00。标题与订阅信息涉及Codex、工作流。\n\n## 短解读（分析）\n\n可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "question": "任务中断后能否恢复？工具权限与失败重试边界写清楚了吗？",
+      "tags": [
+        "Codex",
+        "工作流",
+        "Agent 开发"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    }
+  ]
+}
