@@ -86,6 +86,91 @@
       "content_kind": "brief",
       "summary_kind": "rule_based_brief",
       "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Greptile takes bug detection beyond code review with GPT-6 Astra",
+      "title_zh": "模型能力与使用方式｜Greptile takes bug detection beyond code review with GPT-6 Astra",
+      "url": "https://openai.com/index/greptile-code-review-codex-astra",
+      "source": "OpenAI",
+      "published": "2026-10-26T22:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-31T14:53:55.833310+08:00",
+      "category": "模型进展",
+      "excerpt": "",
+      "summary": "GPT-6相关内容涉及Codex、工作流。模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "reading": "## 来源事实\n\n公开来源为 OpenAI，来源发布时间为 2026-10-26T22:00:00+00:00。标题与订阅信息涉及Codex、工作流。\n\n## 短解读（分析）\n\n模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "question": "版本、开放方式与评测条件是否明确？结果能否在同一任务上比较？",
+      "tags": [
+        "GPT-6",
+        "Codex",
+        "工作流",
+        "模型进展"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "[AINews] Gemini 4 Carbon tops leaderboards, launches for cyber defenders",
+      "title_zh": "模型能力与使用方式｜[AINews] Gemini 4 Carbon tops leaderboards, launches for cyber defenders",
+      "url": "https://latent.space/p/ainews-gemini-4-carbon",
+      "source": "Latent Space",
+      "published": "2026-10-29T05:55:19+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-31T14:53:55.833310+08:00",
+      "category": "模型进展",
+      "excerpt": "",
+      "summary": "Gemini 4相关内容涉及基准测试。模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "reading": "## 来源事实\n\n公开来源为 Latent Space，来源发布时间为 2026-10-29T05:55:19+00:00。标题与订阅信息涉及基准测试。\n\n## 短解读（分析）\n\n模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "question": "版本、开放方式与评测条件是否明确？结果能否在同一任务上比较？",
+      "tags": [
+        "Gemini 4",
+        "基准测试",
+        "模型进展"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Introducing AnySpeechRecognizer and AnyDecisionModel: Open Models for Speech and Decisions on Apple Platforms",
+      "title_zh": "模型能力与使用方式｜Introducing AnySpeechRecognizer and AnyDecisionModel: Open Models for Speech and Decisions on Apple Platforms",
+      "url": "https://huggingface.co/blog/anydecisionmodel",
+      "source": "Hugging Face",
+      "published": "2026-10-29T00:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-31T14:53:55.833310+08:00",
+      "category": "模型进展",
+      "excerpt": "",
+      "summary": "Hugging Face相关内容涉及模型能力与使用方式。模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "reading": "## 来源事实\n\n公开来源为 Hugging Face，来源发布时间为 2026-10-29T00:00:00+00:00。标题与订阅信息涉及模型能力与使用方式。\n\n## 短解读（分析）\n\n模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "question": "版本、开放方式与评测条件是否明确？结果能否在同一任务上比较？",
+      "tags": [
+        "模型进展"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Building a multiplayer game world with autonomous Fable-class models",
+      "title_zh": "模型能力与使用方式｜Building a multiplayer game world with autonomous Fable-class models",
+      "url": "https://simonwillison.net/2026/Oct/29/how-i-built-the-most-ai-pilled-company-in-the-world",
+      "source": "Simon Willison",
+      "published": "2026-10-29T17:00:26+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-10-31T14:53:55.833310+08:00",
+      "category": "模型进展",
+      "excerpt": "",
+      "summary": "Simon Willison相关内容涉及模型能力与使用方式。模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "reading": "## 来源事实\n\n公开来源为 Simon Willison，来源发布时间为 2026-10-29T17:00:26+00:00。标题与订阅信息涉及模型能力与使用方式。\n\n## 短解读（分析）\n\n模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "question": "版本、开放方式与评测条件是否明确？结果能否在同一任务上比较？",
+      "tags": [
+        "模型进展"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
     }
   ]
 }
