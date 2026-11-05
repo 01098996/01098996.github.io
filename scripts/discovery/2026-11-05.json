@@ -147,6 +147,48 @@
       "content_kind": "brief",
       "summary_kind": "rule_based_brief",
       "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "A Closer Look at Phonon TTS. Launching High-Quality On-Device Speech That Tops the Benchmarks.",
+      "title_zh": "语音生成评测｜A Closer Look at Phonon TTS. Launching High-Quality On-Device Speech That Tops the Benchmarks.",
+      "url": "https://huggingface.co/blog/phonon-tts",
+      "source": "Hugging Face",
+      "published": "2026-11-05T00:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-05T19:02:45.075707+08:00",
+      "category": "语音评测",
+      "excerpt": "",
+      "summary": "原标题涉及多语言语音合成或声音克隆的评测与榜单。Hugging Face相关内容涉及基准测试。语音评测需要同时观察文字读对没有、音色是否相似，以及不同语言下的稳定性。一个总分可能掩盖具体语言或说话人的差异，选型时应核对分项和音频样例。",
+      "reading": "## 来源事实\n\n公开来源为 Hugging Face，来源发布时间为 2026-11-05T00:00:00+00:00。原标题涉及多语言语音合成或声音克隆的评测与榜单。标题与订阅信息涉及基准测试。\n\n## 短解读（分析）\n\n语音评测需要同时观察文字读对没有、音色是否相似，以及不同语言下的稳定性。一个总分可能掩盖具体语言或说话人的差异，选型时应核对分项和音频样例。",
+      "question": "榜单覆盖哪些语言？语音合成与声音克隆是否分别评分，是否有可试听样例？",
+      "tags": [
+        "基准测试",
+        "语音评测"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "LifeVal",
+      "title_zh": "评测与可靠性｜LifeVal",
+      "url": "https://openai.com/index/lifeval",
+      "source": "OpenAI",
+      "published": "2026-11-02T09:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-05T19:02:45.075707+08:00",
+      "category": "评测与可靠性",
+      "excerpt": "",
+      "summary": "OpenAI相关内容涉及基准测试。评测结论依赖测试集和执行条件。将失败样例、重复运行的波动与成本一起看，才能判断一个改进是否适合真实任务。",
+      "reading": "## 来源事实\n\n公开来源为 OpenAI，来源发布时间为 2026-11-02T09:00:00+00:00。标题与订阅信息涉及基准测试。\n\n## 短解读（分析）\n\n评测结论依赖测试集和执行条件。将失败样例、重复运行的波动与成本一起看，才能判断一个改进是否适合真实任务。",
+      "question": "测试集、对照条件和失败样例是否公开？结论适用于什么任务？",
+      "tags": [
+        "基准测试",
+        "评测与可靠性"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
     }
   ]
 }
