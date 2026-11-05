@@ -85,6 +85,68 @@
       "content_kind": "brief",
       "summary_kind": "rule_based_brief",
       "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Introducing Images 2.6",
+      "title_zh": "编程助手｜Introducing Images 2.6",
+      "url": "https://openai.com/index/introducing-images-2-6",
+      "source": "OpenAI",
+      "published": "2026-11-04T00:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-05T15:51:22.340205+08:00",
+      "category": "AI 编程实践",
+      "excerpt": "",
+      "summary": "OpenAI相关内容涉及Codex、API。工具能否帮上忙，取决于它在现有项目里如何定位文件、执行检查并呈现改动。可以用一个小修复任务比较完成时间和人工复核量。",
+      "reading": "## 来源事实\n\n公开来源为 OpenAI，来源发布时间为 2026-11-04T00:00:00+00:00。标题与订阅信息涉及Codex、API。\n\n## 短解读（分析）\n\n工具能否帮上忙，取决于它在现有项目里如何定位文件、执行检查并呈现改动。可以用一个小修复任务比较完成时间和人工复核量。",
+      "question": "来源是否给出了可复现的仓库、执行权限和验证步骤？",
+      "tags": [
+        "Codex",
+        "API",
+        "AI 编程实践"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "How we detect frontier model misalignment",
+      "title_zh": "模型能力与使用方式｜How we detect frontier model misalignment",
+      "url": "https://openai.com/index/how-we-detect-frontier-model-misalignment",
+      "source": "OpenAI",
+      "published": "2026-10-29T09:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-05T15:51:22.340205+08:00",
+      "category": "模型进展",
+      "excerpt": "",
+      "summary": "OpenAI相关内容涉及模型能力与使用方式。模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "reading": "## 来源事实\n\n公开来源为 OpenAI，来源发布时间为 2026-10-29T09:00:00+00:00。标题与订阅信息涉及模型能力与使用方式。\n\n## 短解读（分析）\n\n模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "question": "版本、开放方式与评测条件是否明确？结果能否在同一任务上比较？",
+      "tags": [
+        "模型进展"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Building a multiplayer game world with autonomous Fable-class models",
+      "title_zh": "模型能力与使用方式｜Building a multiplayer game world with autonomous Fable-class models",
+      "url": "https://simonwillison.net/2026/Oct/29/how-i-built-the-most-ai-pilled-company-in-the-world",
+      "source": "Simon Willison",
+      "published": "2026-10-29T17:00:26+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-05T15:51:22.340205+08:00",
+      "category": "模型进展",
+      "excerpt": "",
+      "summary": "Simon Willison相关内容涉及模型能力与使用方式。模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "reading": "## 来源事实\n\n公开来源为 Simon Willison，来源发布时间为 2026-10-29T17:00:26+00:00。标题与订阅信息涉及模型能力与使用方式。\n\n## 短解读（分析）\n\n模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "question": "版本、开放方式与评测条件是否明确？结果能否在同一任务上比较？",
+      "tags": [
+        "模型进展"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
     }
   ]
 }
