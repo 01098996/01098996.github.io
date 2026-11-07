@@ -44,6 +44,48 @@
       "content_kind": "brief",
       "summary_kind": "rule_based_brief",
       "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "A Closer Look at Phonon TTS. Launching High-Quality On-Device Speech That Tops the Benchmarks.",
+      "title_zh": "语音生成评测｜A Closer Look at Phonon TTS. Launching High-Quality On-Device Speech That Tops the Benchmarks.",
+      "url": "https://huggingface.co/blog/phonon-tts",
+      "source": "Hugging Face",
+      "published": "2026-11-05T00:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-07T08:57:56.501354+08:00",
+      "category": "语音评测",
+      "excerpt": "",
+      "summary": "原标题涉及多语言语音合成或声音克隆的评测与榜单。Hugging Face相关内容涉及基准测试。语音评测需要同时观察文字读对没有、音色是否相似，以及不同语言下的稳定性。一个总分可能掩盖具体语言或说话人的差异，选型时应核对分项和音频样例。",
+      "reading": "## 来源事实\n\n公开来源为 Hugging Face，来源发布时间为 2026-11-05T00:00:00+00:00。原标题涉及多语言语音合成或声音克隆的评测与榜单。标题与订阅信息涉及基准测试。\n\n## 短解读（分析）\n\n语音评测需要同时观察文字读对没有、音色是否相似，以及不同语言下的稳定性。一个总分可能掩盖具体语言或说话人的差异，选型时应核对分项和音频样例。",
+      "question": "榜单覆盖哪些语言？语音合成与声音克隆是否分别评分，是否有可试听样例？",
+      "tags": [
+        "基准测试",
+        "语音评测"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Qodo builds context into AI code review with Codex",
+      "title_zh": "编程助手｜Qodo builds context into AI code review with Codex",
+      "url": "https://openai.com/index/qodo-codex-plugin",
+      "source": "OpenAI",
+      "published": "2026-11-02T00:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-07T08:57:56.501354+08:00",
+      "category": "AI 编程实践",
+      "excerpt": "",
+      "summary": "Codex相关内容涉及Codex。工具能否帮上忙，取决于它在现有项目里如何定位文件、执行检查并呈现改动。可以用一个小修复任务比较完成时间和人工复核量。",
+      "reading": "## 来源事实\n\n公开来源为 OpenAI，来源发布时间为 2026-11-02T00:00:00+00:00。标题与订阅信息涉及Codex。\n\n## 短解读（分析）\n\n工具能否帮上忙，取决于它在现有项目里如何定位文件、执行检查并呈现改动。可以用一个小修复任务比较完成时间和人工复核量。",
+      "question": "来源是否给出了可复现的仓库、执行权限和验证步骤？",
+      "tags": [
+        "Codex",
+        "AI 编程实践"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
     }
   ]
 }
