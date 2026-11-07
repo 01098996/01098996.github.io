@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-08",
+  "articles": [
+    {
+      "title": "HerdBuilderEstimate/roblox-studio-mcp",
+      "title_zh": "工具连接与自动化｜HerdBuilderEstimate/roblox-studio-mcp",
+      "url": "https://github.com/HerdBuilderEstimate/roblox-studio-mcp",
+      "source": "GitHub",
+      "published": "2026-11-06T06:16:35Z",
+      "date_kind": "project_created",
+      "discovered_at": "2026-11-08T02:49:55.841917+08:00",
+      "category": "工具与应用",
+      "excerpt": "",
+      "summary": "GitHub相关内容涉及开源、MCP、Python。连接外部工具会扩大能力，也会增加出错的位置。先在只读、小范围任务中检查输入输出、权限和错误返回，再决定是否接入真实工作流。",
+      "reading": "## 来源事实\n\n公开来源为 GitHub，项目创建时间为 2026-11-06T06:16:35Z。标题与订阅信息涉及开源、MCP、Python。这里的日期是 GitHub 项目创建日期，不能当作产品发布日期。\n\n## 短解读（分析）\n\n连接外部工具会扩大能力，也会增加出错的位置。先在只读、小范围任务中检查输入输出、权限和错误返回，再决定是否接入真实工作流。",
+      "question": "来源有没有说明权限范围、敏感数据处理和工具出错后的行为？",
+      "tags": [
+        "开源",
+        "MCP",
+        "Python",
+        "工具与应用"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Cult.fit builds operational muscle with Codex",
+      "title_zh": "编程助手｜Cult.fit builds operational muscle with Codex",
+      "url": "https://openai.com/index/cultfit-builds-with-codex",
+      "source": "OpenAI",
+      "published": "2026-11-05T20:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-08T02:49:55.841917+08:00",
+      "category": "AI 编程实践",
+      "excerpt": "",
+      "summary": "Codex相关内容涉及Codex。工具能否帮上忙，取决于它在现有项目里如何定位文件、执行检查并呈现改动。可以用一个小修复任务比较完成时间和人工复核量。",
+      "reading": "## 来源事实\n\n公开来源为 OpenAI，来源发布时间为 2026-11-05T20:00:00+00:00。标题与订阅信息涉及Codex。\n\n## 短解读（分析）\n\n工具能否帮上忙，取决于它在现有项目里如何定位文件、执行检查并呈现改动。可以用一个小修复任务比较完成时间和人工复核量。",
+      "question": "来源是否给出了可复现的仓库、执行权限和验证步骤？",
+      "tags": [
+        "Codex",
+        "AI 编程实践"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    }
+  ]
+}
