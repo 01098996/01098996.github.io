@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-10",
+  "articles": [
+    {
+      "title": "基元律动发布NeoHorse-1.5-Flash Preview，Agent模型RSI进入第二轮迭代",
+      "title_zh": "基元律动发布NeoHorse-1.5-Flash Preview，Agent模型RSI进入第二轮迭代",
+      "url": "https://www.qbitai.com/2026/11/508603.html",
+      "source": "量子位",
+      "published": "2026-11-09T05:09:23+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-10T02:52:24.861876+08:00",
+      "category": "Agent 开发",
+      "excerpt": "",
+      "summary": "量子位相关内容涉及智能体工作流。可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "reading": "## 来源事实\n\n公开来源为 量子位，来源发布时间为 2026-11-09T05:09:23+00:00。标题与订阅信息涉及智能体工作流。\n\n## 短解读（分析）\n\n可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "question": "任务中断后能否恢复？工具权限与失败重试边界写清楚了吗？",
+      "tags": [
+        "Agent 开发"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Cult.fit builds operational muscle with Codex",
+      "title_zh": "编程助手｜Cult.fit builds operational muscle with Codex",
+      "url": "https://openai.com/index/cultfit-builds-with-codex",
+      "source": "OpenAI",
+      "published": "2026-11-05T20:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-10T02:52:24.861876+08:00",
+      "category": "AI 编程实践",
+      "excerpt": "",
+      "summary": "Codex相关内容涉及Codex。工具能否帮上忙，取决于它在现有项目里如何定位文件、执行检查并呈现改动。可以用一个小修复任务比较完成时间和人工复核量。",
+      "reading": "## 来源事实\n\n公开来源为 OpenAI，来源发布时间为 2026-11-05T20:00:00+00:00。标题与订阅信息涉及Codex。\n\n## 短解读（分析）\n\n工具能否帮上忙，取决于它在现有项目里如何定位文件、执行检查并呈现改动。可以用一个小修复任务比较完成时间和人工复核量。",
+      "question": "来源是否给出了可复现的仓库、执行权限和验证步骤？",
+      "tags": [
+        "Codex",
+        "AI 编程实践"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    }
+  ]
+}
