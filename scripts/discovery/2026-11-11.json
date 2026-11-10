@@ -43,6 +43,48 @@
       "content_kind": "brief",
       "summary_kind": "rule_based_brief",
       "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "A Closer Look at Phonon TTS. Launching High-Quality On-Device Speech That Tops the Benchmarks.",
+      "title_zh": "语音生成评测｜A Closer Look at Phonon TTS. Launching High-Quality On-Device Speech That Tops the Benchmarks.",
+      "url": "https://huggingface.co/blog/phonon-tts",
+      "source": "Hugging Face",
+      "published": "2026-11-05T00:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-11T07:27:37.416749+08:00",
+      "category": "语音评测",
+      "excerpt": "",
+      "summary": "原标题涉及多语言语音合成或声音克隆的评测与榜单。Hugging Face相关内容涉及基准测试。语音评测需要同时观察文字读对没有、音色是否相似，以及不同语言下的稳定性。一个总分可能掩盖具体语言或说话人的差异，选型时应核对分项和音频样例。",
+      "reading": "## 来源事实\n\n公开来源为 Hugging Face，来源发布时间为 2026-11-05T00:00:00+00:00。原标题涉及多语言语音合成或声音克隆的评测与榜单。标题与订阅信息涉及基准测试。\n\n## 短解读（分析）\n\n语音评测需要同时观察文字读对没有、音色是否相似，以及不同语言下的稳定性。一个总分可能掩盖具体语言或说话人的差异，选型时应核对分项和音频样例。",
+      "question": "榜单覆盖哪些语言？语音合成与声音克隆是否分别评分，是否有可试听样例？",
+      "tags": [
+        "基准测试",
+        "语音评测"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Introducing Businesses in ChatGPT",
+      "title_zh": "模型发布｜Introducing Businesses in ChatGPT",
+      "url": "https://openai.com/index/introducing-businesses-chatgpt",
+      "source": "OpenAI",
+      "published": "2026-11-10T10:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-11T07:27:37.416749+08:00",
+      "category": "模型进展",
+      "excerpt": "",
+      "summary": "原标题是一则具体模型的发布消息。ChatGPT相关内容涉及模型发布。发布消息可先拆成三个检查项：在哪些入口可用、针对哪类任务、与现有版本怎样比较。能力和速度描述属于发布方陈述，实际选择还要核对开放条件与同任务对照结果。",
+      "reading": "## 来源事实\n\n公开来源为 OpenAI，来源发布时间为 2026-11-10T10:00:00+00:00。原标题是一则具体模型的发布消息。标题与订阅信息涉及模型发布。\n\n## 短解读（分析）\n\n发布消息可先拆成三个检查项：在哪些入口可用、针对哪类任务、与现有版本怎样比较。能力和速度描述属于发布方陈述，实际选择还要核对开放条件与同任务对照结果。",
+      "question": "文档是否说明开放入口和限制？同任务下的质量、耗时与费用如何比较？",
+      "tags": [
+        "ChatGPT",
+        "模型进展"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
     }
   ]
 }
