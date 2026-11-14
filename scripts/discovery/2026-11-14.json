@@ -127,6 +127,27 @@
       "content_kind": "brief",
       "summary_kind": "rule_based_brief",
       "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Introducing Businesses in ChatGPT",
+      "title_zh": "模型发布｜Introducing Businesses in ChatGPT",
+      "url": "https://openai.com/index/introducing-businesses-chatgpt",
+      "source": "OpenAI",
+      "published": "2026-11-10T10:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-14T15:31:29.794094+08:00",
+      "category": "模型进展",
+      "excerpt": "",
+      "summary": "原标题是一则具体模型的发布消息。ChatGPT相关内容涉及模型发布。发布消息可先拆成三个检查项：在哪些入口可用、针对哪类任务、与现有版本怎样比较。能力和速度描述属于发布方陈述，实际选择还要核对开放条件与同任务对照结果。",
+      "reading": "## 来源事实\n\n公开来源为 OpenAI，来源发布时间为 2026-11-10T10:00:00+00:00。原标题是一则具体模型的发布消息。标题与订阅信息涉及模型发布。\n\n## 短解读（分析）\n\n发布消息可先拆成三个检查项：在哪些入口可用、针对哪类任务、与现有版本怎样比较。能力和速度描述属于发布方陈述，实际选择还要核对开放条件与同任务对照结果。",
+      "question": "文档是否说明开放入口和限制？同任务下的质量、耗时与费用如何比较？",
+      "tags": [
+        "ChatGPT",
+        "模型进展"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
     }
   ]
 }
