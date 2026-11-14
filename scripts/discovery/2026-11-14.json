@@ -85,6 +85,48 @@
       "content_kind": "brief",
       "summary_kind": "rule_based_brief",
       "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Introducing ChatGPT Wallet",
+      "title_zh": "模型发布｜Introducing ChatGPT Wallet",
+      "url": "https://openai.com/index/introducing-chatgpt-wallet",
+      "source": "OpenAI",
+      "published": "2026-11-13T15:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-14T11:21:17.746430+08:00",
+      "category": "模型进展",
+      "excerpt": "",
+      "summary": "原标题是一则具体模型的发布消息。ChatGPT相关内容涉及Codex。发布消息可先拆成三个检查项：在哪些入口可用、针对哪类任务、与现有版本怎样比较。能力和速度描述属于发布方陈述，实际选择还要核对开放条件与同任务对照结果。",
+      "reading": "## 来源事实\n\n公开来源为 OpenAI，来源发布时间为 2026-11-13T15:00:00+00:00。原标题是一则具体模型的发布消息。标题与订阅信息涉及Codex。\n\n## 短解读（分析）\n\n发布消息可先拆成三个检查项：在哪些入口可用、针对哪类任务、与现有版本怎样比较。能力和速度描述属于发布方陈述，实际选择还要核对开放条件与同任务对照结果。",
+      "question": "文档是否说明开放入口和限制？同任务下的质量、耗时与费用如何比较？",
+      "tags": [
+        "ChatGPT",
+        "Codex",
+        "模型进展"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Cogent and OpenAI build cyber defense factories for enterprises",
+      "title_zh": "智能体工作流｜Cogent and OpenAI build cyber defense factories for enterprises",
+      "url": "https://openai.com/index/cogent-security",
+      "source": "OpenAI",
+      "published": "2026-11-10T00:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-14T11:21:17.746430+08:00",
+      "category": "Agent 开发",
+      "excerpt": "",
+      "summary": "OpenAI相关内容涉及智能体工作流。可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "reading": "## 来源事实\n\n公开来源为 OpenAI，来源发布时间为 2026-11-10T00:00:00+00:00。标题与订阅信息涉及智能体工作流。\n\n## 短解读（分析）\n\n可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "question": "任务中断后能否恢复？工具权限与失败重试边界写清楚了吗？",
+      "tags": [
+        "Agent 开发"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
     }
   ]
 }
