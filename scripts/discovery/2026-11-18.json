@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-18",
+  "articles": [
+    {
+      "title": "Introducing GPT-6.2 Astra and Sol",
+      "title_zh": "模型发布｜Introducing GPT-6.2 Astra and Sol",
+      "url": "https://openai.com/index/introducing-gpt-6-2-astra-sol",
+      "source": "OpenAI",
+      "published": "2026-11-17T17:45:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-18T06:27:38.815581+08:00",
+      "category": "模型进展",
+      "excerpt": "",
+      "summary": "原标题是一则具体模型的发布消息。GPT-6.2相关内容涉及Codex、计算机操作、API。发布消息可先拆成三个检查项：在哪些入口可用、针对哪类任务、与现有版本怎样比较。能力和速度描述属于发布方陈述，实际选择还要核对开放条件与同任务对照结果。",
+      "reading": "## 来源事实\n\n公开来源为 OpenAI，来源发布时间为 2026-11-17T17:45:00+00:00。原标题是一则具体模型的发布消息。标题与订阅信息涉及Codex、计算机操作、API。\n\n## 短解读（分析）\n\n发布消息可先拆成三个检查项：在哪些入口可用、针对哪类任务、与现有版本怎样比较。能力和速度描述属于发布方陈述，实际选择还要核对开放条件与同任务对照结果。",
+      "question": "文档是否说明开放入口和限制？同任务下的质量、耗时与费用如何比较？",
+      "tags": [
+        "GPT-6.2",
+        "Codex",
+        "计算机操作",
+        "API",
+        "模型进展"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Can AI help build a healthier future?",
+      "title_zh": "编程助手｜Can AI help build a healthier future?",
+      "url": "https://www.microsoft.com/en-us/research/podcast/can-ai-help-build-a-healthier-future",
+      "source": "Microsoft Research",
+      "published": "2026-11-17T16:52:17+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-18T06:27:38.815581+08:00",
+      "category": "AI 编程实践",
+      "excerpt": "",
+      "summary": "Microsoft Research相关内容涉及编程助手。工具能否帮上忙，取决于它在现有项目里如何定位文件、执行检查并呈现改动。可以用一个小修复任务比较完成时间和人工复核量。",
+      "reading": "## 来源事实\n\n公开来源为 Microsoft Research，来源发布时间为 2026-11-17T16:52:17+00:00。标题与订阅信息涉及编程助手。\n\n## 短解读（分析）\n\n工具能否帮上忙，取决于它在现有项目里如何定位文件、执行检查并呈现改动。可以用一个小修复任务比较完成时间和人工复核量。",
+      "question": "来源是否给出了可复现的仓库、执行权限和验证步骤？",
+      "tags": [
+        "AI 编程实践"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    }
+  ]
+}
