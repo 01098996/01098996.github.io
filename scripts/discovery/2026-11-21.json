@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-21",
+  "articles": [
+    {
+      "title": "Introducing GPT-6.2 Astra and Sol",
+      "title_zh": "模型发布｜Introducing GPT-6.2 Astra and Sol",
+      "url": "https://openai.com/index/introducing-gpt-6-2-astra-sol",
+      "source": "OpenAI",
+      "published": "2026-11-17T17:45:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-21T05:11:52.972037+08:00",
+      "category": "模型进展",
+      "excerpt": "",
+      "summary": "原标题是一则具体模型的发布消息。GPT-6.2相关内容涉及Codex、计算机操作、API。发布消息可先拆成三个检查项：在哪些入口可用、针对哪类任务、与现有版本怎样比较。能力和速度描述属于发布方陈述，实际选择还要核对开放条件与同任务对照结果。",
+      "reading": "## 来源事实\n\n公开来源为 OpenAI，来源发布时间为 2026-11-17T17:45:00+00:00。原标题是一则具体模型的发布消息。标题与订阅信息涉及Codex、计算机操作、API。\n\n## 短解读（分析）\n\n发布消息可先拆成三个检查项：在哪些入口可用、针对哪类任务、与现有版本怎样比较。能力和速度描述属于发布方陈述，实际选择还要核对开放条件与同任务对照结果。",
+      "question": "文档是否说明开放入口和限制？同任务下的质量、耗时与费用如何比较？",
+      "tags": [
+        "GPT-6.2",
+        "Codex",
+        "计算机操作",
+        "API",
+        "模型进展"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    },
+    {
+      "title": "Introducing harness adapters: adapt your favorite model to your harness to improve performance and cost",
+      "title_zh": "模型能力与使用方式｜Introducing harness adapters: adapt your favorite model to your harness to improve performance and cost",
+      "url": "https://huggingface.co/blog/harness-adapters-at-scale",
+      "source": "Hugging Face",
+      "published": "2026-11-20T00:00:00+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-21T05:11:52.972037+08:00",
+      "category": "模型进展",
+      "excerpt": "",
+      "summary": "Hugging Face相关内容涉及模型能力与使用方式。模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "reading": "## 来源事实\n\n公开来源为 Hugging Face，来源发布时间为 2026-11-20T00:00:00+00:00。标题与订阅信息涉及模型能力与使用方式。\n\n## 短解读（分析）\n\n模型消息可以作为选型线索，实际价值仍要在自己的任务上验证。比较同一输入下的正确率、响应时间和调用限制，比只看演示更有帮助。",
+      "question": "版本、开放方式与评测条件是否明确？结果能否在同一任务上比较？",
+      "tags": [
+        "模型进展"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    }
+  ]
+}
