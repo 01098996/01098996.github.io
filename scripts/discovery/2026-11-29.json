@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-29",
+  "articles": [
+    {
+      "title": "How Clay Builds GTM Agents — Jeff Barg, Head of AI",
+      "title_zh": "智能体工作流｜How Clay Builds GTM Agents — Jeff Barg, Head of AI",
+      "url": "https://latent.space/p/how-clay-builds-gtm-agents-jeff-barg-head-of-ai",
+      "source": "Latent Space",
+      "published": "2026-11-26T23:02:48+00:00",
+      "date_kind": "feed_published",
+      "discovered_at": "2026-11-29T04:12:39.273573+08:00",
+      "category": "Agent 开发",
+      "excerpt": "",
+      "summary": "Latent Space相关内容涉及Claude Code、评测。可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "reading": "## 来源事实\n\n公开来源为 Latent Space，来源发布时间为 2026-11-26T23:02:48+00:00。标题与订阅信息涉及Claude Code、评测。\n\n## 短解读（分析）\n\n可执行的工作流比演示中的回答更值得观察。工具调用失败后的恢复、状态保存和人工介入点，会直接影响能否长期运行。",
+      "question": "任务中断后能否恢复？工具权限与失败重试边界写清楚了吗？",
+      "tags": [
+        "Claude Code",
+        "评测",
+        "Agent 开发"
+      ],
+      "content_kind": "brief",
+      "summary_kind": "rule_based_brief",
+      "evidence_kind": "public_feed_metadata"
+    }
+  ]
+}
